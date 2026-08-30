@@ -1,0 +1,6 @@
+{
+  "name": "OmniDle - Multi-Topic Guessing Game",
+  "description": "Giochi stile Wordle e LoLdle per Calcio, League of Legends, Cinema, Anime, Videogiochi e Automobili con sfide giornaliere e infinite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
