@@ -1,10 +1,11 @@
 import React from 'react';
-import { CategoryInfo } from '../types';
+import { CategoryInfo, LolLanguage } from '../types';
 import { Trophy, Swords, Car, Clapperboard, Tv, Gamepad2, Play } from 'lucide-react';
 
 interface CategoryCardProps {
   category: CategoryInfo;
-  onSelect: (categoryId: CategoryInfo['id']) => void;
+  onSelect: (categoryId: CategoryInfo['id'], miniGameId?: string) => void;
+  lang?: LolLanguage;
 }
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
@@ -27,9 +28,13 @@ const COLOR_CLASSES: Record<string, { bg: string; text: string; badge: string }>
   indigo: { bg: 'bg-indigo-500/20', text: 'text-indigo-400', badge: 'bg-indigo-500 text-white' },
 };
 
-export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onSelect }) => {
+export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onSelect, lang = 'it' }) => {
   const Icon = ICON_MAP[category.iconName] || Trophy;
   const colors = COLOR_CLASSES[category.color] || COLOR_CLASSES.indigo;
+
+  const displayTitle = lang === 'en' && category.titleEn ? category.titleEn : category.title;
+  const displaySubtitle = lang === 'en' && category.subtitleEn ? category.subtitleEn : category.subtitle;
+  const displaySource = lang === 'en' && category.sourceInfoEn ? category.sourceInfoEn : category.sourceInfo;
 
   return (
     <div
@@ -50,44 +55,55 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onSelect }
 
         {/* Title and Subtitle */}
         <h2 className="text-2xl font-bold mb-1 text-zinc-100 group-hover:text-white transition-colors">
-          {category.title}
+          {displayTitle}
         </h2>
         <p className="text-zinc-500 text-sm italic mb-4">
-          "{category.subtitle}"
+          "{displaySubtitle}"
         </p>
 
         {/* Mini Games list */}
         <div className="space-y-1.5 border-t border-zinc-800/80 pt-3 mb-4">
-          {category.miniGames.map((game) => (
-            <div
-              key={game.id}
-              className={`flex items-center justify-between rounded-md px-2.5 py-1 text-xs transition ${
-                game.isAvailable
-                  ? 'bg-zinc-900/80 text-zinc-300 border border-zinc-800'
-                  : 'bg-zinc-900/30 text-zinc-600 border border-zinc-900/50'
-              }`}
-            >
-              <span className="font-medium truncate max-w-[170px]">{game.title}</span>
-              {game.isAvailable ? (
-                <span className="flex items-center gap-1 font-bold text-emerald-400 text-[11px]">
-                  <Play className="h-3 w-3 fill-emerald-400" />
-                  Attivo
-                </span>
-              ) : (
-                <span className="text-[10px] text-zinc-600 uppercase font-semibold">Prossimamente</span>
-              )}
-            </div>
-          ))}
+          {category.miniGames.map((game) => {
+            const gameTitle = lang === 'en' && game.titleEn ? game.titleEn : game.title;
+
+            return (
+              <div
+                key={game.id}
+                onClick={(e) => {
+                  if (game.isAvailable) {
+                    e.stopPropagation();
+                    onSelect(category.id, game.id);
+                  }
+                }}
+                className={`flex items-center justify-between rounded-md px-2.5 py-1 text-xs transition ${
+                  game.isAvailable
+                    ? 'bg-zinc-900/80 text-zinc-300 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 cursor-pointer'
+                    : 'bg-zinc-900/30 text-zinc-600 border border-zinc-900/50'
+                }`}
+              >
+                <span className="font-medium truncate max-w-[170px]">{gameTitle}</span>
+                {game.isAvailable ? (
+                  <span className="flex items-center text-emerald-400 p-0.5">
+                    <Play className="h-3.5 w-3.5 fill-emerald-400" />
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-zinc-600 uppercase font-semibold">
+                    {lang === 'en' ? 'Coming soon' : 'Prossimamente'}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Footer bar inside card */}
       <div className="flex justify-between items-center pt-3 border-t border-zinc-800/60">
         <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold truncate max-w-[150px]">
-          {category.sourceInfo}
+          {displaySource}
         </span>
         <span className={`px-3.5 py-1 ${colors.badge} text-[10px] font-black rounded-full uppercase tracking-wider transition-transform group-hover:scale-105`}>
-          GIOCA
+          {lang === 'en' ? 'PLAY' : 'GIOCA'}
         </span>
       </div>
     </div>

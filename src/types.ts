@@ -1,24 +1,29 @@
-export type CategoryId = 'calcio' | 'league-of-legends' | 'automobili' | 'film' | 'anime' | 'videogiochi';
+export type CategoryId = 'calcio' | 'league-of-legends' | 'automobili' | 'film' | 'anime' | 'videogiochi' | 'videogiochi-2';
 
 export type GameMode = 'daily' | 'infinite';
 
 export interface CategoryInfo {
   id: CategoryId;
   title: string;
+  titleEn?: string;
   subtitle: string;
+  subtitleEn?: string;
   iconName: string;
   badge: string;
   color: string; // Tailwind color name like 'emerald', 'sky', 'amber', 'rose', 'purple', 'indigo'
   watermarkCode?: string;
   bgGradient: string;
   sourceInfo: string;
+  sourceInfoEn?: string;
   miniGames: MiniGameInfo[];
 }
 
 export interface MiniGameInfo {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   isAvailable: boolean;
 }
 
@@ -52,18 +57,57 @@ export interface FootballPlayer {
 }
 
 // 2. LEAGUE OF LEGENDS
+export type LolLanguage = 'it' | 'en';
+
 export interface LolChampion {
   id: string;
   name: string;
   title: string;
+  titleEn?: string;
   icon: string; // Riot DDragon URL
+  splashUrl?: string;
   gender: 'Maschio' | 'Femmina' | 'Altro';
   positions: ('Top' | 'Jungle' | 'Mid' | 'Bot' | 'Support')[];
   species: string[];
+  speciesEn?: string[];
   resource: 'Mana' | 'Energia' | 'Senza Risorsa' | 'Salute' | 'Furia' | 'Flusso' | 'Scudo';
   rangeType: 'Melee' | 'Ranged' | 'Hybrid';
   regions: string[];
+  regionsEn?: string[];
   releaseYear: number;
+}
+
+export interface LolAbility {
+  id: string; // e.g. "Ahri-Q"
+  championId: string; // e.g. "Ahri"
+  championName: string; // e.g. "Ahri"
+  championNameEn?: string;
+  slot: 'P' | 'Q' | 'W' | 'E' | 'R';
+  name: string; // e.g. "Globo dell'inganno"
+  nameEn: string; // e.g. "Orb of Deception"
+  description: string;
+  descriptionEn: string;
+  iconUrl: string;
+}
+
+export interface LolArtwork {
+  id: string; // e.g. "Ahri_14"
+  championId: string;
+  championName: string;
+  skinNum: number;
+  artworkName: string; // e.g. "Ahri Guardiana Stellare"
+  artworkNameEn: string; // e.g. "Star Guardian Ahri"
+  splashUrl: string;
+}
+
+export interface LolQuote {
+  id: string; // e.g. "Yasuo_01"
+  championId: string; // e.g. "Yasuo"
+  championName: string; // "Yasuo"
+  quoteIt: string;
+  quoteEn: string;
+  quoteTypeIt: string;
+  quoteTypeEn: string;
 }
 
 // 3. AUTOMOBILI / CARS
@@ -74,7 +118,7 @@ export interface CarModel {
   country: string; // e.g., "Italia"
   flag: string;
   bodyType: 'Supercar' | 'Berlina' | 'SUV' | 'Coupé' | 'Hatchback' | 'Cabrio' | 'Hypercar';
-  engineType: 'V8' | 'V12' | 'V6' | 'W16' | 'Inline-4' | 'Flat-6' | 'Elettrico' | 'Ibrido' | 'Rotativo Wankel';
+  engineType: 'V8' | 'V12' | 'V10' | 'V6' | 'W16' | 'Inline-6' | 'Inline-5' | 'Inline-4' | 'Flat-6' | 'Elettrico' | 'Ibrido' | 'Rotativo Wankel';
   drivetrain: 'RWD' | 'AWD' | 'FWD';
   horsepower: number;
   releaseYear: number;
@@ -116,11 +160,17 @@ export interface VideoGameItem {
   title: string;
   developer: string;
   releaseYear: number;
-  genres: string[];
-  perspective: '1a Persona' | '3a Persona' | 'Isometrica' | '2D Side-Scroller';
+  genres: string[]; // Gameplay genres: Avventura, Azione, GDR, Platform, Sparatutto, Picchiaduro, etc.
+  themes?: string[]; // Narrative / setting themes: Fantasy, Sci-Fi, Storico, Arti Marziali, Cyberpunk, etc.
+  perspective: '1a Persona' | '3a Persona' | 'Isometrica' | '2D Side-Scroller' | 'Top-Down';
   mainPlatform: 'PC / Multi' | 'PlayStation' | 'Nintendo' | 'Xbox';
+  platforms?: string[]; // Specific consoles: PS1, PS2, PS3, PS4, PS5, Xbox, Xbox 360, Xbox One, Xbox Series X/S, SNES, N64, GameCube, Wii, Switch, PC, Dreamcast, etc.
   iconicQuote: string;
   coverUrl?: string;
+  pegi?: string; // e.g. 'PEGI 3', 'PEGI 7', 'PEGI 12', 'PEGI 16', 'PEGI 18'
+  gameModes?: string[]; // e.g. ['Giocatore singolo'], ['Giocatore singolo', 'Multiplayer', 'Co-op online']
+  franchise?: string; // e.g. 'Crash Bandicoot', 'The Legend of Zelda', 'Dark Souls', 'Resident Evil'
+  gameType?: 'Normale' | 'Remake' | 'Remaster'; // IGDB Category: Gioco Normale, Remake, Remaster
 }
 
 // MATCH TILE STATUS
@@ -138,6 +188,7 @@ export interface GuessRecord<T> {
   item: T;
   matches: AttributeMatch[];
   isCorrect: boolean;
+  isSameFranchise?: boolean;
 }
 
 export interface UserStats {
@@ -147,4 +198,5 @@ export interface UserStats {
   maxStreak: number;
   guessDistribution: Record<number, number>;
   lastPlayedDate?: string;
+  totalScore?: number;
 }

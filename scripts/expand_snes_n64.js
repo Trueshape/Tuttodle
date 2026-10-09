@@ -1,0 +1,158 @@
+import fs from 'fs';
+import { generateBoxArtSvg } from './generator_helpers.js';
+
+function mapGames(rawList, consoleKey, mainPlatform = 'Nintendo') {
+  return rawList.map(([title, dev, year, genres, themes, perspective, quote, pegi, franchise, bg, accent, icon]) => ({
+    id: `${consoleKey.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`,
+    title,
+    developer: dev,
+    releaseYear: year,
+    genres,
+    themes,
+    perspective,
+    mainPlatform,
+    platforms: [consoleKey],
+    iconicQuote: quote,
+    coverUrl: generateBoxArtSvg({
+      title,
+      consoleKey,
+      developer: dev,
+      year,
+      genre: genres[0],
+      pegi,
+      themeBg: bg,
+      accentColor: accent,
+      iconSymbol: icon
+    }),
+    pegi,
+    gameModes: ['Giocatore singolo'],
+    franchise
+  }));
+}
+
+const snesExtra = [
+  ["Super Mario All-Stars", "Nintendo EAD", 1993, ["Platform 2D"], ["Super Mario Bros 1 2 3", "Grafica 16-bit Rifatta"], "2D Side-Scroller", "I primi quattro leggendari capitoli di Mario tirati a lucido a 16-bit in una sola cartuccia.", "PEGI 3", "Super Mario", "#b71c1c", "#ffd700", "⭐"],
+  ["Mega Man X2", "Capcom", 1994, ["Action Platformer"], ["Chip Cx4", "Zero Risorto", "X-Buster Potenziato"], "2D Side-Scroller", "Scatti fulminei, armature celate e la rinascita del leggendario cacciatore Zero.", "PEGI 7", "Mega Man", "#0d47a1", "#00e5ff", "🤖"],
+  ["Mega Man X3", "Capcom", 1995, ["Action Platformer"], ["Zero Giocabile con Z-Saber", "Chip Dorato"], "2D Side-Scroller", "Affetta i Maverick al comando di Zero brandendo la letale spada laser Z-Saber.", "PEGI 7", "Mega Man", "#1a237e", "#ff1744", "⚔️"],
+  ["Super Castlevania IV", "Konami", 1991, ["Action Platformer"], ["Simon Belmont", "Frusta Direzionabile a 8 Vie", "Mode 7"], "2D Side-Scroller", "Fai roteare la frusta Vampirkiller in otto direzioni per respingere le tenebre del Conte.", "PEGI 12", "Castlevania", "#3e0000", "#ff5722", "🦇"],
+  ["Castlevania: Dracula X", "Konami", 1995, ["Action Platformer"], ["Richter Belmont", "Item Crash", "Salvataggio di Annet"], "2D Side-Scroller", "Richter scaglia tempeste di croci sacre e acqua santa nelle sale del castello.", "PEGI 12", "Castlevania", "#2b0000", "#ffd700", "✝️"],
+  ["Contra III: The Alien Wars", "Konami", 1992, ["Run and Gun"], ["Invasione Aliena", "Doppia Arma", "Livelli Mode 7 Rotanti"], "2D Side-Scroller", "Due eroi senza paura affrontano l'invasione aliena tra rovine infuocate e moto volanti.", "PEGI 12", "Contra", "#1a0005", "#ff1744", "💥"],
+  ["Secret of Evermore", "Square", 1995, ["Action RPG"], ["Ragazzo e il Cane Mutaforma", "Alchimia di Podunk"], "Isometrica", "Un ragazzo e il suo cane viaggiano nel tempo tra preistoria, antichità e futuro alchemico.", "PEGI 7", "Square", "#2e7d32", "#ffd54f", "🐕"],
+  ["Seiken Densetsu 3 (Trials of Mana)", "Square", 1995, ["Action RPG"], ["Sei Eroi Selezionabili", "Albero del Mana", "Grafica 16-bit Meravigliosa"], "Isometrica", "Scegli tre protagonisti su sei per vivere una favola fantasy con trame incrociate sublimi.", "PEGI 7", "Mana", "#004d40", "#76ff03", "🌿"],
+  ["Terranigma", "Quintet", 1995, ["Action RPG"], ["Ark", "Rinascita del Pianeta Terra", "Trilogia dell'Anima"], "Isometrica", "Il viaggio commovente di Ark per resuscitare i continenti, le piante, gli animali e l'umanità.", "PEGI 7", "Soul Blazer", "#002b4d", "#00e5ff", "🌍"],
+  ["Illusion of Gaia", "Quintet", 1993, ["Action RPG"], ["Will e il Flauto Magico", "Cavaliere Freedan", "Sette Meraviglie"], "Isometrica", "Will suona il flauto e si trasforma nel guerriero d'ombra Freedan tra le rovine del mondo.", "PEGI 7", "Soul Blazer", "#3e2723", "#ffb300", "🎶"],
+  ["Soul Blazer", "Quintet", 1992, ["Action RPG"], ["Freed", "Liberare le Anime Imprigionate", "Spada Sacra"], "Isometrica", "Distruggi i nidi dei mostri per liberare abitanti, ponti e ricordi del regno di Freil.", "PEGI 7", "Soul Blazer", "#1a237e", "#ffd700", "✨"],
+  ["Lufia II: Rise of the Sinistrals", "Neverland", 1995, ["GDR Classico"], ["Maxim e Selan", "Enigmi nei Dungeon", "Antico Dungeon da 99 Piani"], "Isometrica", "I migliori enigmi ambientali del genere GDR a 16-bit e la leggendaria sfida dell'Antico Dungeon.", "PEGI 7", "Lufia", "#1565c0", "#ffca28", "⚔️"],
+  ["Breath of Fire", "Capcom", 1993, ["GDR a Turni"], ["Ryu del Clan del Drago", "Nina dalle Ali Bianche"], "Isometrica", "Ryu risveglia il potere sopito del drago che scorre nel suo sangue per salvare il clan.", "PEGI 7", "Breath of Fire", "#0d47a1", "#00e676", "🐉"],
+  ["Breath of Fire II", "Capcom", 1994, ["GDR a Turni"], ["Città da Costruire Township", "Sciamani", "Chiesa di Sant'Eva"], "Isometrica", "Fonda la tua città attirando artigiani e svela i loschi segreti della Chiesa di Sant'Eva.", "PEGI 7", "Breath of Fire", "#002171", "#ffd600", "🏰"],
+  ["Star Fox 2", "Nintendo EAD", 2017, ["Simulazione Spaziale 3D"], ["Chip Super FX 2", "Walker Terrestre Arwing", "Miyu e Fay"], "1a Persona", "Il capolavoro perduto a lungo inedito che ha introdotto le trasformazioni terrene dell'Arwing.", "PEGI 3", "Star Fox", "#003366", "#00e5ff", "🦊"],
+  ["Pilotwings (SNES)", "Nintendo EAD", 1990, ["Simulazione di Volo"], ["Mode 7 Pioniere", "Biplano Paracadute Jetpack"], "3a Persona", "Ottieni i brevetti di volo superando atterraggi al millimetro sul bersaglio in Mode 7.", "PEGI 3", "Pilotwings", "#0277bd", "#e0f7fa", "🛩️"],
+  ["F-Zero", "Nintendo EAD", 1990, ["Corse Futuristiche"], ["Mute City", "Big Blue", "Velocità Mode 7"], "3a Persona", "Mute City e Big Blue inaugurano l'era dell'alta velocità fantascientifica a 16-bit.", "PEGI 3", "F-Zero", "#0d47a1", "#ff1744", "🏎️"],
+  ["Super Mario Kart", "Nintendo EAD", 1992, ["Corse Kart"], ["Nascita del Genere", "Gusci e Bucce", "Battaglia a Palloncini"], "3a Persona", "Il capostipite assoluto che ha inventato le corse arcade coi kart e le risse a palloncini.", "PEGI 3", "Mario Kart", "#b71c1c", "#ffd700", "🏎️"],
+  ["Donkey Kong Country 3: Dixie Kong's Double Trouble!", "Rare", 1996, ["Platform 2D"], ["Dixie e Kiddy Kong", "Mondo Nordico", "I Fratelli Orso"], "2D Side-Scroller", "Dixie e il piccolo Kiddy esplorano laghi e fabbriche del nordico Kremisfero.", "PEGI 3", "Donkey Kong", "#2e7d32", "#ffca28", "🍌"],
+  ["Super Punch-Out!!", "Nintendo R&D3", 1994, ["Pugilato Arcade"], ["Barra Knockout KO Speciale", "Picchiatori Mondiali"], "3a Persona", "Tempismo millimetrico per schivare montanti devastanti e scatenare raffiche KO.", "PEGI 7", "Punch-Out", "#004d40", "#ffeb3b", "🥊"],
+  ["Super Bomberman", "Hudson Soft", 1993, ["Azione Multigiocatore"], ["4 Giocatori Multitap", "Bomba a Orologeria", "Labirinto"], "Isometrica", "La festa comincia quando quattro amici collegano il Multitap per farsi saltare in aria!", "PEGI 3", "Bomberman", "#01579b", "#ff3d00", "💣"],
+  ["Super Bomberman 2", "Hudson Soft", 2004, ["Azione"], ["I Cinque Cyborg Bomberman", "Trappole Meccaniche"], "Isometrica", "Trappole magnetiche, fornaci e tapis roulant rendono le sfide multiplayer ancora più folli.", "PEGI 3", "Super Bomberman", "#002171", "#ffd600", "💥"],
+  ["Super Bomberman 3", "Hudson Soft", 1995, ["Azione"], ["5 Giocatori con i Canguri Rui", "Carrello da Morto"], "Isometrica", "Cavalca i simpatici canguri Rui e lancia bombe dall'esterno dell'arena anche da eliminato.", "PEGI 3", "Super Bomberman", "#c2185b", "#76ff03", "🦘"],
+  ["Tactics Ogre: Let Us Cling Together", "Quest", 1995, ["Strategia a Turni"], ["Yasumi Matsuno", "Denam Pavel", "Scelte Morali Tragiche"], "Isometrica", "Il padre spirituale di tutti i capolavori tattici isometrici con una narrazione politica sublime.", "PEGI 12", "Ogre Battle", "#1b1b1b", "#ffd700", "♟️"],
+  ["Ogre Battle: The March of the Black Queen", "Quest", 1993, ["Strategia in Tempo Reale"], ["Carte dei Tarocchi", "Liberare Città", "Allineamento Morale"], "Isometrica", "Guida plotoni di cavalieri e maghi sulla mappa strategica evocando i poteri dei Tarocchi.", "PEGI 12", "Ogre Battle", "#1a0033", "#ffb300", "🃏"],
+  ["Dragon Quest V: Hand of the Heavenly Bride", "Chunsoft / Enix", 1992, ["GDR a Turni"], ["Tre Generazioni di Vita", "Catturare Mostri", "La Scelta della Sposa"], "Isometrica", "Vivi l'intera vita del protagonista da bambino a padre: cattura mostri e scegli chi sposare.", "PEGI 7", "Dragon Quest", "#0d47a1", "#ffd600", "👰"],
+  ["Dragon Quest VI: Realms of Revelation", "Heartbeat / Enix", 1995, ["GDR"], ["Mondo Reale e Mondo dei Sogni", "Classi Vocazioni"], "Isometrica", "Viaggia tra la veglia e il sogno per risvegliare le classi leggendarie e sconfiggere Murdaw.", "PEGI 7", "Dragon Quest", "#002b4d", "#00e5ff", "💤"],
+  ["Final Fantasy IV", "Square", 1991, ["GDR"], ["Cecil il Cavaliere delle Tenebre", "Paladino", "Active Time Battle Debutto"], "Isometrica", "Cecil redime la propria anima diventando Paladino sulla cima del Monte Ordeals.", "PEGI 7", "Final Fantasy", "#0d1b2a", "#80d8ff", "🌙"],
+  ["Final Fantasy V", "Square", 1992, ["GDR"], ["Bartz e il Chocobo Boko", "Job System Magistrale", "Quattro Cristalli"], "Isometrica", "Il sistema di classi più versatile e amato con ventidue mestieri intercambiabili.", "PEGI 7", "Final Fantasy", "#1a237e", "#ffca28", "💎"],
+  ["Live A Live", "Square", 1994, ["GDR a Episodi"], ["Sette Ere Storiche", "Preistoria Far West Giappone Ninja", "Takashi Tokita"], "Isometrica", "Sette racconti straordinari ambientati in ere diverse convergono verso una battaglia finale senza tempo.", "PEGI 12", "Live A Live", "#261c14", "#ff5722", "📜"],
+  ["Front Mission", "G-Craft / Square", 1995, ["GDR Strategico Mecha"], ["Wanzer Personalizzabili", "Isola di Huffman", "Battaglie a Pezzi"], "Isometrica", "Personalizza ogni braccio, gamba e cannone dei tuoi robot da guerra Wanzer.", "PEGI 12", "Front Mission", "#263238", "#ff9800", "🤖"],
+  ["Bahamut Lagoon", "Square", 1996, ["GDR Strategico"], ["Alleva i Draghi", "Guerra tra le Isole Celesti", "Magia del Terreno"], "Isometrica", "Nutri e fai evolvere i tuoi draghi per scatenare tempeste elementali sui campi di battaglia.", "PEGI 12", "Square", "#00204a", "#e040fb", "🐲"],
+  ["R-Type III: The Third Lightning", "Irem", 1993, ["Shoot 'em Up"], ["Force Mutaforma", "Cannone a Onde Iper-Raggio", "Bydo"], "2D Side-Scroller", "Sgancia e richiama la capsula energetica Force per incenerire le titaniche mostruosità Bydo.", "PEGI 7", "R-Type", "#001064", "#00e5ff", "🚀"],
+  ["Space Megaforce (Super Aleste)", "Compile", 1992, ["Shoot 'em Up Verticale"], ["Otto Armi Livellabili", "Zero Rallentamenti"], "2D Side-Scroller", "La frenesia pura dei vertical shooter con otto armi polivalenti e musiche ad alta energia.", "PEGI 3", "Aleste", "#0d1b2a", "#ffd54f", "🛸"],
+  ["Wild Guns", "Natsume", 1994, ["Gallery Shooter Steampunk"], ["Clint e Annie", "Far West Fantascientifico", "Lazo e Dinamite"], "3a Persona", "Schiva proiettili a colpi di capriole e spara all'impazzata contro robot da saloon giganti.", "PEGI 12", "Wild Guns", "#3e2723", "#ff6f00", "🤠"],
+  ["The Legend of the Mystical Ninja (Goemon)", "Konami", 1991, ["Action Adventure Comico"], ["Goemon ed Ebisumaru", "Giappone Feudale Bizzarro"], "2D Side-Scroller", "Goemon ed Ebisumaru tirano pipe e piatti d'oro attraversando un Giappone esilarante.", "PEGI 7", "Goemon", "#b71c1c", "#ffca28", "👺"],
+  ["Sunset Riders (SNES)", "Konami", 1993, ["Run and Gun Western"], ["Steve Billy Bob Cormano", "Bury me with my money!", "Tori al Galoppo"], "2D Side-Scroller", "Bury me with my money! Salta sulle mandrie al galoppo e spara ai fuorilegge nei saloon.", "PEGI 12", "Sunset Riders", "#bf360c", "#ffd700", "🐎"],
+  ["Zombies Ate My Neighbors", "LucasArts", 1993, ["Azione Sopravvivenza Commedia"], ["Pistole ad Acqua", "Salva i Vicini in Piscina", "Motoseghe"], "Isometrica", "Salva bagnanti e cheerleader da zombie, formiche giganti e bambolotti assassini.", "PEGI 12", "LucasArts", "#1b3a1b", "#76ff03", "🧟"],
+  ["Sparkster", "Konami", 1994, ["Platform Azione"], ["Opossum con Jetpack", "Spada di Fuoco", "Propulsione a 8 Direzioni"], "2D Side-Scroller", "Carica la barra del jetpack per sfrecciare a razzo rimbalzando tra le pareti corazzate.", "PEGI 7", "Sparkster", "#0d47a1", "#ffd600", "🚀"],
+  ["ActRaiser 2", "Quintet", 1993, ["Action Platformer"], ["Grafica Barocca Sublime", "Ali Angeliche", "Spada Sacra"], "2D Side-Scroller", "Una gioia visiva gotica senza pari con l'angelo guerriero che affronta i sette peccati capitali.", "PEGI 12", "ActRaiser", "#311b92", "#ffd700", "👼"],
+  ["Shadowrun (SNES)", "Beam Software", 1993, ["Action RPG Cyberpunk"], ["Jake Armitage", "Risveglio nell'Obitorio", "Decker nel Cyberspazio"], "Isometrica", "Jake si risveglia in un obitorio di Seattle senza memoria tra hacker, orchi e multinazionali.", "PEGI 16", "Shadowrun", "#121212", "#00e676", "💻"],
+  ["SimCity (SNES)", "Nintendo / Maxis", 1991, ["Simulazione Urbanistica"], ["Dottor Wright", "Bowser che Distrugge la Città", "Musica Rilassante"], "Isometrica", "Costruisci la metropoli dei tuoi sogni e guarda Bowser radere al suolo i grattacieli!", "PEGI 3", "SimCity", "#2e7d32", "#fff59d", "🏙️"],
+  ["Uniracers (Unirally)", "DMA Design", 1994, ["Corse Monociclo Acrobatico"], ["Acrobazie Aeree", "DMA Design Creatori di GTA"], "2D Side-Scroller", "Esegui salti mortali con il monociclo per guadagnare scatti di velocità supersonici.", "PEGI 3", "Uniracers", "#c2185b", "#ffeb3b", "🤹"],
+  ["Rock N' Roll Racing", "Silicon & Synapse (Blizzard)", 1993, ["Corse Isometriche con Armi"], ["Colonna Sonora Hard Rock", "Telecronaca Esagerata", "Missili"], "Isometrica", "Born to be Wild risuona a palla mentre scagli mine e missili sui bolidi alieni avversari.", "PEGI 7", "Blizzard", "#1a0005", "#ff1744", "🎸"],
+  ["The Lost Vikings", "Silicon & Synapse (Blizzard)", 1992, ["Puzzle Platform Co-op"], ["Erik Baleog Olaf", "Navicella Spaziale Tomator"], "2D Side-Scroller", "Combina la corsa di Erik, la spada di Baleog e lo scudo di Olaf per risolvere geniali puzzle.", "PEGI 7", "Blizzard", "#00204a", "#ffd54f", "🛡️"],
+  ["Demon's Crest", "Capcom", 1994, ["Action Adventure Gotico"], ["Firebrand Gargoyle", "Crest Magici", "Atmosfera Cupa e Splendida"], "2D Side-Scroller", "Il gargoyle Firebrand vola e scava nella roccia alla conquista delle pietre elementali.", "PEGI 12", "Ghosts 'n Goblins", "#1a0024", "#e91e63", "😈"],
+  ["Super Ghouls 'n Ghosts", "Capcom", 1991, ["Action Platformer"], ["Arthur in Mutande", "Doppio Salto", "Difficoltà Leggendaria"], "2D Side-Scroller", "Arthur perde l'armatura al primo colpo ma risorge in mutande per salvare la principessa.", "PEGI 7", "Ghosts 'n Goblins", "#3e2723", "#ff9800", "🛡️"],
+  ["Hagane: The Final Conflict", "CAProduction / Red", 1994, ["Action Ninja Platformer"], ["Cyborg Ninja", "Salto Triplo Acrobatico", "Quattro Armi Ninja"], "2D Side-Scroller", "Acrobazie verticali estreme tra bombe a mano, catene falciate e katana ultrasonica.", "PEGI 12", "Hagane", "#1b1b1b", "#ff1744", "🥷"],
+  ["Super Star Wars: Return of the Jedi", "Sculptured Software", 1994, ["Action Platformer"], ["Luke Cavaliere Jedi", "Wicket e Chewbacca", "Duello con l'Imperatore"], "2D Side-Scroller", "Brandisci la spada laser verde di Luke ed esplora il palazzo di Jabba e la luna boscosa di Endor.", "PEGI 12", "Star Wars", "#0d1b2a", "#76ff03", "⚔️"],
+  ["Super Star Wars: The Empire Strikes Back", "Sculptured Software", 1993, ["Action Platformer"], ["Hoth e Dagobah", "Poteri della Forza", "Scontro con Darth Vader"], "2D Side-Scroller", "Addestrati con Yoda nella palude di Dagobah prima di affrontare Vader a Città delle Nuvole.", "PEGI 12", "Star Wars", "#102027", "#29b6f6", "❄️"]
+];
+
+const n64Extra = [
+  ["Turok: Dinosaur Hunter", "Iguana Entertainment", 1997, ["First-Person Shooter"], ["Nebbia Atmosferica", "Arco e Frecce Esplosive", "Dinosauri Bionici"], "1a Persona", "Turok caccia dinosauri armati di cannoni laser nella nebbia misteriosa delle Terre Perdute.", "PEGI 18", "Turok", "#1b3a1b", "#ff3d00", "🦖"],
+  ["Turok 2: Seeds of Evil", "Iguana Entertainment", 1998, ["First-Person Shooter"], ["Cerebral Bore", "Primagen", "Cartuccia Nera"], "1a Persona", "Il Cerebral Bore aggancia le onde cerebrali dei nemici trapanando le loro teste!", "PEGI 18", "Turok", "#0a190f", "#00e676", "🧠"],
+  ["Turok 3: Shadow of Oblivion", "Acclaim Studios Austin", 2000, ["First-Person Shooter"], ["Danielle e Joseph", "Oblivion", "Grafica Pulitissima"], "1a Persona", "Scegli tra Danielle e Joseph per vivere due percorsi tattici diversi con cecchino e visore.", "PEGI 18", "Turok", "#121212", "#ff1744", "🎯"],
+  ["Star Wars: Shadows of the Empire", "LucasArts", 1996, ["Action Shooter 3D"], ["Dash Rendar", "Battaglia di Hoth Piattaforma di Lancio", "Bobba Fett"], "3a Persona", "Dash Rendar abbatte gli AT-AT coi cavi d'acciaio prima di fuggire dalla base imperiale.", "PEGI 12", "Star Wars", "#0d1b2a", "#ff9800", "🚀"],
+  ["Star Wars: Rogue Squadron", "Factor 5 / LucasArts", 1998, ["Simulazione Volo Arcade"], ["Luke Skywalker", "X-Wing e Snowspeeder", "Expansion Pak Supportato"], "3a Persona", "Vola a pelo d'acqua e difendi le stazioni spaziali della Ribellione al timone del tuo X-Wing.", "PEGI 12", "Star Wars", "#102027", "#ffd700", "🛸"],
+  ["Star Wars Episode I: Racer", "LucasArts", 1999, ["Corse Sgusci"], ["Anakin Skywalker", "Sguscio a 1000 all'Ora", "Boonta Eve Classic"], "1a Persona", "Adrenalina pura a mille all'ora nei canyon di Tatooine tra le fiamme dei motori a turbina.", "PEGI 3", "Star Wars", "#bf360c", "#ffeb3b", "🏎️"],
+  ["Blast Corps", "Rare", 1997, ["Azione e Demolizione Puzzle"], ["Testata Nucleare Fuori Controllo", "Demolisci Edifici", "Camion e Robot"], "3a Persona", "Radere al suolo qualsiasi cosa sul cammino del missile nucleare prima che impatti ed esploda!", "PEGI 3", "Blast Corps", "#d84315", "#ffd600", "🚜"],
+  ["Jet Force Gemini", "Rare", 1999, ["Third-Person Shooter Sci-Fi"], ["Juno Vela e il Cane Lupus", "Mizar", "Salvataggio Tribals"], "3a Persona", "Tre guerrieri galattici e un cane corazzato combattono l'invasione delle formiche spaziali di Mizar.", "PEGI 12", "Rare", "#002b4d", "#00e5ff", "🐜"],
+  ["Body Harvest", "DMA Design", 1998, ["Open World Sci-Fi Shooter"], ["Pianeta Terra", "Invasori Insettoidi", "I Creatori di GTA"], "3a Persona", "Il rivoluzionario prototipo open world di DMA Design prima della nascita di Grand Theft Auto 3.", "PEGI 16", "Body Harvest", "#1c2518", "#ff5722", "🦗"],
+  ["Space Station Silicon Valley", "DMA Design", 1998, ["Puzzle Platformer"], ["Evo Microchip", "Possedere Animali Robotici", "Pecore Bioniche"], "3a Persona", "Un microchip senziente prende il controllo di pecore con ruote, cani e pinguini a razzo.", "PEGI 7", "DMA Design", "#004d40", "#ffca28", "🐑"],
+  ["Mischief Makers", "Treasure", 1997, ["Platform 2D Innovativo"], ["Marina Liteyears", "Shake shake!", "Afferra e Scuoti"], "2D Side-Scroller", "Shake, shake! Marina afferra nemici, missili e stelle giganti scuotendoli a tempo di record.", "PEGI 3", "Treasure", "#ad1457", "#ffd600", "🤖"],
+  ["Sin & Punishment", "Treasure", 2000, ["Rail Shooter Acrobatico"], ["Saki e Airan", "Spada Laser e Fucile", "Spettacolo Balistico"], "3a Persona", "Il capolavoro cult di Treasure con scatti acrobatici e deviazioni al millimetro dei missili.", "PEGI 12", "Sin & Punishment", "#0d47a1", "#ff1744", "🎯"],
+  ["Ogre Battle 64: Person of Lordly Caliber", "Quest", 1999, ["Strategia a Turni"], ["Magnus Gallant", "Rivoluzione Palatina", "Allineamento Truppe"], "Isometrica", "Un'epopea tattica matura e complessa che intreccia politica, amicizia e libero arbitrio.", "PEGI 12", "Ogre Battle", "#1b1b1b", "#ffd700", "⚔️"],
+  ["Mario Golf (N64)", "Camelot Software Planning", 1999, ["Golf"], ["Regno dei Funghi", "Barra di Potenza Perfetta", "4 Giocatori"], "3a Persona", "La precisione millimetrica sul green incontra il carisma di Mario, Luigi e Bowser.", "PEGI 3", "Super Mario", "#2e7d32", "#fff59d", "⛳"],
+  ["Mario Tennis (N64)", "Camelot Software Planning", 2000, ["Tennis Arcade"], ["Debutto Storico di Waluigi", "Topspin e Smorzate", "Multiplayer Infinito"], "3a Persona", "Waluigi fa il suo debutto assoluto in uno dei giochi sportivi più divertenti e bilanciati di sempre.", "PEGI 3", "Super Mario", "#00c853", "#7b1fa2", "🎾"],
+  ["Mario Party (N64)", "Hudson Soft", 1998, ["Party Game"], ["Gira la Levetta Analogica", "Ruba-Stelle"], "Isometrica", "Il party game che ha dato il via a tutto, mettendo a dura prova i palmi delle mani dei giocatori!", "PEGI 3", "Mario Party", "#1565c0", "#ffd600", "🎲"],
+  ["Mario Party 2", "Hudson Soft", 1999, ["Party Game"], ["Mario Vestito da Cowboy Pirata e Mago", "Duelli a 2"], "Isometrica", "I personaggi indossano costumi a tema su ogni tabellone tra saloon, galeoni e castelli.", "PEGI 3", "Mario Party", "#2e7d32", "#ff5722", "🤠"],
+  ["Mario Party 3", "Hudson Soft", 2000, ["Party Game"], ["Spalla Partner", "Stella Millenaria", "Tabellone Duello"], "Isometrica", "Porta con te Toad, Koopa o Boo come guardia del corpo nelle sfide a due per la Stella Millenaria.", "PEGI 3", "Mario Party", "#00838f", "#ffca28", "⭐"],
+  ["Pokemon Snap", "HAL Laboratory", 1999, ["Fotografia su Rotaia"], ["Isola Pokémon", "Professor Oak", "Foto di Pikachu sul Surf"], "1a Persona", "Lancia mele e sfere pester per far uscire i Pokémon allo scoperto e scattare la foto perfetta!", "PEGI 3", "Pokemon", "#ffd600", "#00bcd4", "📸"],
+  ["Pokemon Stadium", "Nintendo EAD", 1999, ["Battaglie Pokémon 3D"], ["151 Pokémon a 3D", "Minigiochi Folli", "Transfer Pak col Game Boy"], "3a Persona", "Vedi finalmente i tuoi Pokémon del Game Boy combattere in tre dimensioni sui megaschermi dello stadio!", "PEGI 3", "Pokemon", "#0d47a1", "#ffd600", "🏟️"],
+  ["Pokemon Stadium 2", "Nintendo EAD", 2000, ["Battaglie Pokémon 3D"], ["Pokémon di Johto", "Accademia di Earl", "Minigiochi Esilaranti"], "3a Persona", "I 251 Pokémon delle prime due generazioni si affrontano con animazioni ricchissime e nuove coppe.", "PEGI 3", "Pokemon", "#c2185b", "#ffeb3b", "⚡"],
+  ["1080° Snowboarding", "Nintendo EAD", 1998, ["Snowboard"], ["Ghiaccio e Neve Fresca", "Rotazione 1080 Gradi", "Abbigliamento Tommy Hilfiger"], "3a Persona", "Il feeling della tavola sulla neve compressa e la sfida di completare una rotazione a 1080 gradi.", "PEGI 3", "1080", "#0277bd", "#e0f7fa", "🏂"],
+  ["Wave Race 64", "Nintendo EAD", 1996, ["Moto d'Acqua Arcade"], ["Onde Dinamiche Rivoluzionarie", "Delfino Cavalcabile"], "3a Persona", "La fisica dell'acqua che ha incantato il mondo al lancio del Nintendo 64.", "PEGI 3", "Wave Race", "#00695c", "#80d8ff", "🌊"],
+  ["Excitebike 64", "Left Field Productions", 2000, ["Motocross"], ["Fango e Salti Giganti", "Crea-Tracciati 3D"], "3a Persona", "Salti mozzafiato, derapate sulla terra battuta e un completo editor di circuiti da cross.", "PEGI 3", "Excitebike", "#d84315", "#ffd600", "🏍️"],
+  ["Ridge Racer 64", "Nintendo NST", 2000, ["Corse Arcade"], ["Derapata a 360 Gradi", "60 FPS Granitici", "Tracciati Classici"], "3a Persona", "Velocità supersonica e derapate infinite a 60 frame al secondo create dagli studi americani di Nintendo.", "PEGI 3", "Ridge Racer", "#1a0005", "#ff1744", "🏁"],
+  ["Wipeout 64", "Psygnosis", 1998, ["Corse Anti-Gravità"], ["Piranha e Feisar", "Arma Esclusiva Cyclone", "Tracciati Inediti"], "1a Persona", "La celebre serie di corse futuristiche di Psygnosis sbarca su N64 con controllo analogico impeccabile.", "PEGI 3", "Wipeout", "#001064", "#00e5ff", "🚀"],
+  ["Beetle Adventure Racing!", "Paradigm Entertainment", 2000, ["Corse Esplorative"], ["New Beetle", "Scorciatoie Segrete Enormi", "Vulcano e Giungla"], "3a Persona", "Guida le iconiche New Beetle attraverso piste immense stracolme di scorciatoie e grotte segrete.", "PEGI 3", "Beetle", "#ffd600", "#00e676", "🪲"],
+  ["Hydro Thunder", "Midway Games", 2000, ["Corse Motoscafi"], ["Booster a Reazione", "Cascate e Vulcani"], "3a Persona", "Hydro Thunder! Motoscafi supersonici che saltano giù dalle cascate del Niagara tra razzi e spruzzi.", "PEGI 3", "Thunder", "#003366", "#00e5ff", "🚤"],
+  ["San Francisco Rush: Extreme Racing", "Atari Games", 1997, ["Corse Acrobatiche"], ["Saliscendi di Frisco", "Salti nel Vuoto", "Chiavi Nascoste"], "3a Persona", "I ripidissimi colli di San Francisco si trasformano in trampolini per lanciarsi tra i grattacieli.", "PEGI 3", "Rush", "#ff6f00", "#ffeb3b", "🌁"],
+  ["Rush 2: Extreme Racing USA", "Atari Games", 1998, ["Corse Acrobatiche"], ["Las Vegas New York Hawaii", "Stunt Track Folle"], "3a Persona", "La modalità Stunt Track è il parco giochi definitivo dove tentare salti mortali impossibili.", "PEGI 3", "Rush", "#d50000", "#ffd54f", "🏎️"],
+  ["Rayman 2: The Great Escape", "Ubisoft Montpellier", 1999, ["Platform 3D"], ["Michel Ancel", "Pirati Robot Spaziali", "Mondi Magici"], "3a Persona", "Il salto di Rayman nel 3D è una delle avventure visivamente più incantevoli e poetiche dell'era a 64-bit.", "PEGI 3", "Rayman", "#1a237e", "#ffeb3b", "✨"],
+  ["Glover", "Interactive Studios", 1998, ["Puzzle Platform"], ["Guanto Magico Animato", "Rotolare e Rimbalzare la Sfera"], "3a Persona", "Un guanto con quattro dita fa rimbalzare, rotolare e protegge una magica sfera di gomma o cristallo.", "PEGI 3", "Glover", "#01579b", "#ffd700", "🧤"],
+  ["Rocket: Robot on Wheels", "Sucker Punch Productions", 1999, ["Platform con Fisica Reale"], ["Parco Giochi Meccanico", "Fisica Rivoluzionaria"], "3a Persona", "Il primo titolo dei creatori di Sly Cooper e Ghost of Tsushima con simulazione fisica avveniristica.", "PEGI 3", "Rocket", "#e65100", "#76ff03", "🤖"],
+  ["Chameleon Twist", "Japan System Supply", 1997, ["Platform Adventure"], ["Camaleonte Davy", "Lingua Elastica per Arrampicarsi"], "3a Persona", "Allunga la lingua camaleontica per agganciarti a pali, volteggiare e ingoiare i nemici.", "PEGI 3", "Chameleon", "#00c853", "#ffd600", "🦎"],
+  ["Goemon's Great Adventure (Mystical Ninja 2)", "Konami", 1999, ["Platform 2D Co-op"], ["Co-op a 2 Simultanea", "Robot Gigante Impact"], "2D Side-Scroller", "Goemon ed Ebisumaru in un platform a scorrimento velocissimo con spettacolari battaglie robot.", "PEGI 7", "Goemon", "#b71c1c", "#ffeb3b", "👺"],
+  ["Mystical Ninja Starring Goemon", "Konami", 1997, ["Action Adventure 3D"], ["Oedo Feudale", "Musiche Giapponesi Geniali", "Impact"], "3a Persona", "Esplora il Giappone a 360 gradi prima di salire sul colossale robot fumante Impact!", "PEGI 7", "Goemon", "#c2185b", "#ffd700", "🎌"],
+  ["Castlevania (Castlevania 64)", "Konami", 1999, ["Action Adventure"], ["Reinhard Schneider e Carrie", "Atmosfera Gotica Cupa"], "3a Persona", "La prima incursione nel 3D di Castlevania con labirinti di siepi, vampiri e la villa dei morti.", "PEGI 16", "Castlevania", "#1a0005", "#ff5722", "🦇"],
+  ["Castlevania: Legacy of Darkness", "Konami", 1999, ["Action Adventure"], ["Cornell il Licantropo", "Grafica Migliorata"], "3a Persona", "Vivi la maledizione dell'uomo lupo Cornell che muta in bestia per salvare la sorellina.", "PEGI 16", "Castlevania", "#261c14", "#d50000", "🐺"],
+  ["Shadow Man", "Acclaim Studios Teesside", 1999, ["Action Adventure Horror"], ["Michael LeRoi", "Deadside Mondo dei Morti", "Maschera delle Ombre"], "3a Persona", "Michael LeRoi impugna la pistola Gun e viaggia tra il mondo dei vivi e le paludi oscure di Deadside.", "PEGI 18", "Shadow Man", "#0d1b2a", "#80d8ff", "💀"],
+  ["Nightmare Creatures", "Kalisto Entertainment", 1998, ["Action Horror Gotico"], ["Londra Vittoriana 1834", "Mostri e Zombie", "Combattimento a Fendenti"], "3a Persona", "Lame e magie nella nebbiosa Londra infestata dagli orrori alchemici di Adam Crowley.", "PEGI 18", "Nightmare Creatures", "#1b1b1b", "#c62828", "🩸"],
+  ["Resident Evil 2 (N64)", "Angel Studios / Capcom", 1999, ["Survival Horror"], ["Compressione Miracolosa su Cartuccia", "Audio Surround Completo"], "3a Persona", "Due interi dischi PlayStation compressi in una cartuccia da 64MB con filmati completi: miracolo tecnico!", "PEGI 18", "Resident Evil", "#1a0000", "#ff1744", "🧟"],
+  ["Mega Man 64 (Mega Man Legends)", "Capcom", 2001, ["Action RPG 3D"], ["Mega Man Volnutt", "Isola di Kattelox", "Dungeon Rovine Antiche"], "3a Persona", "Mega Man esplora le rovine sotterranee di Kattelox alla ricerca del leggendario Tesoro Madre.", "PEGI 7", "Mega Man", "#00204a", "#00e5ff", "🤖"],
+  ["Duke Nukem: Zero Hour", "Eurocom", 1999, ["Third-Person Shooter"], ["Viaggi nel Tempo", "Far West Londra Vittoriana Post-Apocalisse"], "3a Persona", "Hail to the king, baby! Il Duca viaggia nel tempo salvando le pupe dagli alieni a colpi di doppietta.", "PEGI 18", "Duke Nukem", "#3e2723", "#ff9800", "🕶️"],
+  ["Duke Nukem 64", "Eurocom", 1997, ["First-Person Shooter"], ["4 Giocatori Co-op e Deathmatch", "Armi Nuove Esclusive"], "1a Persona", "Gioca l'intera campagna leggendaria di Duke Nukem a 4 giocatori a schermo diviso sul divano!", "PEGI 18", "Duke Nukem", "#212121", "#ffd600", "💥"],
+  ["Quake 64", "Midway Games", 1998, ["First-Person Shooter Gotico"], ["Luci Colorate Dinamiche", "Musiche di Trent Reznor"], "1a Persona", "L'illuminazione poligonale più atmosferica e cupa per il leggendario shooter di id Software.", "PEGI 18", "Quake", "#1a0005", "#ff5722", "🛸"],
+  ["Quake II (N64)", "Raster Productions", 1999, ["First-Person Shooter"], ["Livelli Totalmente Inediti", "Strogg", "Multiplayer a 4"], "1a Persona", "Una campagna completamente originale ed esclusiva per N64 costruita da zero per la console.", "PEGI 18", "Quake", "#261c14", "#ff9800", "🪖"],
+  ["Doom 64", "Midway Games", 1997, ["First-Person Shooter Horror"], ["Campagna Completamente Inedita", "Sprite Nuovi Giganteschi", "Atmosfera Tetro Horror"], "1a Persona", "Non un semplice porting ma il vero, cupo e terrificante Doom 3 dell'era classica a 64-bit.", "PEGI 18", "Doom", "#1a0000", "#ff1744", "🔥"],
+  ["GoldenEye 007", "Rare", 1997, ["First-Person Shooter Stealth"], ["James Bond", "Multiplayer a 4 Divano Leggendario", "Facility e Dam"], "1a Persona", "Il gioco che ha ridefinito gli sparatutto su console e le serate tra amici a schermo diviso.", "PEGI 16", "GoldenEye", "#102027", "#ffd54f", "🍸"],
+  ["The World Is Not Enough (N64)", "Eurocom", 2000, ["First-Person Shooter"], ["James Bond Pierce Brosnan", "Doppiaggio Parlato Completo", "Grafica da Urlo"], "1a Persona", "La grafica più spettacolare e il doppiaggio digitalizzato più limpido mai ascoltato su N64.", "PEGI 16", "James Bond", "#0d1b2a", "#29b6f6", "🔫"],
+  ["Cruis'n USA", "Midway Games", 1996, ["Corse Arcade"], ["Dalla California a Washington", "Cabriolet e Ferrari"], "3a Persona", "Cruis'n USA! Il classico da sala giochi con la colonna sonora cantata a squarciagola.", "PEGI 3", "Cruis'n", "#b71c1c", "#ffd700", "🌴"]
+];
+
+function readGamesArray(filepath) {
+  const content = fs.readFileSync(filepath, 'utf8');
+  const eq = content.indexOf('= [');
+  const start = eq !== -1 ? eq + 2 : content.indexOf('[');
+  const end = content.lastIndexOf(']');
+  return JSON.parse(content.slice(start, end + 1));
+}
+
+// Append to SNES and N64
+const snesFile = 'src/data/consoles/snesGames.ts';
+const snesCurrent = readGamesArray(snesFile);
+const snesAll = [...snesCurrent, ...mapGames(snesExtra, 'SNES')];
+fs.writeFileSync(snesFile, `import { VideoGameItem } from '../../types';\n\nexport const SNES_GAMES: VideoGameItem[] = ${JSON.stringify(snesAll, null, 2)};\n`, 'utf8');
+console.log('SNES total:', snesAll.length);
+
+const n64File = 'src/data/consoles/n64Games.ts';
+const n64Current = readGamesArray(n64File);
+const n64All = [...n64Current, ...mapGames(n64Extra, 'N64')];
+fs.writeFileSync(n64File, `import { VideoGameItem } from '../../types';\n\nexport const N64_GAMES: VideoGameItem[] = ${JSON.stringify(n64All, null, 2)};\n`, 'utf8');
+console.log('N64 total:', n64All.length);

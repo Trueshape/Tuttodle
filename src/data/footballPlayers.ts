@@ -1,8 +1,11 @@
 import { FootballPlayer } from '../types';
+import { MORE_PLAYERS_1 } from './morePlayers1';
+import { MORE_PLAYERS_2 } from './morePlayers2';
 
 export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   {
     id: 'neymar-jr',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg/960px-Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Neymar Jr',
     nationality: 'Brasile',
     flag: '🇧🇷',
@@ -27,6 +30,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'cristiano-ronaldo',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg/960px-Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Cristiano Ronaldo',
     nationality: 'Portogallo',
     flag: '🇵🇹',
@@ -52,6 +56,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'lionel-messi',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/960px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Lionel Messi',
     nationality: 'Argentina',
     flag: '🇦🇷',
@@ -74,6 +79,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'zlatan-ibrahimovic',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Zlatan_Ibrahimovi%C4%87_nyc.jpg/960px-Zlatan_Ibrahimovi%C4%87_nyc.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Zlatan Ibrahimović',
     nationality: 'Svezia',
     flag: '🇸🇪',
@@ -103,6 +109,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'kylian-mbappe',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg/960px-Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Kylian Mbappé',
     nationality: 'Francia',
     flag: '🇫🇷',
@@ -126,6 +133,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'erling-haaland',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Erling_Haaland_Morocco_v_Norway_7_June_2026-51.jpg/960px-Erling_Haaland_Morocco_v_Norway_7_June_2026-51.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Erling Haaland',
     nationality: 'Norvegia',
     flag: '🇳🇴',
@@ -150,6 +158,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'luka-modric',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Luka_Modric_Croatia_v_Portugal_2_July_2026-055.jpg/960px-Luka_Modric_Croatia_v_Portugal_2_July_2026-055.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Luka Modrić',
     nationality: 'Croazia',
     flag: '🇭🇷',
@@ -174,6 +183,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'kaka',
+    image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Kak%C3%A1_visited_Stadium_St._Petersburg.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     name: 'Kaká',
     nationality: 'Brasile',
     flag: '🇧🇷',
@@ -199,6 +209,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'zinedine-zidane',
+    image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Zinedine_Zidane_by_Tasnim_03.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     name: 'Zinedine Zidane',
     nationality: 'Francia',
     flag: '🇫🇷',
@@ -222,6 +233,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'andrea-pirlo',
+    image: "https://upload.wikimedia.org/wikipedia/commons/6/6e/20150616_-_Portugal_-_Italie_-_Gen%C3%A8ve_-_Andrea_Pirlo_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     name: 'Andrea Pirlo',
     nationality: 'Italia',
     flag: '🇮🇹',
@@ -248,6 +260,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'francesco-totti',
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/42/KL-2018_%284%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     name: 'Francesco Totti',
     nationality: 'Italia',
     flag: '🇮🇹',
@@ -268,6 +281,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'lautaro-martinez',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Lautaro_Martinez_Argentina_v_Spain_19_July_2026-049_%28cropped%29.jpg/960px-Lautaro_Martinez_Argentina_v_Spain_19_July_2026-049_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Lautaro Martínez',
     nationality: 'Argentina',
     flag: '🇦🇷',
@@ -289,6 +303,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'jude-bellingham',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Jude_Bellingham_England_v_Ghana_23_June_2026-061_%28cropped%29.jpg/960px-Jude_Bellingham_England_v_Ghana_23_June_2026-061_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Jude Bellingham',
     nationality: 'Inghilterra',
     flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
@@ -311,6 +326,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'robert-lewandowski',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/2019147183134_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0228_-_B70I8527_%28cropped%29.jpg/960px-2019147183134_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0228_-_B70I8527_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Robert Lewandowski',
     nationality: 'Polonia',
     flag: '🇵🇱',
@@ -335,6 +351,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
   },
   {
     id: 'mohamed-salah',
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Mohamed_Salah_Argentina_v_Egypt_7_July_2026-163_%28cropped%29.jpg/960px-Mohamed_Salah_Argentina_v_Egypt_7_July_2026-163_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     name: 'Mohamed Salah',
     nationality: 'Egitto',
     flag: '🇪🇬',
@@ -357,5 +374,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
       { years: '2015–2017', club: 'AS Roma', countryFlag: '🇮🇹' },
       { years: '2017–', club: 'Liverpool', countryFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' }
     ]
-  }
+  },
+  ...MORE_PLAYERS_1,
+  ...MORE_PLAYERS_2
 ];

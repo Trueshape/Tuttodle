@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, X, Check } from 'lucide-react';
 
 export interface SearchOption {
@@ -7,20 +7,26 @@ export interface SearchOption {
   subtitle?: string;
   iconUrl?: string;
   flag?: string;
+  badge?: string;
+  badgeColor?: 'cyan' | 'purple' | 'amber' | 'zinc';
 }
 
 interface SearchBarProps {
   options: SearchOption[];
-  alreadyGuessedIds: string[];
-  onSelectOption: (option: SearchOption) => void;
+  alreadyGuessedIds?: string[];
+  onSelectOption?: (option: SearchOption) => void;
+  onSelect?: (option: SearchOption) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   options,
-  alreadyGuessedIds,
+  alreadyGuessedIds = [],
   onSelectOption,
+  onSelect,
   placeholder = 'Cerca e seleziona...',
+  disabled = false,
 }) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -29,12 +35,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Filter options based on query and remove already guessed
-  const filteredOptions = options.filter(
-    (opt) =>
-      opt.name.toLowerCase().includes(query.toLowerCase()) ||
-      (opt.subtitle && opt.subtitle.toLowerCase().includes(query.toLowerCase()))
-  );
+  // Filter options based on query and sort alphabetically by name (A-Z)
+  const filteredOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = q
+      ? options.filter(
+          (opt) =>
+            opt.name.toLowerCase().includes(q) ||
+            (opt.subtitle && opt.subtitle.toLowerCase().includes(q))
+        )
+      : [...options];
+
+    return list.sort((a, b) =>
+      a.name.localeCompare(b.name, 'it', { sensitivity: 'base', numeric: true })
+    );
+  }, [options, query]);
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [query]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -49,6 +68,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return;
+
     if (!isOpen && e.key === 'ArrowDown') {
       setIsOpen(true);
       return;
@@ -66,7 +87,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       e.preventDefault();
       if (filteredOptions[selectedIndex]) {
         const selected = filteredOptions[selectedIndex];
-        if (!alreadyGuessedIds.includes(selected.id)) {
+        if (!alreadyGuessedIds?.includes(selected.id)) {
           handleSelect(selected);
         }
       }
@@ -76,8 +97,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleSelect = (option: SearchOption) => {
-    if (alreadyGuessedIds.includes(option.id)) return;
-    onSelectOption(option);
+    if (alreadyGuessedIds?.includes(option.id)) return;
+    if (onSelectOption) {
+      onSelectOption(option);
+    } else if (onSelect) {
+      onSelect(option);
+    }
     setQuery('');
     setIsOpen(false);
     setSelectedIndex(0);
@@ -91,16 +116,24 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           ref={inputRef}
           type="text"
           id="input-search-bar"
+          disabled={disabled}
           value={query}
           onChange={(e) => {
+            if (disabled) return;
             setQuery(e.target.value);
             setIsOpen(true);
             setSelectedIndex(0);
           }}
-          onFocus={() => setIsOpen(true)}
+          onFocus={() => {
+            if (!disabled) setIsOpen(true);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-zinc-800 bg-[#141417] py-3.5 pl-12 pr-10 text-base font-medium text-zinc-100 placeholder-zinc-500 shadow-xl backdrop-blur-md outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all"
+          className={`w-full rounded-xl border border-zinc-800 bg-[#141417] py-3.5 pl-12 pr-10 text-base font-medium text-zinc-100 placeholder-zinc-500 shadow-xl backdrop-blur-md outline-none transition-all ${
+            disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]'
+          }`}
         />
         {query && (
           <button
@@ -153,10 +186,27 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       />
                     )}
                     {opt.flag && <span className="text-xl">{opt.flag}</span>}
-                    <div>
-                      <div className="font-semibold text-zinc-100">{opt.name}</div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-zinc-100">{opt.name}</span>
+                        {opt.badge && (
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shrink-0 whitespace-nowrap ${
+                              opt.badgeColor === 'purple' || opt.badge.toLowerCase().includes('remake')
+                                ? 'bg-purple-500/25 text-purple-300 border border-purple-500/50'
+                                : opt.badgeColor === 'cyan' || opt.badge.toLowerCase().includes('remaster')
+                                ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/50'
+                                : opt.badgeColor === 'amber' || opt.badge.toLowerCase().includes('espansione') || opt.badge.toLowerCase().includes('expansion')
+                                ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50'
+                                : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
+                            }`}
+                          >
+                            {opt.badge}
+                          </span>
+                        )}
+                      </div>
                       {opt.subtitle && (
-                        <div className="text-xs text-zinc-400">{opt.subtitle}</div>
+                        <div className="text-xs text-zinc-400 mt-0.5">{opt.subtitle}</div>
                       )}
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import {
   FootballPlayer,
   LolChampion,
+  LolLanguage,
   CarModel,
   MovieItem,
   AnimeItem,
@@ -9,6 +10,16 @@ import {
   MatchStatus,
   ArrowDirection
 } from '../types';
+import {
+  translateGender,
+  translateResource,
+  translateRegion,
+  translateSpecies,
+} from './lolLocalization';
+import {
+  localizeSpecLabel,
+  localizeSpecValue,
+} from './vgLocalization';
 
 function getNumericArrow(guessed: number, target: number): ArrowDirection {
   if (guessed < target) return 'up';
@@ -72,7 +83,12 @@ export function compareFootballPlayer(guessed: FootballPlayer, target: FootballP
 }
 
 // 2. LOL CHAMPION COMPARISON
-export function compareLolChampion(guessed: LolChampion, target: LolChampion): AttributeMatch[] {
+export function compareLolChampion(
+  guessed: LolChampion,
+  target: LolChampion,
+  lang: string = 'it'
+): AttributeMatch[] {
+  const currentLang = lang === 'en' ? 'en' : 'it';
   const isGenderMatch = guessed.gender === target.gender;
 
   const commonPos = guessed.positions.filter(p => target.positions.includes(p));
@@ -97,37 +113,37 @@ export function compareLolChampion(guessed: LolChampion, target: LolChampion): A
 
   return [
     {
-      label: 'Genere',
-      value: guessed.gender,
+      label: lang === 'en' ? 'Gender' : 'Genere',
+      value: translateGender(guessed.gender, lang),
       status: isGenderMatch ? 'exact' : 'wrong',
     },
     {
-      label: 'Posizione',
+      label: lang === 'en' ? 'Position' : 'Posizione',
       value: guessed.positions.join(', '),
       status: isPosExact ? 'exact' : isPosPartial ? 'partial' : 'wrong',
     },
     {
-      label: 'Specie',
-      value: guessed.species.join(', '),
+      label: lang === 'en' ? 'Species' : 'Specie',
+      value: guessed.species.map((s) => translateSpecies(s, lang)).join(', '),
       status: isSpeciesExact ? 'exact' : isSpeciesPartial ? 'partial' : 'wrong',
     },
     {
-      label: 'Risorsa',
-      value: guessed.resource,
+      label: lang === 'en' ? 'Resource' : 'Risorsa',
+      value: translateResource(guessed.resource, lang),
       status: isResourceMatch ? 'exact' : 'wrong',
     },
     {
-      label: 'Attacco',
+      label: lang === 'en' ? 'Range' : 'Attacco',
       value: guessed.rangeType,
       status: isRangeMatch ? 'exact' : isRangePartial ? 'partial' : 'wrong',
     },
     {
-      label: 'Regione',
-      value: guessed.regions.join(', '),
+      label: lang === 'en' ? 'Region' : 'Regione',
+      value: guessed.regions.map((r) => translateRegion(r, lang)).join(', '),
       status: isRegionExact ? 'exact' : isRegionPartial ? 'partial' : 'wrong',
     },
     {
-      label: 'Anno Uscita',
+      label: lang === 'en' ? 'Release Year' : 'Anno Uscita',
       value: guessed.releaseYear,
       status: isYearExact ? 'exact' : yearDiff <= 2 ? 'partial' : 'wrong',
       arrow: getNumericArrow(guessed.releaseYear, target.releaseYear),
@@ -282,45 +298,118 @@ export function compareAnime(guessed: AnimeItem, target: AnimeItem): AttributeMa
 }
 
 // 6. VIDEO GAME COMPARISON
-export function compareVideoGame(guessed: VideoGameItem, target: VideoGameItem): AttributeMatch[] {
-  const isDevMatch = guessed.developer === target.developer;
+export function compareVideoGame(
+  guessed: VideoGameItem,
+  target: VideoGameItem,
+  lang: string = 'it'
+): AttributeMatch[] {
+  const currentLang: LolLanguage = lang === 'en' ? 'en' : 'it';
+  const isEn = currentLang === 'en';
+  const isDevMatch = guessed.developer.toLowerCase().trim() === target.developer.toLowerCase().trim();
 
-  const commonGenres = guessed.genres.filter(g => target.genres.includes(g));
+  // 1. Genere (Gameplay mechanics: Azione, RPG, Platform, FPS, ecc.)
+  const commonGenres = guessed.genres.filter((g) =>
+    target.genres.some((tg) => tg.toLowerCase() === g.toLowerCase())
+  );
   const isGenreExact = guessed.genres.length === target.genres.length && commonGenres.length === target.genres.length;
   const isGenrePartial = !isGenreExact && commonGenres.length > 0;
 
+  // 2. Tema (Narrativa/Ambientazione: Arti Marziali, Storico, Fantasy, Sci-Fi, ecc.)
+  const guessedThemes = guessed.themes || [];
+  const targetThemes = target.themes || [];
+  const commonThemes = guessedThemes.filter((t) =>
+    targetThemes.some((tt) => tt.toLowerCase() === t.toLowerCase())
+  );
+  const isThemeExact = guessedThemes.length > 0 && guessedThemes.length === targetThemes.length && commonThemes.length === targetThemes.length;
+  const isThemePartial = !isThemeExact && commonThemes.length > 0;
+
+  // 3. Anno Uscita
   const yearDiff = Math.abs(guessed.releaseYear - target.releaseYear);
   const isYearExact = guessed.releaseYear === target.releaseYear;
 
+  // 4. Piattaforme (PC, PlayStation, Nintendo, Xbox)
+  const guessedPlats = (guessed.platforms && guessed.platforms.length > 0) ? guessed.platforms : [guessed.mainPlatform as any];
+  const targetPlats = (target.platforms && target.platforms.length > 0) ? target.platforms : [target.mainPlatform as any];
+  const commonPlats = guessedPlats.filter((p) => targetPlats.includes(p));
+  const isPlatExact = guessedPlats.length === targetPlats.length && commonPlats.length === targetPlats.length;
+  const isPlatPartial = !isPlatExact && commonPlats.length > 0;
+
+  // 5. PEGI
+  const isPegiExact = !!guessed.pegi && !!target.pegi && guessed.pegi === target.pegi;
+  const pegiTiers = ['PEGI 3', 'PEGI 7', 'PEGI 12', 'PEGI 16', 'PEGI 18'];
+  const gIdx = pegiTiers.indexOf(guessed.pegi || '');
+  const tIdx = pegiTiers.indexOf(target.pegi || '');
+  const isPegiPartial = !isPegiExact && gIdx !== -1 && tIdx !== -1 && Math.abs(gIdx - tIdx) <= 1;
+
+  // 6. Modalità (Giocatore singolo, Multiplayer, etc.)
+  const guessedModes = guessed.gameModes || ['Giocatore singolo'];
+  const targetModes = target.gameModes || ['Giocatore singolo'];
+  const commonModes = guessedModes.filter((m) => targetModes.includes(m));
+  const isModeExact = guessedModes.length === targetModes.length && commonModes.length === targetModes.length;
+  const isModePartial = !isModeExact && commonModes.length > 0;
+
+  // 7. Prospettiva
   const isPerspectiveMatch = guessed.perspective === target.perspective;
-  const isPlatformMatch = guessed.mainPlatform === target.mainPlatform;
+
+  // 8. Tipo (Normale, Remake, Remaster secondo IGDB)
+  const guessedType = guessed.gameType || 'Normale';
+  const targetType = target.gameType || 'Normale';
+  const isTypeExact = guessedType === targetType;
+  const isTypePartial =
+    !isTypeExact &&
+    ((guessedType === 'Remake' && targetType === 'Remaster') ||
+      (guessedType === 'Remaster' && targetType === 'Remake'));
+
+  const rawGenreStr = guessed.genres.join(', ');
+  const rawThemeStr = guessedThemes.length > 0 ? guessedThemes.join(', ') : 'Generale';
+  const rawModeStr = guessedModes.join(', ');
 
   return [
     {
-      label: 'Sviluppatore',
+      label: localizeSpecLabel('Sviluppatore', currentLang),
       value: guessed.developer,
       status: isDevMatch ? 'exact' : 'wrong',
     },
     {
-      label: 'Genere',
-      value: guessed.genres.join(', '),
+      label: localizeSpecLabel('Genere', currentLang),
+      value: localizeSpecValue('Genere', rawGenreStr, currentLang),
       status: isGenreExact ? 'exact' : isGenrePartial ? 'partial' : 'wrong',
     },
     {
-      label: 'Anno Uscita',
+      label: localizeSpecLabel('Tema', currentLang),
+      value: localizeSpecValue('Tema', rawThemeStr, currentLang),
+      status: isThemeExact ? 'exact' : isThemePartial ? 'partial' : 'wrong',
+    },
+    {
+      label: localizeSpecLabel('Anno Uscita', currentLang),
       value: guessed.releaseYear,
       status: isYearExact ? 'exact' : yearDiff <= 3 ? 'partial' : 'wrong',
       arrow: getNumericArrow(guessed.releaseYear, target.releaseYear),
     },
     {
-      label: 'Prospettiva',
-      value: guessed.perspective,
+      label: localizeSpecLabel('Piattaforme', currentLang),
+      value: guessedPlats,
+      status: isPlatExact ? 'exact' : isPlatPartial ? 'partial' : 'wrong',
+    },
+    {
+      label: 'PEGI',
+      value: guessed.pegi || (isEn ? 'N/A' : 'N/D'),
+      status: isPegiExact ? 'exact' : isPegiPartial ? 'partial' : 'wrong',
+    },
+    {
+      label: localizeSpecLabel('Modalità', currentLang),
+      value: localizeSpecValue('Modalità', rawModeStr, currentLang),
+      status: isModeExact ? 'exact' : isModePartial ? 'partial' : 'wrong',
+    },
+    {
+      label: localizeSpecLabel('Prospettiva', currentLang),
+      value: localizeSpecValue('Prospettiva', guessed.perspective, currentLang),
       status: isPerspectiveMatch ? 'exact' : 'wrong',
     },
     {
-      label: 'Piattaforma',
-      value: guessed.mainPlatform,
-      status: isPlatformMatch ? 'exact' : 'wrong',
+      label: localizeSpecLabel('Tipo', currentLang),
+      value: localizeSpecValue('Tipo', guessedType, currentLang),
+      status: isTypeExact ? 'exact' : isTypePartial ? 'partial' : 'wrong',
     },
   ];
 }

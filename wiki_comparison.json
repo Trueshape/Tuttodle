@@ -1,0 +1,1213 @@
+[
+  {
+    "id": "Yasuo",
+    "currentEn": "Death is like the wind; always by my side.",
+    "currentIt": "La morte è come il vento, sempre al mio fianco.",
+    "wikiPickEn": "Death is like the wind—always by my side.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Jinx",
+    "currentEn": "Rules are made to be broken, like buildings! Or people!",
+    "currentIt": "Le regole sono fatte per essere infrante. Come gli edifici! O le persone!",
+    "wikiPickEn": "Rules are made to be broken... like buildings! Or people!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Aatrox",
+    "currentEn": "So long as life has breath, so long as time has meaning, I will not die!",
+    "currentIt": "Finché la vita esiste... finché il tempo ha un significato... io non morirò mai!",
+    "wikiPickEn": "Now, hear the silence of Annihilation",
+    "type": "Ultimate / Revive"
+  },
+  {
+    "id": "Ahri",
+    "currentEn": "Don't you trust me?",
+    "currentIt": "Ti fidi di me?",
+    "wikiPickEn": "A clever fox is never caught.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Akali",
+    "currentEn": "Fear the assassin with no master.",
+    "currentIt": "Non ho padroni, né regole. Soltanto l'equilibrio.",
+    "wikiPickEn": "Fear the assassin with no master.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Alistar",
+    "currentEn": "You can't milk those!",
+    "currentIt": "Non puoi mungere questi capezzoli!",
+    "wikiPickEn": "Nothing can hold me back!",
+    "type": "Joke"
+  },
+  {
+    "id": "Amumu",
+    "currentEn": "I thought you'd never pick me.",
+    "currentIt": "Credevo non me l'avresti mai chiesto...",
+    "wikiPickEn": "I thought you'd never pick me.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Anivia",
+    "currentEn": "On wings of hope.",
+    "currentIt": "Sulle ali della speranza.",
+    "wikiPickEn": "On my wings.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Annie",
+    "currentEn": "Have you seen my bear Tibbers?",
+    "currentIt": "Hai visto il mio orsetto Tibbers?",
+    "wikiPickEn": "You wanna play too? It'll be fun!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Ashe",
+    "currentEn": "All the world on one arrow.",
+    "currentIt": "Tutto il mondo in una sola freccia.",
+    "wikiPickEn": "All the world on one arrow.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "AurelionSol",
+    "currentEn": "Naturally.",
+    "currentIt": "Naturalmente.",
+    "wikiPickEn": "Naturally.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Azir",
+    "currentEn": "Shurima! Your emperor has returned!",
+    "currentIt": "Shurima! Il tuo imperatore è tornato!",
+    "wikiPickEn": "Shurima! Your emperor has returned!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Bard",
+    "currentEn": "*Celestial chimes and ethereal harmonic tones echo*",
+    "currentIt": "*Suoni celestiali e campanelli mistici risuonano nell'aria*",
+    "wikiPickEn": "Sound Effect",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Belveth",
+    "currentEn": "I am all that was, and all that will be.",
+    "currentIt": "Io sono tutto ciò che fu, e tutto ciò che sarà.",
+    "wikiPickEn": "I am the voice of the silence.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Blitzcrank",
+    "currentEn": "The time of man has come to an end.",
+    "currentIt": "Il tempo degli uomini è giunto al termine.",
+    "wikiPickEn": "Fired up and ready to serve.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Brand",
+    "currentEn": "This world will burn.",
+    "currentIt": "Questo mondo brucerà in un inferno di fiamme!",
+    "wikiPickEn": "Ready to set the world on fire? Heheheh...",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Braum",
+    "currentEn": "The heart is the strongest muscle.",
+    "currentIt": "Il cuore è il muscolo più forte!",
+    "wikiPickEn": "The heart is the strongest muscle.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Briar",
+    "currentEn": "Ooh, what's that smell?! Must eat!",
+    "currentIt": "Cos'è quel profumino?! Devo mangiare!",
+    "wikiPickEn": "Nice to meet you! I'm hungry. I mean... Briar!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Caitlyn",
+    "currentEn": "Meet the long arm of the law.",
+    "currentIt": "Ho questo tizio nel mirino.",
+    "wikiPickEn": "I'm on the case.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Camille",
+    "currentEn": "Precision is the difference between a butcher and a surgeon.",
+    "currentIt": "La precisione fa la differenza tra un chirurgo e un macellaio.",
+    "wikiPickEn": "Precision is the difference between a butcher and a surgeon.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Cassiopeia",
+    "currentEn": "There is no antidote for me.",
+    "currentIt": "Non c'è antidoto al mio veleno.",
+    "wikiPickEn": "There is no antidote for me.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Chogath",
+    "currentEn": "Nom nom nom nom nom!",
+    "currentIt": "La tua carne delizierà il mio palato!",
+    "wikiPickEn": "You'd wish the world you know to end! Yeeeesssss...",
+    "type": "Joke / Attack"
+  },
+  {
+    "id": "Corki",
+    "currentEn": "I'm on it, blackbird!",
+    "currentIt": "Sono a zero gradi e in picchiata!",
+    "wikiPickEn": "I'm up to snuff, and gots me an ace machine!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Darius",
+    "currentEn": "Witness true Noxian strength!",
+    "currentIt": "Testimoniate la vera forza di Noxus!",
+    "wikiPickEn": "They will regret opposing me.",
+    "type": "Ultimate Cast"
+  },
+  {
+    "id": "Diana",
+    "currentEn": "A new moon is rising.",
+    "currentIt": "La luna non mente mai.",
+    "wikiPickEn": "A new moon is rising.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "DrMundo",
+    "currentEn": "Mundo goes where he pleases!",
+    "currentIt": "Mundo va dove vuole!",
+    "wikiPickEn": "The doctor is... uh... in!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Draven",
+    "currentEn": "Welcome to the League of Draven!",
+    "currentIt": "Benvenuti a League of Draven!",
+    "wikiPickEn": "Welcome to the League of Draven.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Ekko",
+    "currentEn": "It's not about how much time you have, it's how you use it.",
+    "currentIt": "Non conta quanto tempo hai, ma come lo usi.",
+    "wikiPickEn": "It's not how much time you have, it's how you use it.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Elise",
+    "currentEn": "Beauty is another form of power.",
+    "currentIt": "Solo la ragnatela è eterna.",
+    "wikiPickEn": "Only the spider is safe in her web.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Evelynn",
+    "currentEn": "It's so much better in the dark.",
+    "currentIt": "Piacere e dolore sono la stessa cosa per me.",
+    "wikiPickEn": "You know you want me.",
+    "type": "Movement"
+  },
+  {
+    "id": "Ezreal",
+    "currentEn": "Who needs a map?",
+    "currentIt": "I musei sono posti per le cose vecchie, io faccio la storia!",
+    "wikiPickEn": "Quest accepted! ...Wait, where are we going?",
+    "type": "Movement / Joke"
+  },
+  {
+    "id": "Fiddlesticks",
+    "currentEn": "Fiddlesticks... end of men... Fiddlesticks...",
+    "currentIt": "Fiddlesticks... prima delle leggende... ci fu la paura...",
+    "wikiPickEn": "Fear...",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Fiora",
+    "currentEn": "I long for a worthy opponent.",
+    "currentIt": "Mi arrendo? Nemmeno per sogno!",
+    "wikiPickEn": "I long for a worthy opponent.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Fizz",
+    "currentEn": "Feeding time!",
+    "currentIt": "Vuoi vedere un trucco di magia?",
+    "wikiPickEn": "Let me at 'em!",
+    "type": "Ultimate Cast"
+  },
+  {
+    "id": "Galio",
+    "currentEn": "Time to make an entrance!",
+    "currentIt": "È ora di fare un ingresso trionfale!",
+    "wikiPickEn": "Time to make an impact!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Gangplank",
+    "currentEn": "Neither the flames nor the depths could claim me.",
+    "currentIt": "Né la terra né il mare potranno fermarmi!",
+    "wikiPickEn": "Neither the flames nor the depths could claim me.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Garen",
+    "currentEn": "My heart and sword always for Demacia.",
+    "currentIt": "Il mio cuore e la mia spada per Demacia!",
+    "wikiPickEn": "My heart and sword always for Demacia.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Gnar",
+    "currentEn": "Gnar gada!",
+    "currentIt": "DEMAGLIO! Shugi shugi shugi!",
+    "wikiPickEn": "Gnar gada!",
+    "type": "Transformation"
+  },
+  {
+    "id": "Gragas",
+    "currentEn": "If you're buying, I'm in!",
+    "currentIt": "Se paghi tu, sono pronto a bere!",
+    "wikiPickEn": "If you're buying, I'm in!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Graves",
+    "currentEn": "Dead man walkin'.",
+    "currentIt": "Morto un bersaglio, se ne fa un altro.",
+    "wikiPickEn": "Dead man walkin'.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Gwen",
+    "currentEn": "Scissors, needles, thread! I'm ready!",
+    "currentIt": "Forbici, aghi e filo! Sono pronta!",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Hecarim",
+    "currentEn": "Behold the might of the Shadow Isles!",
+    "currentIt": "Ascoltate il fragore degli zoccoli della morte!",
+    "wikiPickEn": "Behold, the might of the Shadow Isles.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Heimerdinger",
+    "currentEn": "Order, entropy, a never-ending cycle.",
+    "currentIt": "Eureka! La scienza non dorme mai!",
+    "wikiPickEn": "Indeed, a wise choice.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Hwei",
+    "currentEn": "Pain, despair... all colors on my palette.",
+    "currentIt": "Il dolore può diventare arte.",
+    "wikiPickEn": "A painter meets their subject eye to eye.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Illaoi",
+    "currentEn": "Motion is life.",
+    "currentIt": "Il movimento è vita, la stasi è morte.",
+    "wikiPickEn": "I'm not big on sermons—broken bones teach better lessons.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Irelia",
+    "currentEn": "Fight for the First Lands!",
+    "currentIt": "Ricordate il Placidium!",
+    "wikiPickEn": "Fight for the First Lands!",
+    "type": "Attack / Battlecry"
+  },
+  {
+    "id": "Ivern",
+    "currentEn": "My favorite color is spring.",
+    "currentIt": "I miei alberi preferiti sono i salici piangenti.",
+    "wikiPickEn": "My favorite color is spring.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Janna",
+    "currentEn": "The tempest is at your command.",
+    "currentIt": "Il vento è al mio comando.",
+    "wikiPickEn": "The tempest is at your command.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "JarvanIV",
+    "currentEn": "By my will, this shall be finished!",
+    "currentIt": "Per la gloria di Demacia!",
+    "wikiPickEn": "By my will, this shall be finished.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Jax",
+    "currentEn": "Imagine if I had a real weapon!",
+    "currentIt": "Immagina se avessi un'arma vera!",
+    "wikiPickEn": "Let's do this.",
+    "type": "Movement / Joke"
+  },
+  {
+    "id": "Jayce",
+    "currentEn": "I fight for a brighter tomorrow.",
+    "currentIt": "Lotto per un domani più luminoso!",
+    "wikiPickEn": "I fight for a brighter tomorrow.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Jhin",
+    "currentEn": "In carnage, I bloom, like a flower in the dawn.",
+    "currentIt": "Nell'eccidio io fiorisco, come un fiore all'alba.",
+    "wikiPickEn": "In carnage, I bloom, like a flower in the dawn.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kaisa",
+    "currentEn": "Fear fuels instinct.",
+    "currentIt": "La paura forgia l'istinto.",
+    "wikiPickEn": "Are you the hunter... '''or the prey?'''",
+    "type": "Movement"
+  },
+  {
+    "id": "Kalista",
+    "currentEn": "Death to all betrayers.",
+    "currentIt": "La nostra vendetta sarà assoluta.",
+    "wikiPickEn": "Death to all betrayers.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Karma",
+    "currentEn": "Never become a monster to defeat one.",
+    "currentIt": "Saggezza e compassione, ma con la forza necessaria.",
+    "wikiPickEn": "Always trust your spirit.",
+    "type": "Movement"
+  },
+  {
+    "id": "Karthus",
+    "currentEn": "Death is not the end.",
+    "currentIt": "Agonia, estasi, pace. Ogni morte è una canzone.",
+    "wikiPickEn": "Agony, ecstasy, peace. Every passing has a beauty all its own.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kassadin",
+    "currentEn": "The balance of power must be preserved.",
+    "currentIt": "L'equilibrio del potere deve essere preservato.",
+    "wikiPickEn": "The balance of power must be preserved.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Katarina",
+    "currentEn": "Violence solves everything!",
+    "currentIt": "La violenza risolve tutto!",
+    "wikiPickEn": "Violence solves everything.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kayle",
+    "currentEn": "Into the light!",
+    "currentIt": "Nella luce troverete la giustizia.",
+    "wikiPickEn": "They shall tremble at my perfection.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kayn",
+    "currentEn": "Will you prove worthy?",
+    "currentIt": "Dimostrerai di essere degno?",
+    "wikiPickEn": "Will you prove worthy?",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kennen",
+    "currentEn": "The eye of the storm never rests.",
+    "currentIt": "Il cuore della tempesta non riposa mai.",
+    "wikiPickEn": "The eyes never lie.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Khazix",
+    "currentEn": "Change is good.",
+    "currentIt": "Cambiamento è buono. Evolvi e consuma!",
+    "wikiPickEn": "Change... is good.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kindred",
+    "currentEn": "Never one... without the other.",
+    "currentIt": "Mai l'uno... senza l'altro.",
+    "wikiPickEn": "Never one...",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Kled",
+    "currentEn": "Courage is unpredictable, but fear is total certainty!",
+    "currentIt": "Questa è terra mia! Fino all'orizzonte!",
+    "wikiPickEn": "I find courage unpredictable. It's total insanity you can rely on!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "KogMaw",
+    "currentEn": "Terror coming... daddy coming!",
+    "currentIt": "Ora della pappa!",
+    "wikiPickEn": "Time to feast!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "KSante",
+    "currentEn": "I will not yield!",
+    "currentIt": "Io non mi piegherò mai!",
+    "wikiPickEn": "Better to fight, than to live in fear.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Leblanc",
+    "currentEn": "The world is an illusion, and I pull the strings.",
+    "currentIt": "Il mondo è un'illusione, e io ne muovo i fili.",
+    "wikiPickEn": "The Black Rose shall bloom once more.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "LeeSin",
+    "currentEn": "Your will, my hands.",
+    "currentIt": "La tua volontà, le mie mani.",
+    "wikiPickEn": "Your will, my hands.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Leona",
+    "currentEn": "The sun always rises.",
+    "currentIt": "Il sole sorge sempre.",
+    "wikiPickEn": "The dawn has arrived.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Lillia",
+    "currentEn": "Eep! Did they see me?",
+    "currentIt": "Eep! Speriamo non mi abbiano vista...",
+    "wikiPickEn": "Me? A dream come true.",
+    "type": "Movement"
+  },
+  {
+    "id": "Lissandra",
+    "currentEn": "All will freeze.",
+    "currentIt": "Tutto sarà sepolto sotto il ghiaccio.",
+    "wikiPickEn": "I will bury the world in ice.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Lucian",
+    "currentEn": "Everybody dies. Some just need a little help.",
+    "currentIt": "Ognuno deve morire. Alcuni hanno solo bisogno di un aiuto.",
+    "wikiPickEn": "Everybody dies. Some just need a little help.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Lulu",
+    "currentEn": "That tasted purple!",
+    "currentIt": "Quel sapore mi sa di viola!",
+    "wikiPickEn": "Pleased to meet you!",
+    "type": "Movement / Joke"
+  },
+  {
+    "id": "Lux",
+    "currentEn": "Lighting the way!",
+    "currentIt": "Illuminiamo la via!",
+    "wikiPickEn": "Let's light it up!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Malphite",
+    "currentEn": "Rock solid.",
+    "currentIt": "Duro come la roccia!",
+    "wikiPickEn": "Rock solid.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Malzahar",
+    "currentEn": "Oblivion awaits!",
+    "currentIt": "La fine del mondo è solo l'inizio.",
+    "wikiPickEn": "Oblivion awaits!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Maokai",
+    "currentEn": "I will have my peace.",
+    "currentIt": "Un tempo questa terra era pura.",
+    "wikiPickEn": "The Isles will bloom again!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "MasterYi",
+    "currentEn": "A true master is an eternal student.",
+    "currentIt": "Il vero maestro è un eterno studente.",
+    "wikiPickEn": "My blade is yours.",
+    "type": "Joke / Movement"
+  },
+  {
+    "id": "Milio",
+    "currentEn": "Warm and fuzzy!",
+    "currentIt": "I miei fuocherelli scaldano tutti!",
+    "wikiPickEn": "Sound Effect",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "MissFortune",
+    "currentEn": "Fortune doesn't favor fools.",
+    "currentIt": "La fortuna non favorisce gli sciocchi.",
+    "wikiPickEn": "Fortune doesn't favor fools.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Mordekaiser",
+    "currentEn": "Destiny. Domination. Deceit.",
+    "currentIt": "Il destino. Il dominio. L'inganno.",
+    "wikiPickEn": "Destiny. Domination. Deceit.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Morgana",
+    "currentEn": "We all wear masks.",
+    "currentIt": "Le mie ali sono spezzate, ma la mia volontà è intatta.",
+    "wikiPickEn": "I am bound, but I will not break.",
+    "type": "Movement"
+  },
+  {
+    "id": "Naafiri",
+    "currentEn": "The pack never misses.",
+    "currentIt": "I nostri latrati riempiranno la notte.",
+    "wikiPickEn": "We give chase!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Nami",
+    "currentEn": "I decide what the tide will bring.",
+    "currentIt": "Le onde ci guideranno.",
+    "wikiPickEn": "I decide what the tide will bring.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Nasus",
+    "currentEn": "The cycle of life and death continues. We will live, they will die.",
+    "currentIt": "Il ciclo della vita e della morte continua. Noi vivremo, loro moriranno.",
+    "wikiPickEn": "The cycle of life and death continues,we will live,they will die.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Nautilus",
+    "currentEn": "All will drown.",
+    "currentIt": "Affonderanno tutti.",
+    "wikiPickEn": "Beware the depths.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Neeko",
+    "currentEn": "Neeko is not a sad tomato. She's a strong tomato!",
+    "currentIt": "Neeko non è un pomodoro triste, è un pomodoro forte!",
+    "wikiPickEn": "Neeko is best decision!",
+    "type": "Joke / Movement"
+  },
+  {
+    "id": "Nidalee",
+    "currentEn": "They will fear the wild.",
+    "currentIt": "Sentiranno gli artigli della cacciatrice.",
+    "wikiPickEn": "The wild calls. I answer.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Nilah",
+    "currentEn": "Joy is boundless!",
+    "currentIt": "La gioia è l'arma più affilata!",
+    "wikiPickEn": "Joy, unceasing and forever!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Nocturne",
+    "currentEn": "Darkness...",
+    "currentIt": "Oscurità...",
+    "wikiPickEn": "Embrace the darkness.",
+    "type": "Ultimate Cast"
+  },
+  {
+    "id": "Nunu",
+    "currentEn": "Every adventure is better with a friend!",
+    "currentIt": "È tempo di avventure, Willump!",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Olaf",
+    "currentEn": "Leave nothing behind!",
+    "currentIt": "Lasciatemi andare incontro a una morte gloriosa!",
+    "wikiPickEn": "Leave nothing behind!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Orianna",
+    "currentEn": "I know what makes them tick. I know how to make the ticking stop.",
+    "currentIt": "So cosa li fa ticchettare. So come farli smettere.",
+    "wikiPickEn": "We will kill your enemies. That will be fun.",
+    "type": "Movement"
+  },
+  {
+    "id": "Ornn",
+    "currentEn": "Back to work.",
+    "currentIt": "Torno al lavoro.",
+    "wikiPickEn": "Fine, we go.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Pantheon",
+    "currentEn": "I am not a god, I am a man!",
+    "currentIt": "Non sono un dio, sono un uomo!",
+    "wikiPickEn": "In battle, we are reborn.",
+    "type": "Ultimate Cast"
+  },
+  {
+    "id": "Poppy",
+    "currentEn": "I'm no hero. Just a yordle with a hammer.",
+    "currentIt": "Non sono un eroe, sto solo portando questo martello.",
+    "wikiPickEn": "I'm no hero—just a Yordle with a hammer.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Pyke",
+    "currentEn": "Did I kill you yet?",
+    "currentIt": "C'è ancora molto spazio sul mio taccuino.",
+    "wikiPickEn": "Sink 'em all.",
+    "type": "Movement / Kill"
+  },
+  {
+    "id": "Qiyana",
+    "currentEn": "Bow to the empress of elements.",
+    "currentIt": "Voi camminate sul terreno che io comando.",
+    "wikiPickEn": "You may now appreciate me.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Quinn",
+    "currentEn": "Justice takes wing.",
+    "currentIt": "Gli occhi di Valor vedono tutto.",
+    "wikiPickEn": "Justice takes wing.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Rakan",
+    "currentEn": "I have no plan, I only have charm!",
+    "currentIt": "Io non ho un piano, io ho solo fascino!",
+    "wikiPickEn": "Let's dance.",
+    "type": "Movement / Joke"
+  },
+  {
+    "id": "Rammus",
+    "currentEn": "Alright.",
+    "currentIt": "Ok.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "RekSai",
+    "currentEn": "*Menacing screech and tremor from beneath the dunes*",
+    "currentIt": "*Ruggito sinistro e stridente dalle profondità della sabbia*",
+    "wikiPickEn": "Sound Effect",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Rell",
+    "currentEn": "They broke the wrong girl.",
+    "currentIt": "Hanno spezzato la ragazza sbagliata.",
+    "wikiPickEn": "Nothing gets in, no one gets out.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Renata",
+    "currentEn": "Everyone has a price.",
+    "currentIt": "Tutti hanno un prezzo, persino tu.",
+    "wikiPickEn": "It's 'Miss Glasc'... if you value your life.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Renekton",
+    "currentEn": "As I live, all will die!",
+    "currentIt": "Finché vivo, tutti moriranno!",
+    "wikiPickEn": "As I live, all will die!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Rengar",
+    "currentEn": "Tonight, we hunt!",
+    "currentIt": "Stanotte andiamo a caccia!",
+    "wikiPickEn": "Tonight, we hunt!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Riven",
+    "currentEn": "A broken blade is more than enough for the likes of you.",
+    "currentIt": "Una spada spezzata è più che sufficiente per le vostre teste.",
+    "wikiPickEn": "What is broken can be reforged.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Rumble",
+    "currentEn": "Let's get in the fight!",
+    "currentIt": "Diamo una bella strigliata a questi bulli!",
+    "wikiPickEn": "Let's get in the fight!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Ryze",
+    "currentEn": "A step ahead of cataclysm.",
+    "currentIt": "Un passo avanti verso le Rune.",
+    "wikiPickEn": "A step ahead of cataclysm.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Samira",
+    "currentEn": "You want style? You found her.",
+    "currentIt": "Vuoi dello stile? Te lo do io lo stile!",
+    "wikiPickEn": "You want style? You've found her.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Sejuani",
+    "currentEn": "Trust nothing but your strength.",
+    "currentIt": "Solo i forti sopravvivono nell'inverno.",
+    "wikiPickEn": "Trust nothing but your strength.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Senna",
+    "currentEn": "No one fights alone in the Mist.",
+    "currentIt": "Nessuno combatte da solo nella nebbia.",
+    "wikiPickEn": "No one fights alone in the Mist.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Seraphine",
+    "currentEn": "Let's change the world together.",
+    "currentIt": "Ascoltiamo la voce della città.",
+    "wikiPickEn": "Let's change the world!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Sett",
+    "currentEn": "I love my ma.",
+    "currentIt": "Adoro la mia mamma.",
+    "wikiPickEn": "I'm undisputed.",
+    "type": "Movement / Joke"
+  },
+  {
+    "id": "Shaco",
+    "currentEn": "Why so serious?!",
+    "currentIt": "Perché così serio?!",
+    "wikiPickEn": "How about a magic trick?",
+    "type": "Joke"
+  },
+  {
+    "id": "Shen",
+    "currentEn": "A demonstration of superior judgment.",
+    "currentIt": "Con gli occhi della mente.",
+    "wikiPickEn": "A demonstration of superior judgement.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Shyvana",
+    "currentEn": "They will face the dragon's fury.",
+    "currentIt": "Affronteranno la furia di un drago.",
+    "wikiPickEn": "They are nothing before me.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Singed",
+    "currentEn": "How'd that taste?",
+    "currentIt": "Come va la pozione?",
+    "wikiPickEn": "How about a drink?",
+    "type": "Joke / Laugh"
+  },
+  {
+    "id": "Sion",
+    "currentEn": "DEATH IS NOT THE END!",
+    "currentIt": "LA MORTE NON È UNA SCUSA!",
+    "wikiPickEn": "Rest is for the living.",
+    "type": "Passive Revive"
+  },
+  {
+    "id": "Sivir",
+    "currentEn": "I always take my toll. Blood, or gold.",
+    "currentIt": "Io combatto per chi paga di più.",
+    "wikiPickEn": "I always take my toll; blood, or gold.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Skarner",
+    "currentEn": "Earth remembers.",
+    "currentIt": "Sento il battito della terra primordiale.",
+    "wikiPickEn": "I am the vanguard of [[Ixtal]]'s protection.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Smolder",
+    "currentEn": "My mom says I'm the fiercest dragon!",
+    "currentIt": "Mia madre dice che sono il drago più feroce!",
+    "wikiPickEn": "I bring the heat!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Sona",
+    "currentEn": "Only you can hear me, summoner.",
+    "currentIt": "Solo tu puoi sentirmi, evocatore.",
+    "wikiPickEn": "What masterpiece shall we play today?",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Soraka",
+    "currentEn": "Let me guide you.",
+    "currentIt": "Finché avrò respiro, nessuno cadrà.",
+    "wikiPickEn": "Let me guide you.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Swain",
+    "currentEn": "Victory requires sacrifice.",
+    "currentIt": "La vittoria richiede sacrifici.",
+    "wikiPickEn": "Fear the power you do not see.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Sylas",
+    "currentEn": "No more cages! No more kings!",
+    "currentIt": "Niente più gabbie, niente più re!",
+    "wikiPickEn": "No more cages!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Syndra",
+    "currentEn": "So much untapped power!",
+    "currentIt": "Il mio potenziale è illimitato!",
+    "wikiPickEn": "So much untapped power!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "TahmKench",
+    "currentEn": "Call me king, call me demon; water forgets the names of the drowned.",
+    "currentIt": "Chiamami re, chiamami demone... l'acqua dimentica i nomi degli annegati.",
+    "wikiPickEn": "Call me king, call me demon. Water forgets the names of the drowned.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Taliyah",
+    "currentEn": "Throw another rock!",
+    "currentIt": "Un sasso alla volta.",
+    "wikiPickEn": "Know the loom. Be the stone.",
+    "type": "Attack"
+  },
+  {
+    "id": "Talon",
+    "currentEn": "Live and die by the blade.",
+    "currentIt": "Vivi e muori per la lama.",
+    "wikiPickEn": "Live and die by the blade.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Taric",
+    "currentEn": "Truly, truly outrageous.",
+    "currentIt": "Le gemme hanno un potere unico, davvero splendido.",
+    "wikiPickEn": "That glimmer of hope you see, that's me.",
+    "type": "Joke / Movement"
+  },
+  {
+    "id": "Teemo",
+    "currentEn": "Captain Teemo on duty!",
+    "currentIt": "Capitano Teemo a rapporto!",
+    "wikiPickEn": "Captain Teemo on duty.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Thresh",
+    "currentEn": "What delightful agony we shall inflict.",
+    "currentIt": "Che deliziosa agonia dovremo infliggere?",
+    "wikiPickEn": "What delightful agony we shall inflict.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Tristana",
+    "currentEn": "Boom!",
+    "currentIt": "Una volta che il cannone ha sparato, non puoi fermare la palla!",
+    "wikiPickEn": "Once a Bandle gunner, always a Bandle gunner!",
+    "type": "Attack / Cast"
+  },
+  {
+    "id": "Trundle",
+    "currentEn": "Time to troll!",
+    "currentIt": "Tempo di mazzate da troll!",
+    "wikiPickEn": "Time to troll!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Tryndamere",
+    "currentEn": "My right arm is a lot stronger than my left arm!",
+    "currentIt": "Il mio braccio destro è molto più forte del sinistro!",
+    "wikiPickEn": "This'll be a slaughter.",
+    "type": "Joke"
+  },
+  {
+    "id": "TwistedFate",
+    "currentEn": "It's my lucky day.",
+    "currentIt": "È la mia mano fortunata.",
+    "wikiPickEn": "Lady Luck is smilin'.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Twitch",
+    "currentEn": "I was hiding in the shadows!",
+    "currentIt": "Sbucato dalla fogna!",
+    "wikiPickEn": "What doesn't kill you just isn't finished yet.",
+    "type": "Exit Stealth"
+  },
+  {
+    "id": "Udyr",
+    "currentEn": "Our rage is beyond your control.",
+    "currentIt": "Il nostro istinto è la nostra guida.",
+    "wikiPickEn": "Conflict feeds the [[Freljord]].",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Urgot",
+    "currentEn": "From suffering, strength!",
+    "currentIt": "Dalla sofferenza nasce la vera forza!",
+    "wikiPickEn": "You cannot know strength... Until you are broken.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Varus",
+    "currentEn": "The guilty will know agony.",
+    "currentIt": "La colpa non ha scuse, la freccia non sbaglia mai.",
+    "wikiPickEn": "The guilty will know agony.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Vayne",
+    "currentEn": "Let us hunt those who have fallen to darkness.",
+    "currentIt": "Purifichiamo le ombre.",
+    "wikiPickEn": "Let us hunt those who have fallen to darkness.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Veigar",
+    "currentEn": "I am evil! Stop laughing!",
+    "currentIt": "Chi ha detto che sono basso?!",
+    "wikiPickEn": "Know that if the tables were turned, I would show you no mercy!",
+    "type": "Joke"
+  },
+  {
+    "id": "Velkoz",
+    "currentEn": "Knowledge through disintegration.",
+    "currentIt": "La conoscenza attraverso la disintegrazione.",
+    "wikiPickEn": "Knowledge through... disintegration.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Vex",
+    "currentEn": "Whatever.",
+    "currentIt": "Uff... che noia la vita.",
+    "wikiPickEn": "'Kay. See if I care.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Vi",
+    "currentEn": "Punch first. Ask questions while punching.",
+    "currentIt": "Prima picchia, poi fai le domande.",
+    "wikiPickEn": "Punch first. Ask questions while punching.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Viego",
+    "currentEn": "Where is she? Isolde...",
+    "currentIt": "Dov'è lei? Isolde, amore mio...",
+    "wikiPickEn": "Love ruins all.",
+    "type": "Movement"
+  },
+  {
+    "id": "Viktor",
+    "currentEn": "Join the glorious evolution!",
+    "currentIt": "Accogliete la gloriosa evoluzione!",
+    "wikiPickEn": "Join the glorious evolution.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Vladimir",
+    "currentEn": "The rivers will run red.",
+    "currentIt": "Il fiume scarlatto scorrerà!",
+    "wikiPickEn": "The rivers will run red.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Volibear",
+    "currentEn": "I am the storm!",
+    "currentIt": "Io sono la tempesta!",
+    "wikiPickEn": "Feel the power of the wild.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Warwick",
+    "currentEn": "Blood brings them all to me.",
+    "currentIt": "Sento il tuo sangue.",
+    "wikiPickEn": "Blood runs... they all run.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "MonkeyKing",
+    "currentEn": "Every problem can be solved with a staff.",
+    "currentIt": "Voglio essere il migliore!",
+    "wikiPickEn": "I will be the best.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Xayah",
+    "currentEn": "They only get one life, and they spend it like this?",
+    "currentIt": "Hanno una sola vita. Perché la sprecano così?",
+    "wikiPickEn": "Sound Effect",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Xerath",
+    "currentEn": "I am eternal!",
+    "currentIt": "Io sono il potere assoluto!",
+    "wikiPickEn": "I will be free.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "XinZhao",
+    "currentEn": "Here's a tip, and a spear behind it!",
+    "currentIt": "Nel cuore della battaglia!",
+    "wikiPickEn": "To the arena!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Yone",
+    "currentEn": "One to cut, one to seal.",
+    "currentIt": "Una spada per il passato, una per il futuro.",
+    "wikiPickEn": "One to cut, one to seal.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Yorick",
+    "currentEn": "What is one more grave?",
+    "currentIt": "Cosa sono mille cadaveri per un uomo che ha scavato diecimila tombe?",
+    "wikiPickEn": "Fear not... I will make use of your corpse.",
+    "type": "Movement"
+  },
+  {
+    "id": "Yuumi",
+    "currentEn": "Where's my fishy fishy?!",
+    "currentIt": "Dov'è il mio pesce?! Libro, andiamo!",
+    "wikiPickEn": "You and me, we got this!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zac",
+    "currentEn": "I should get a suit.",
+    "currentIt": "Dovrei comprarmi un vestito.",
+    "wikiPickEn": "I was made for this... literally.",
+    "type": "Joke"
+  },
+  {
+    "id": "Zed",
+    "currentEn": "The darkest shadow is that which lies within the light.",
+    "currentIt": "L'ombra più scura è celata nella luce.",
+    "wikiPickEn": "The unseen blade is the deadliest.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zeri",
+    "currentEn": "Lighting it up!",
+    "currentIt": "Scintilla accesa, andiamo!",
+    "wikiPickEn": "A spark is all I need!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Ziggs",
+    "currentEn": "This is gonna blow!",
+    "currentIt": "Questa miccia è troppo corta!",
+    "wikiPickEn": "This'll be a blast!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zilean",
+    "currentEn": "I knew you would do that.",
+    "currentIt": "Sapevo che avresti fatto questo.",
+    "wikiPickEn": "I knew you would do that...",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zoe",
+    "currentEn": "There are so many holes in reality, let's go play!",
+    "currentIt": "C'è un sacco di tempo prima che l'universo collassi, andiamo a giocare!",
+    "wikiPickEn": "Yes! This'll be fun! Right?",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zyra",
+    "currentEn": "Feel the thorns embrace.",
+    "currentIt": "Le nostre spine vi strazieranno.",
+    "wikiPickEn": "Feel the thorns' embrace.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Akshan",
+    "currentEn": "Find the scoundrel, avenge the fallen, and grab a celebratory beverage.",
+    "currentIt": "Trova il colpevole, vendica i caduti e poi un bel brindisi alla vittoria!",
+    "wikiPickEn": "Fixing the world, one scoundrel at a time!",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Ambessa",
+    "currentEn": "Never yield. Show no weakness. Rule with blood and iron.",
+    "currentIt": "Non cedere mai. Non mostrare debolezza. Governa con la forza.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Aphelios",
+    "currentEn": "So many weapons, Aphelios. The deadliest is your faith.",
+    "currentIt": "Attraverso il veleno, io parlo. Attraverso le armi, tu colpisci.",
+    "wikiPickEn": "So many weapons, Aphelios. The deadliest is your faith.",
+    "type": "Champion Pick (Alune)"
+  },
+  {
+    "id": "Aurora",
+    "currentEn": "The spirits are not our enemies, they just want someone who truly listens.",
+    "currentIt": "Gli spiriti non sono mostri, hanno solo bisogno di qualcuno che li ascolti.",
+    "wikiPickEn": "See with eyes unclouded.",
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Locke",
+    "currentEn": "The ashes of the past shall not choke the flame of our duty.",
+    "currentIt": "Le ceneri del passato non possono soffocare la fiamma del nostro dovere.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Mel",
+    "currentEn": "True diplomacy is spun in gold and tempered by unbroken resolve.",
+    "currentIt": "La vera diplomazia si tesse con l'oro e si forgia nella determinazione.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Yunara",
+    "currentEn": "An unbroken faith heals every wound and pierces through all deceit.",
+    "currentIt": "La fede incrollabile guarisce ogni ferita e trafigge ogni inganno.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  },
+  {
+    "id": "Zaahen",
+    "currentEn": "Forgotten by the sands, yet our blade endures for all eternity.",
+    "currentIt": "Siamo stati dimenticati dalle sabbie, ma la nostra lama risorgerà eterna.",
+    "wikiPickEn": null,
+    "type": "Champion Pick"
+  }
+]

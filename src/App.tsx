@@ -1,22 +1,53 @@
 import React, { useState } from 'react';
-import { CategoryId, GameMode, AttributeMatch, UserStats } from './types';
+import { CategoryId, GameMode, AttributeMatch, UserStats, LolLanguage } from './types';
 import { CATEGORIES } from './data/categories';
 import { getStats } from './utils/stats';
+import { Header } from './components/Header';
 import { CategoryCard } from './components/CategoryCard';
 import { HowToPlayModal } from './components/HowToPlayModal';
 import { StatsModal } from './components/StatsModal';
 import { VictoryModal } from './components/VictoryModal';
 import { FootballTransferGame } from './components/games/FootballTransferGame';
-import { LoLClassicGame } from './components/games/LoLClassicGame';
+import { LoLGame } from './components/games/LoLGame';
 import { CarSpecsGame } from './components/games/CarSpecsGame';
 import { MovieGame } from './components/games/MovieGame';
 import { AnimeGame } from './components/games/AnimeGame';
 import { VideoGame } from './components/games/VideoGame';
-import { Trophy, Flame, Home, Calendar, Infinity as InfinityIcon, ArrowLeft, BarChart2, HelpCircle } from 'lucide-react';
+import { BarChart2, HelpCircle } from 'lucide-react';
+
+const getEffectiveMiniGame = (catId: CategoryId | null, subId: string | null): string => {
+  if (!catId) return 'default';
+  if (subId) return subId;
+  if (catId === 'league-of-legends') return 'classico';
+  if (catId === 'videogiochi') return 'pixel';
+  if (catId === 'calcio') return 'carriera';
+  if (catId === 'automobili') return 'specs';
+  if (catId === 'film') return 'film-stats';
+  if (catId === 'anime') return 'anime-stats';
+  const catObj = CATEGORIES.find((c) => c.id === catId);
+  return catObj?.miniGames[0]?.id || 'default';
+};
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
+  const [selectedMiniGame, setSelectedMiniGame] = useState<string | null>(null);
   const [gameMode, setGameMode] = useState<GameMode>('daily');
+  const [roundKey, setRoundKey] = useState<number>(0);
+
+  const [lang, setLang] = useState<LolLanguage>(() => {
+    try {
+      const saved = localStorage.getItem('omnidle_lol_language');
+      if (saved === 'en' || saved === 'it') return saved;
+    } catch {}
+    return 'it';
+  });
+
+  const handleLanguageChange = (newLang: LolLanguage) => {
+    setLang(newLang);
+    try {
+      localStorage.setItem('omnidle_lol_language', newLang);
+    } catch {}
+  };
 
   // Modals state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -36,18 +67,34 @@ export default function App() {
     targetName: '',
   });
 
+  const activeMiniGame = getEffectiveMiniGame(selectedCategory, selectedMiniGame);
+
   // Current stats object for modal
   const getCurrentStats = (): UserStats => {
     if (!selectedCategory) {
       return { played: 0, won: 0, currentStreak: 0, maxStreak: 0, guessDistribution: {} };
     }
     const catObj = CATEGORIES.find((c) => c.id === selectedCategory);
-    const primaryGameId = catObj?.miniGames[0]?.id || 'default';
-    return getStats(selectedCategory, primaryGameId);
+    const gameId = activeMiniGame || catObj?.miniGames[0]?.id || 'default';
+    return getStats(selectedCategory, gameId);
   };
 
-  const handleSelectCategory = (catId: CategoryId) => {
+  const handleSelectCategory = (catId: CategoryId, miniGameId?: string) => {
     setSelectedCategory(catId);
+    const defaultSub =
+      miniGameId ||
+      (catId === 'videogiochi'
+        ? 'pixel'
+        : catId === 'league-of-legends'
+        ? 'classico'
+        : null);
+    setSelectedMiniGame(defaultSub);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleGoHome = () => {
+    setSelectedCategory(null);
+    setSelectedMiniGame(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -60,8 +107,14 @@ export default function App() {
       attemptsCount,
       guessesMatches,
       targetName: targetItem.name || targetItem.title || 'Vittoria',
-      targetSubtitle: targetItem.currentClub || targetItem.brand || targetItem.director || targetItem.studio || targetItem.developer || targetItem.title,
-      targetImageUrl: targetItem.icon || targetItem.imageUrl || targetItem.posterUrl,
+      targetSubtitle:
+        targetItem.currentClub ||
+        targetItem.brand ||
+        targetItem.director ||
+        targetItem.studio ||
+        targetItem.developer ||
+        targetItem.title,
+      targetImageUrl: targetItem.icon || targetItem.imageUrl || targetItem.posterUrl || targetItem.coverUrl,
     });
     setIsVictoryOpen(true);
   };
@@ -71,57 +124,26 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0c0c0e] text-[#f4f4f5] font-sans selection:bg-[#6366f1] selection:text-white antialiased flex flex-col justify-between">
       <div>
+        {/* Sticky Header with Brand, Mini-game Switcher, Mode Switcher, Language Switcher, and Actions */}
+        <Header
+          currentCategory={selectedCategory}
+          onCategoryChange={handleSelectCategory}
+          currentMiniGame={activeMiniGame}
+          onMiniGameChange={(gameId) => setSelectedMiniGame(gameId)}
+          currentMode={gameMode}
+          onModeChange={setGameMode}
+          currentLang={lang}
+          onLanguageChange={handleLanguageChange}
+          onGoHome={handleGoHome}
+          onOpenHelp={() => setIsHelpOpen(true)}
+          onOpenStats={() => setIsStatsOpen(true)}
+        />
+
         {/* Main Content Area */}
         <main className="pb-12">
           {!selectedCategory ? (
             /* HOME VIEW */
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-              {/* Hero Banner Header Section */}
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-zinc-900">
-                <div>
-                  <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-none text-white">
-                    TUTTO<span className="text-[#6366f1]">DLE</span>
-                  </h1>
-                  <p className="text-zinc-500 mt-2 uppercase tracking-widest text-xs font-bold">
-                    Challenge your knowledge across 6 universes
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    onClick={() => setIsStatsOpen(true)}
-                    id="btn-hero-stats"
-                    className="px-3.5 py-1.5 border border-zinc-800 rounded-md text-[11px] font-bold text-zinc-300 uppercase tracking-widest bg-zinc-900/80 hover:bg-zinc-800 hover:text-white transition flex items-center gap-1.5"
-                  >
-                    <BarChart2 className="h-3.5 w-3.5 text-[#6366f1]" />
-                    <span>Statistiche</span>
-                  </button>
-                  <button
-                    onClick={() => setIsHelpOpen(true)}
-                    id="btn-hero-help"
-                    className="px-3.5 py-1.5 bg-[#6366f1] text-white rounded-md text-[11px] font-bold uppercase tracking-widest hover:bg-indigo-600 transition flex items-center gap-1.5 shadow-sm"
-                  >
-                    <HelpCircle className="h-3.5 w-3.5" />
-                    <span>Come Giocare</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Categories Grid Header */}
-              <div className="mb-6 flex items-center justify-between gap-2">
-                <div>
-                  <h2 className="text-xl font-extrabold text-white uppercase tracking-wider">
-                    Seleziona una Categoria
-                  </h2>
-                  <p className="text-xs text-zinc-500 italic">
-                    Confronta gli attributi stile LoLdle & Wordle per vincere.
-                  </p>
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#6366f1] bg-[#6366f1]/10 px-3 py-1 rounded-md border border-[#6366f1]/20">
-                  {CATEGORIES.length} Mondi Attivi
-                </span>
-              </div>
-
+            <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6">
               {/* Categories Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {CATEGORIES.map((cat) => (
@@ -129,6 +151,7 @@ export default function App() {
                     key={cat.id}
                     category={cat}
                     onSelect={handleSelectCategory}
+                    lang={lang}
                   />
                 ))}
               </div>
@@ -136,87 +159,67 @@ export default function App() {
           ) : (
             /* GAME VIEW */
             <div>
-              {/* Compact Navigation & Mode bar for active game */}
-              <div className="border-b border-zinc-800 bg-[#0c0c0e]/95 py-3 px-4 sm:px-6 mb-4">
-                <div className="mx-auto max-w-5xl flex items-center justify-between gap-3">
-                  <button
-                    onClick={() => setSelectedCategory(null)}
-                    id="btn-back-home"
-                    className="flex items-center gap-2 rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-bold text-zinc-300 border border-zinc-800 hover:bg-zinc-800 hover:text-white transition uppercase tracking-wider"
-                  >
-                    <ArrowLeft className="h-4 w-4 text-[#6366f1]" />
-                    <span>Torna ai Temi</span>
-                  </button>
-
-                  {/* Mode switcher */}
-                  <div className="flex items-center rounded-lg bg-zinc-900 p-1 border border-zinc-800">
-                    <button
-                      onClick={() => setGameMode('daily')}
-                      id="btn-mode-daily"
-                      className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                        gameMode === 'daily'
-                          ? 'bg-[#6366f1] text-white shadow-sm'
-                          : 'text-zinc-400 hover:text-zinc-200'
-                      }`}
-                    >
-                      <Calendar className="h-3.5 w-3.5" />
-                      <span>Daily</span>
-                    </button>
-                    <button
-                      onClick={() => setGameMode('infinite')}
-                      id="btn-mode-infinite"
-                      className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                        gameMode === 'infinite'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-zinc-400 hover:text-zinc-200'
-                      }`}
-                    >
-                      <InfinityIcon className="h-3.5 w-3.5" />
-                      <span>Infinite</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
               {selectedCategory === 'calcio' && (
                 <FootballTransferGame
+                  key={`calcio-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
                 />
               )}
               {selectedCategory === 'league-of-legends' && (
-                <LoLClassicGame
+                <LoLGame
+                  key={`lol-${activeMiniGame}-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
+                  initialSubGame={activeMiniGame}
+                  onSubGameChange={(sub) => setSelectedMiniGame(sub)}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
+                  onLanguageChange={handleLanguageChange}
                 />
               )}
               {selectedCategory === 'automobili' && (
                 <CarSpecsGame
+                  key={`auto-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
                 />
               )}
               {selectedCategory === 'film' && (
                 <MovieGame
+                  key={`film-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
                 />
               )}
               {selectedCategory === 'anime' && (
                 <AnimeGame
+                  key={`anime-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
                 />
               )}
               {selectedCategory === 'videogiochi' && (
                 <VideoGame
+                  key={`vg-${activeMiniGame}-${roundKey}`}
                   mode={gameMode}
+                  onModeChange={setGameMode}
+                  initialSubGame={activeMiniGame}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
                 />
               )}
             </div>
@@ -229,29 +232,40 @@ export default function App() {
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
         categoryId={selectedCategory}
+        lang={lang}
       />
 
       <StatsModal
         isOpen={isStatsOpen}
         onClose={() => setIsStatsOpen(false)}
         stats={getCurrentStats()}
-        gameTitle={activeCategoryObj?.title || 'OmniDle'}
+        gameTitle={
+          lang === 'en' && activeCategoryObj?.titleEn
+            ? activeCategoryObj.titleEn
+            : activeCategoryObj?.title || 'TuttoDle'
+        }
+        lang={lang}
       />
 
       <VictoryModal
         isOpen={isVictoryOpen}
         onClose={() => setIsVictoryOpen(false)}
-        gameTitle={activeCategoryObj?.title || 'OmniDle'}
+        gameTitle={
+          lang === 'en' && activeCategoryObj?.titleEn
+            ? activeCategoryObj.titleEn
+            : activeCategoryObj?.title || 'TuttoDle'
+        }
         targetName={victoryData.targetName}
         targetSubtitle={victoryData.targetSubtitle}
         targetImageUrl={victoryData.targetImageUrl}
         attemptsCount={victoryData.attemptsCount}
         guessesMatches={victoryData.guessesMatches}
         mode={gameMode}
+        lang={lang}
         onPlayNextInfinite={() => {
           setIsVictoryOpen(false);
-          // Re-trigger game re-init
-          window.dispatchEvent(new Event('resize'));
+          setRoundKey((prev) => prev + 1);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
     </div>

@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FootballPlayer, GuessRecord, GameMode, AttributeMatch } from '../../types';
 import { FOOTBALL_PLAYERS } from '../../data/footballPlayers';
 import { compareFootballPlayer } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
+import { getGameSession, saveGameSession } from '../../utils/dailySession';
+import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { ArrowUp, ArrowDown, HelpCircle, Lightbulb, Trophy, Award, Lock, ShieldCheck } from 'lucide-react';
+import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
+import { ArrowUp, ArrowDown, HelpCircle, Lightbulb, Award, Lock, ShieldCheck, User, RotateCcw } from 'lucide-react';
 
 interface FootballTransferGameProps {
   mode: GameMode;
+  onModeChange?: (mode: GameMode) => void;
   onVictory: (attemptsCount: number, guessesMatches: AttributeMatch[][], targetPlayer: FootballPlayer) => void;
   onOpenHelp: () => void;
 }
 
 export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
   mode,
+  onModeChange,
   onVictory,
   onOpenHelp,
 }) => {
@@ -27,7 +32,28 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
   });
 
   // Pick target player based on mode
-  const initGame = () => {
+  const initGame = (forceNew: boolean = false) => {
+    if (!forceNew) {
+      const session = getGameSession<GuessRecord<FootballPlayer>, FootballPlayer>('calcio', 'carriera', mode);
+      if (session) {
+        let restored = session.targetItem;
+        if (!restored && session.targetId) {
+          restored = FOOTBALL_PLAYERS.find((p) => p.id === session.targetId);
+        }
+        if (restored) {
+          setTargetPlayer(restored);
+          const savedGuesses = session.guesses || [];
+          setGuesses(savedGuesses);
+          setIsGameOver(Boolean(session.isGameOver));
+          setUnlockedHints({
+            hint1: savedGuesses.length >= 3,
+            hint2: savedGuesses.length >= 5,
+          });
+          return;
+        }
+      }
+    }
+
     let chosen: FootballPlayer;
     if (mode === 'daily') {
       const idx = getDailyIndex('calcio', 'carriera', FOOTBALL_PLAYERS.length);
@@ -36,10 +62,19 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
       const randIdx = Math.floor(Math.random() * FOOTBALL_PLAYERS.length);
       chosen = FOOTBALL_PLAYERS[randIdx];
     }
+
     setTargetPlayer(chosen);
     setGuesses([]);
     setIsGameOver(false);
     setUnlockedHints({ hint1: false, hint2: false });
+
+    saveGameSession('calcio', 'carriera', mode, {
+      isWon: false,
+      isGameOver: false,
+      guesses: [],
+      targetItem: chosen,
+      targetId: chosen.id,
+    });
   };
 
   useEffect(() => {
@@ -52,12 +87,17 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
     if (guesses.length >= 5) setUnlockedHints((h) => ({ ...h, hint2: true }));
   }, [guesses.length]);
 
-  const searchOptions: SearchOption[] = FOOTBALL_PLAYERS.map((p) => ({
-    id: p.id,
-    name: p.name,
-    subtitle: `${p.flag} ${p.nationality} • ${p.position} • ${p.currentClub}`,
-    flag: p.flag,
-  }));
+  const searchOptions: SearchOption[] = useMemo(() => {
+    return FOOTBALL_PLAYERS.map((p) => ({
+      id: p.id,
+      name: p.name,
+      subtitle: `${p.flag} ${p.nationality} • ${p.position} • ${p.currentClub}`,
+      flag: p.flag,
+      iconUrl: getProxiedImageUrl(p.image),
+    })).sort((a, b) =>
+      a.name.localeCompare(b.name, 'it', { sensitivity: 'base', numeric: true })
+    );
+  }, []);
 
   const handleMakeGuess = (option: SearchOption) => {
     if (isGameOver) return;
@@ -76,6 +116,14 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
     const newGuesses = [record, ...guesses];
     setGuesses(newGuesses);
 
+    saveGameSession('calcio', 'carriera', mode, {
+      isWon: isCorrect,
+      isGameOver: isCorrect,
+      guesses: newGuesses,
+      targetItem: targetPlayer,
+      targetId: targetPlayer.id,
+    });
+
     if (isCorrect) {
       setIsGameOver(true);
       saveGameResult('calcio', 'carriera', true, newGuesses.length);
@@ -88,10 +136,6 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
     <div className="mx-auto max-w-4xl px-4 py-6">
       {/* Game Title & Header */}
       <div className="mb-6 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/20 mb-2">
-          <Trophy className="h-3.5 w-3.5" />
-          Indovina il Calciatore • Carriera & Trasferimenti
-        </div>
         <h1 className="text-3xl font-black text-white sm:text-4xl">
           Chi è questo calciatore?
         </h1>
@@ -99,6 +143,18 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
           Analizza la lista dei trasferimenti in ordine cronologico e seleziona il nome corretto.
         </p>
       </div>
+
+      {/* Banner Risultato Daily Già Completata */}
+      {mode === 'daily' && isGameOver && (
+        <DailyCompletedBanner
+          attemptsCount={guesses.length}
+          targetName={targetPlayer.name}
+          targetSubtitle={`${targetPlayer.flag} ${targetPlayer.nationality} • ${targetPlayer.position} • ${targetPlayer.currentClub}`}
+          targetImageUrl={getProxiedImageUrl(targetPlayer.image)}
+          onPlayInfinite={onModeChange ? () => onModeChange('infinite') : undefined}
+          lang="it"
+        />
+      )}
 
       {/* Transfer History Timeline Card */}
       <div className="mb-8 rounded-3xl border border-slate-700/80 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl backdrop-blur-xl">
@@ -181,6 +237,19 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
         </div>
       )}
 
+      {/* Pulsante Nuova Partita in Modalità Infinita */}
+      {isGameOver && mode === 'infinite' && (
+        <div className="mb-8 flex justify-center">
+          <button
+            onClick={() => initGame(true)}
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-emerald-600/30 cursor-pointer active:scale-95"
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span>Nuova Partita</span>
+          </button>
+        </div>
+      )}
+
       {/* Guesses Table */}
       {guesses.length > 0 && (
         <div className="mt-8 space-y-4">
@@ -188,55 +257,97 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
             I Tuoi Tentativi ({guesses.length})
           </h3>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {guesses.map((guess, idx) => (
               <div
                 key={idx}
-                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xl transition"
+                className="flex flex-col md:flex-row items-stretch gap-3 group"
               >
-                {/* Player Name Header */}
-                <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{guess.item.flag}</span>
-                    <span className="font-extrabold text-white text-base">
+                {/* Foto del calciatore a fianco della scheda */}
+                <div className="w-full md:w-48 lg:w-52 shrink-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 shadow-xl relative flex items-center justify-center min-h-[140px] md:min-h-0 self-stretch">
+                  {guess.item.image ? (
+                    <img
+                      src={getProxiedImageUrl(guess.item.image)}
+                      alt={guess.item.name}
+                      className="w-full h-full max-h-48 md:max-h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        const fallback = parent?.querySelector('.player-fallback');
+                        if (fallback) {
+                          fallback.classList.remove('hidden');
+                          fallback.classList.add('flex');
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className={`player-fallback ${
+                      guess.item.image ? 'hidden' : 'flex'
+                    } flex-col items-center justify-center p-4 text-center text-slate-500`}
+                  >
+                    <User className="h-9 w-9 text-slate-600 mb-1.5" />
+                    <span className="text-xs font-bold text-slate-400 line-clamp-1">
                       {guess.item.name}
                     </span>
-                    <span className="text-xs text-slate-400">({guess.item.currentClub})</span>
                   </div>
-                  {guess.isCorrect && (
-                    <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-extrabold text-emerald-400 border border-emerald-500/30">
-                      CORRETTO!
-                    </span>
-                  )}
+
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-white drop-shadow">
+                      <span className="truncate">{guess.item.name}</span>
+                      <span className="text-xs shrink-0 ml-1.5">{guess.item.flag}</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Attribute tiles */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-                  {guess.matches.map((match, mIdx) => (
-                    <div
-                      key={mIdx}
-                      className={`flex flex-col items-center justify-center rounded-xl p-2.5 text-center transition ${
-                        match.status === 'exact'
-                          ? 'bg-emerald-600/30 text-emerald-200 border border-emerald-500/50'
-                          : match.status === 'partial'
-                          ? 'bg-amber-600/30 text-amber-200 border border-amber-500/50'
-                          : 'bg-rose-950/40 text-rose-300 border border-rose-900/40'
-                      }`}
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">
-                        {match.label}
+                {/* Scheda delle specifiche del calciatore */}
+                <div className="flex-1 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-4 shadow-xl flex flex-col justify-between">
+                  {/* Player Name Header */}
+                  <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{guess.item.flag}</span>
+                      <span className="font-extrabold text-white text-base">
+                        {guess.item.name}
                       </span>
-                      <div className="mt-1 flex items-center gap-1 text-xs font-black">
-                        <span>{match.value}</span>
-                        {match.arrow === 'up' && (
-                          <ArrowUp className="h-3.5 w-3.5 text-emerald-300 stroke-[3]" />
-                        )}
-                        {match.arrow === 'down' && (
-                          <ArrowDown className="h-3.5 w-3.5 text-rose-300 stroke-[3]" />
-                        )}
-                      </div>
+                      <span className="text-xs text-slate-400">({guess.item.currentClub})</span>
                     </div>
-                  ))}
+                    {guess.isCorrect && (
+                      <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-xs font-extrabold text-emerald-400 border border-emerald-500/30">
+                        CORRETTO!
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Attribute tiles */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                    {guess.matches.map((match, mIdx) => (
+                      <div
+                        key={mIdx}
+                        className={`flex flex-col items-center justify-center rounded-xl p-2.5 text-center transition ${
+                          match.status === 'exact'
+                            ? 'bg-emerald-600/30 text-emerald-200 border border-emerald-500/50'
+                            : match.status === 'partial'
+                            ? 'bg-amber-600/30 text-amber-200 border border-amber-500/50'
+                            : 'bg-rose-950/40 text-rose-300 border border-rose-900/40'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">
+                          {match.label}
+                        </span>
+                        <div className="mt-1 flex items-center gap-1 text-xs font-black">
+                          <span>{match.value}</span>
+                          {match.arrow === 'up' && (
+                            <ArrowUp className="h-3.5 w-3.5 text-emerald-300 stroke-[3]" />
+                          )}
+                          {match.arrow === 'down' && (
+                            <ArrowDown className="h-3.5 w-3.5 text-rose-300 stroke-[3]" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

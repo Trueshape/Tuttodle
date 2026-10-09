@@ -1,17 +1,25 @@
 import React from 'react';
-import { X, Award, Flame, Target, Percent } from 'lucide-react';
-import { UserStats } from '../types';
+import { X, Flame } from 'lucide-react';
+import { UserStats, LolLanguage } from '../types';
 
 interface StatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   stats: UserStats;
   gameTitle?: string;
+  lang?: LolLanguage;
 }
 
-export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats, gameTitle = 'Partita' }) => {
+export const StatsModal: React.FC<StatsModalProps> = ({
+  isOpen,
+  onClose,
+  stats,
+  gameTitle = 'Partita',
+  lang = 'it',
+}) => {
   if (!isOpen) return null;
 
+  const isEn = lang === 'en';
   const winRate = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
   const maxAttemptsCount = Math.max(...(Object.values(stats.guessDistribution) as number[]), 1);
 
@@ -21,41 +29,51 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats, 
         <button
           onClick={onClose}
           id="btn-close-stats"
-          className="absolute right-4 top-4 rounded-xl p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+          className="absolute right-4 top-4 rounded-xl p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <h2 className="text-2xl font-black text-slate-100">Statistiche</h2>
+        <h2 className="text-2xl font-black text-slate-100">
+          {isEn ? 'Statistics' : 'Statistiche'}
+        </h2>
         <p className="text-xs font-semibold text-indigo-400 mt-0.5">{gameTitle}</p>
 
         {/* Top 4 Stats Cards */}
         <div className="mt-5 grid grid-cols-4 gap-2 text-center">
           <div className="rounded-2xl bg-slate-800/80 border border-slate-700/60 p-3">
             <div className="text-2xl font-black text-slate-100">{stats.played}</div>
-            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">Giocate</div>
+            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">
+              {isEn ? 'Played' : 'Giocate'}
+            </div>
           </div>
           <div className="rounded-2xl bg-slate-800/80 border border-slate-700/60 p-3">
             <div className="text-2xl font-black text-emerald-400">{winRate}%</div>
-            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">Vittorie</div>
+            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">
+              {isEn ? 'Win %' : 'Vittorie'}
+            </div>
           </div>
           <div className="rounded-2xl bg-slate-800/80 border border-slate-700/60 p-3">
             <div className="flex items-center justify-center gap-0.5 text-2xl font-black text-amber-400">
               <Flame className="h-5 w-5 fill-amber-400" />
               {stats.currentStreak}
             </div>
-            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">Serie</div>
+            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">
+              {isEn ? 'Streak' : 'Serie'}
+            </div>
           </div>
           <div className="rounded-2xl bg-slate-800/80 border border-slate-700/60 p-3">
             <div className="text-2xl font-black text-purple-400">{stats.maxStreak}</div>
-            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">Max Serie</div>
+            <div className="text-[10px] font-medium text-slate-400 uppercase mt-1">
+              {isEn ? 'Max Streak' : 'Max Serie'}
+            </div>
           </div>
         </div>
 
         {/* Guess Distribution Chart */}
         <div className="mt-6 border-t border-slate-800 pt-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-            Distribuzione Tentativi
+            {isEn ? 'Guess Distribution' : 'Distribuzione Tentativi'}
           </h3>
           <div className="space-y-1.5">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
@@ -84,9 +102,9 @@ export const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, stats, 
         <button
           onClick={onClose}
           id="btn-close-stats-footer"
-          className="mt-6 w-full rounded-2xl bg-slate-800 border border-slate-700 py-3 font-bold text-slate-200 hover:bg-slate-700 transition"
+          className="mt-6 w-full rounded-2xl bg-slate-800 border border-slate-700 py-3 font-bold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
         >
-          Chiudi
+          {isEn ? 'Close' : 'Chiudi'}
         </button>
       </div>
     </div>
