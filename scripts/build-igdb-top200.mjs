@@ -63,6 +63,7 @@ for (const [file, label, brand] of CONSOLES) {
       releaseYear,
       genres: genres.length ? genres : ['Generico'],
       themes: themes.length ? themes : undefined,
+      franchise: g.franchise?.name || g.collection?.name || undefined,
       perspective: PERSPECTIVES[0],
       mainPlatform: brand,
       platforms: [label],

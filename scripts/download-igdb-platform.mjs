@@ -38,7 +38,7 @@ const games = [];
 const PAGE = 500;
 
 for (let offset = 0; ; offset += PAGE) {
-  const query = `fields name,cover.image_id,first_release_date,aggregated_rating,rating_count,category,version_parent,genres.name,themes.name,game_modes.name,involved_companies.company.name,involved_companies.developer,platforms;`
+  const query = `fields name,cover.image_id,first_release_date,franchise.name,collection.name,aggregated_rating,rating_count,category,version_parent,genres.name,themes.name,game_modes.name,involved_companies.company.name,involved_companies.developer,platforms;`
     + ` where platforms = (${platformId}) & version_parent = null${extraFilter ? ` & ${extraFilter}` : ''};`
     + ` sort rating_count desc; limit ${PAGE}; offset ${offset};`;
   const res = await fetch('https://api.igdb.com/v4/games', {
