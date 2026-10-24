@@ -34,7 +34,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onSelect, 
 
   const displayTitle = lang === 'en' && category.titleEn ? category.titleEn : category.title;
   const displaySubtitle = lang === 'en' && category.subtitleEn ? category.subtitleEn : category.subtitle;
-  const displaySource = lang === 'en' && category.sourceInfoEn ? category.sourceInfoEn : category.sourceInfo;
 
   return (
     <div
@@ -98,10 +97,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onSelect, 
       </div>
 
       {/* Footer bar inside card */}
-      <div className="flex justify-between items-center pt-3 border-t border-zinc-800/60">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold truncate max-w-[150px]">
-          {displaySource}
-        </span>
+      <div className="flex justify-end items-center pt-3 border-t border-zinc-800/60">
         <span className={`px-3.5 py-1 ${colors.badge} text-[10px] font-black rounded-full uppercase tracking-wider transition-transform group-hover:scale-105`}>
           {lang === 'en' ? 'PLAY' : 'GIOCA'}
         </span>
