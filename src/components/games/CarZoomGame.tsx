@@ -114,13 +114,13 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
           : `L'immagine si rimpicciolisce a ogni errore. ${maxAttempts} tentativi.`}
       </p>
 
-      <div className="relative mb-4 aspect-[16/10] rounded-2xl overflow-hidden border border-zinc-800 bg-black">
+      <div className="relative mb-4 rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <img
           key={targetCar.id}
           onLoad={() => setImageReady(true)}
           src={getProxiedImageUrl(targetCar.imageUrl)}
           alt={lang === 'en' ? 'Zoomed car' : 'Auto zoomata'}
-          className={`w-full h-full object-cover select-none pointer-events-none ${wrongGuesses.length > 0 ? 'transition-transform duration-500' : ''}`}
+          className={`w-full h-auto block select-none pointer-events-none ${wrongGuesses.length > 0 ? 'transition-transform duration-500' : ''}`}
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: `${focus.x}% ${focus.y}%`,

@@ -12,7 +12,6 @@ const TILES = COLS * ROWS;
 const LOW_SCALE = 4;
 const MAX_ATTEMPTS = 5;
 const CANVAS_W = 600;
-const CANVAS_H = 500;
 
 type Status = 'playing' | 'won' | 'lost';
 
@@ -101,21 +100,22 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const scale = Math.max(CANVAS_W / imageReady.naturalWidth, CANVAS_H / imageReady.naturalHeight);
-    const drawW = imageReady.naturalWidth * scale;
-    const drawH = imageReady.naturalHeight * scale;
+    const W = CANVAS_W;
+    const H = Math.round((CANVAS_W * imageReady.naturalHeight) / imageReady.naturalWidth);
+    canvas.width = W;
+    canvas.height = H;
     const full = document.createElement('canvas');
-    full.width = CANVAS_W;
-    full.height = CANVAS_H;
-    full.getContext('2d')?.drawImage(imageReady, (CANVAS_W - drawW) / 2, (CANVAS_H - drawH) / 2, drawW, drawH);
+    full.width = W;
+    full.height = H;
+    full.getContext('2d')?.drawImage(imageReady, 0, 0, W, H);
 
     const low = document.createElement('canvas');
     low.width = COLS * LOW_SCALE;
     low.height = ROWS * LOW_SCALE;
     low.getContext('2d')?.drawImage(full, 0, 0, low.width, low.height);
 
-    const tileW = CANVAS_W / COLS;
-    const tileH = CANVAS_H / ROWS;
+    const tileW = W / COLS;
+    const tileH = H / ROWS;
     ctx.imageSmoothingEnabled = false;
     for (let i = 0; i < TILES; i++) {
       const col = i % COLS;
@@ -176,7 +176,7 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
       </p>
 
       <div className="mb-4 rounded-2xl overflow-hidden border border-zinc-800 bg-black">
-        <canvas ref={canvasRef} width={CANVAS_W} height={CANVAS_H} className="w-full h-auto block" />
+        <canvas ref={canvasRef} className="w-full h-auto block" />
       </div>
 
       <p className="text-xs text-zinc-500 mb-3">
