@@ -347,7 +347,18 @@ export const ConsoleBadge: React.FC<{ consoleKey: string }> = ({ consoleKey }) =
         title="Sega Mega Drive / Genesis (1988)"
         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black border border-[#0055aa] text-white shadow-sm hover:scale-105 transition"
       >
-        <span className="text-[10px] font-black italic tracking-widest text-[#3399ff]">SEGA</span>
+        <span className="text-[10px] font-black italic tracking-widest text-[#3399ff]">MEGA DRIVE</span>
+      </span>
+    );
+  }
+
+  if (key === 'Sega Saturn' || key === 'Saturn') {
+    return (
+      <span
+        title="Sega Saturn (1994)"
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#0b1a33] border border-[#3a6fd8]/60 text-white shadow-sm hover:scale-105 transition"
+      >
+        <span className="text-[10px] font-black tracking-tight text-[#7fb0ff]">Saturn</span>
       </span>
     );
   }

@@ -28,13 +28,15 @@ const CONSOLES = [
   ['igdb-wiiu', 'Wii U', 'Nintendo'],
   ['igdb-nes', 'NES', 'Nintendo'],
   ['igdb-gameboy', 'Game Boy', 'Nintendo'],
-  ['igdb-gbc', 'Game Boy Color', 'Nintendo'],
+  ['igdb-gbc', 'GBC', 'Nintendo'],
   ['igdb-psp', 'PSP', 'PlayStation'],
   ['igdb-3ds', 'Nintendo 3DS', 'Nintendo'],
-  ['igdb-megadrive', 'Mega Drive/Genesis', 'Sega'],
+  ['igdb-megadrive', 'Mega Drive', 'Sega'],
   ['igdb-gba', 'Game Boy Advance', 'Nintendo'],
   ['igdb-saturn', 'Sega Saturn', 'Sega'],
   ['igdb-dreamcast', 'Dreamcast', 'Sega'],
+  ['igdb-vita', 'PS Vita', 'PlayStation'],
+  ['igdb-mastersystem', 'Master System', 'Sega'],
 ];
 
 const PERSPECTIVES = ['3a Persona'];
@@ -46,7 +48,8 @@ for (const [file, label, brand] of CONSOLES) {
     .filter((g) => g.name && g.cover?.image_id && g.aggregated_rating != null)
     .sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
   const topN = withCover.slice(0, LIMIT);
-  const top = [...topN, ...withCover.slice(LIMIT).filter((g) => g.aggregated_rating > 90 || g.rating_count > 10)];
+  const minReviews = label === 'Switch' ? 50 : ['SNES', 'NES', 'N64', 'GBC', 'Game Boy'].includes(label) ? 4 : 10;
+  const top = [...topN, ...withCover.slice(LIMIT).filter((g) => g.aggregated_rating > 90 || g.rating_count > minReviews)];
   for (const g of top) {
     const developer = (g.involved_companies || []).find((c) => c.developer)?.company?.name || 'Sconosciuto';
     const releaseYear = g.first_release_date ? new Date(g.first_release_date * 1000).getUTCFullYear() : 0;

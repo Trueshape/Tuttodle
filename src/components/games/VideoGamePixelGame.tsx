@@ -7,7 +7,7 @@ import { getDailyIndex, getTimeUntilNextDaily } from '../../utils/dailySeed';
 import { getStats, saveGameResult } from '../../utils/stats';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { PixelatedCoverCanvas } from './PixelatedCoverCanvas';
-import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters } from './VideoGameFilters';
+import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters, loadExcludedGenres, saveExcludedGenres } from './VideoGameFilters';
 import { DIFFICULTY_OPTIONS, VideoGameDifficulty, gameMatchesDifficulty } from '../../utils/videoGameDifficulty';
 import { localizeSpecValue } from '../../utils/vgLocalization';
 import { getSafeCoverUrl, getFallbackSvgCover } from '../../utils/boxArtGenerator';
@@ -152,7 +152,13 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   }, [gameList, previouslyFlaggedGameIds, serverFlaggedIds, coverReplacements]);
 
   // Filtri per la modalità Endless / Infinita
-  const [filters, setFilters] = useState<VideoGameFiltersState>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<VideoGameFiltersState>(() => ({
+    ...DEFAULT_FILTERS,
+    excludedGenres: loadExcludedGenres(),
+  }));
+  useEffect(() => {
+    saveExcludedGenres(filters.excludedGenres);
+  }, [filters.excludedGenres]);
   const [difficulty, setDifficulty] = useState<VideoGameDifficulty>('all');
   const prevDifficultyRef = useRef<VideoGameDifficulty>('all');
   useEffect(() => {

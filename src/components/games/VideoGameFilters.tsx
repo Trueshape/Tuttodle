@@ -14,6 +14,23 @@ export interface VideoGameFiltersState {
   excludedGenres: string[];
 }
 
+const EXCLUDED_GENRES_KEY = 'tuttodle_excluded_genres';
+
+export function loadExcludedGenres(): string[] {
+  try {
+    const stored = JSON.parse(localStorage.getItem(EXCLUDED_GENRES_KEY) || '[]');
+    return Array.isArray(stored) ? stored.filter((g) => typeof g === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveExcludedGenres(genres: string[]) {
+  try {
+    localStorage.setItem(EXCLUDED_GENRES_KEY, JSON.stringify(genres));
+  } catch {}
+}
+
 export const DEFAULT_FILTERS: VideoGameFiltersState = {
   brand: 'ALL',
   selectedConsoles: [],
@@ -47,8 +64,8 @@ export const BRAND_DEFINITIONS: Record<
   Sega: {
     name: 'Sega',
     icon: '🌀',
-    consoles: ['Mega Drive', 'Dreamcast'],
-    description: 'Mega Drive, Dreamcast',
+    consoles: ['Mega Drive', 'Dreamcast', 'Sega Saturn', 'Master System'],
+    description: 'Mega Drive, Dreamcast, Sega Saturn, Master System',
   },
 };
 

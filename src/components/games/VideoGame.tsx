@@ -9,7 +9,7 @@ import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { ArrowUp, ArrowDown, Gamepad2, Lightbulb, Grid3X3, Sparkles, Star, Play, RotateCcw, HelpCircle } from 'lucide-react';
 import { VideoGamePixelGame } from './VideoGamePixelGame';
-import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters } from './VideoGameFilters';
+import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters, loadExcludedGenres, saveExcludedGenres } from './VideoGameFilters';
 import { PlatformIcons } from './PlatformIcons';
 import { PixelHeart } from './PixelHeart';
 import { localizeSpecLabel, localizeSpecValue } from '../../utils/vgLocalization';
@@ -156,7 +156,13 @@ export const VideoGame: React.FC<VideoGameProps> = ({
   }, [initialSubGame]);
 
   // Filtri per modalità Endless / Sfida Infinita
-  const [filters, setFilters] = useState<VideoGameFiltersState>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<VideoGameFiltersState>(() => ({
+    ...DEFAULT_FILTERS,
+    excludedGenres: loadExcludedGenres(),
+  }));
+  useEffect(() => {
+    saveExcludedGenres(filters.excludedGenres);
+  }, [filters.excludedGenres]);
   const [difficulty, setDifficulty] = useState<VideoGameDifficulty>('all');
 
   const availablePlatforms = useMemo(() => {
