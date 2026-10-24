@@ -426,7 +426,8 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
       const currentFiltered = playableGames.filter(
         (g) => gameMatchesFilters(g, currentFiltersToUse) && gameMatchesDifficulty(g, difficulty)
       );
-      const activePool = currentFiltered.length > 0 ? currentFiltered : playableGames;
+      if (currentFiltered.length === 0) return;
+      const activePool = currentFiltered;
       const unplayed = activePool.filter((g) => !playedGameIdsInSession.includes(g.id));
       const finalPool = unplayed.length > 0 ? unplayed : activePool;
       const randIdx = Math.floor(Math.random() * finalPool.length);

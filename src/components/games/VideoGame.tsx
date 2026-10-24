@@ -243,7 +243,8 @@ export const VideoGame: React.FC<VideoGameProps> = ({
       const currentFiltered = gamesPool.filter((g) =>
         gameMatchesFilters(g, currentFilters) && gameMatchesDifficulty(g, currentDiff)
       );
-      const activePool = currentFiltered.length > 0 ? currentFiltered : gamesPool;
+      if (currentFiltered.length === 0) return;
+      const activePool = currentFiltered;
       const randIdx = Math.floor(Math.random() * activePool.length);
       chosen = activePool[randIdx];
     }
