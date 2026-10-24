@@ -164,7 +164,7 @@ export default function App() {
             <div>
               {selectedCategory === 'calcio' && (
                 <FootballTransferGame
-                  key={`calcio-${roundKey}`}
+                  key={`calcio-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   onVictory={handleVictory}
@@ -173,7 +173,7 @@ export default function App() {
               )}
               {selectedCategory === 'league-of-legends' && (
                 <LoLGame
-                  key={`lol-${activeMiniGame}-${roundKey}`}
+                  key={`lol-${activeMiniGame}-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   initialSubGame={activeMiniGame}
@@ -192,7 +192,7 @@ export default function App() {
               )}
               {selectedCategory === 'automobili' && activeMiniGame !== 'silhouette' && activeMiniGame !== 'pixel-auto' && (
                 <CarSpecsGame
-                  key={`auto-${roundKey}`}
+                  key={`auto-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   onVictory={handleVictory}
@@ -205,7 +205,7 @@ export default function App() {
               )}
               {selectedCategory === 'film' && activeMiniGame !== 'citazioni' && (
                 <MovieGame
-                  key={`film-${roundKey}`}
+                  key={`film-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   onVictory={handleVictory}
@@ -215,7 +215,7 @@ export default function App() {
               )}
               {selectedCategory === 'anime' && (
                 <AnimeGame
-                  key={`anime-${roundKey}`}
+                  key={`anime-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   onVictory={handleVictory}
@@ -225,7 +225,7 @@ export default function App() {
               )}
               {selectedCategory === 'videogiochi' && (
                 <VideoGame
-                  key={`vg-${activeMiniGame}-${roundKey}`}
+                  key={`vg-${activeMiniGame}-${gameMode}-${roundKey}`}
                   mode={gameMode}
                   onModeChange={setGameMode}
                   initialSubGame={activeMiniGame}
