@@ -89,7 +89,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
 }) => {
   // Modalità locale sincronizzata con la prop
   const [activeMode, setActiveMode] = useState<GameMode>(mode);
-  const [gridSize, setGridSize] = useState<PixelGridSize>('5x6');
+  const [gridSize] = useState<PixelGridSize>('5x6');
   const [naturalAspect, setNaturalAspect] = useState<number | null>(null);
 
   useEffect(() => {
@@ -205,12 +205,12 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   //   - 48 tessere: 6x8 (6 colonne, 8 righe)
   //   - 30 tessere: 5x6 (5 colonne, 6 righe)
   const currentCols = isLandscape
-    ? (activeMode === 'infinite' && gridSize === '5x6' ? 6 : 8)
-    : (activeMode === 'infinite' && gridSize === '5x6' ? 5 : DEFAULT_COLS);
+    ? (gridSize === '5x6' ? 6 : 8)
+    : (gridSize === '5x6' ? 5 : DEFAULT_COLS);
 
   const currentRows = isLandscape
-    ? (activeMode === 'infinite' && gridSize === '5x6' ? 5 : 6)
-    : (activeMode === 'infinite' && gridSize === '5x6' ? 6 : DEFAULT_ROWS);
+    ? (gridSize === '5x6' ? 5 : 6)
+    : (gridSize === '5x6' ? 6 : DEFAULT_ROWS);
 
   const currentTotalTiles = currentCols * currentRows;
 
@@ -352,7 +352,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     const currentGridToUse = customGridSize || gridSize;
 
     // Totale tessere: 30 in modalità ridotta o 48 in modalità standard (invariato tra landscape e portrait)
-    const activeTotalTiles = currentModeToUse === 'infinite' && currentGridToUse === '5x6' ? 30 : 48;
+    const activeTotalTiles = currentGridToUse === '5x6' ? 30 : 48;
 
     // 1. Se non è richiesta esplicitamente una nuova partita, controlla se esiste una sessione salvata
     if (!forceNew) {
@@ -389,9 +389,8 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
           setEarnedScore(finalEarned);
 
           const savedGrid = (savedSession.extra?.gridSize as PixelGridSize) || currentGridToUse;
-          setGridSize(savedGrid);
 
-          const effectiveTotal = currentModeToUse === 'infinite' && savedGrid === '5x6' ? 30 : 48;
+          const effectiveTotal = savedGrid === '5x6' ? 30 : 48;
 
           if (isOver) {
             setRevealedIndices(Array.from({ length: effectiveTotal }, (_, i) => i));
@@ -588,52 +587,6 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     const randomPick = unrevealed[Math.floor(Math.random() * unrevealed.length)];
     setLastRevealedIndex(randomPick);
     return [...currentRevealed, randomPick];
-  };
-
-  // Cambia dimensione griglia (5x6/6x5 o 6x8/8x6) SENZA cambiare il gioco corrente
-  const handleGridSizeChange = (newSize: PixelGridSize) => {
-    if (gridSize === newSize) return;
-    revealedByGridRef.current[gridSize] = revealedIndices;
-    setGridSize(newSize);
-
-    const newTotal = newSize === '5x6' ? 30 : 48;
-
-    if (gameState !== 'playing') {
-      setRevealedIndices(Array.from({ length: newTotal }, (_, i) => i));
-    } else {
-      const remembered = revealedByGridRef.current[newSize];
-      let newRevealed: number[];
-      if (remembered) {
-        newRevealed = remembered;
-      } else {
-        // Mantiene lo stesso numero di tessere sbloccate sul gioco corrente
-        const targetCount = Math.min(newTotal, Math.max(1, guessHistory.length + 1));
-        newRevealed = [];
-        while (newRevealed.length < targetCount) {
-          const rand = Math.floor(Math.random() * newTotal);
-          if (!newRevealed.includes(rand)) {
-            newRevealed.push(rand);
-          }
-        }
-        revealedByGridRef.current[newSize] = newRevealed;
-      }
-      setRevealedIndices(newRevealed);
-      setLastRevealedIndex(newRevealed[newRevealed.length - 1]);
-
-      saveGameSession(categoryKey, 'pixel-cover', activeMode, {
-        isWon: false,
-        isGameOver: false,
-        guesses: guessHistory,
-        targetItem: targetGame,
-        targetId: targetGame.id,
-        extra: {
-          earnedScore: 0,
-          revealedIndices: newRevealed,
-          gridSize: newSize,
-          franchiseHint,
-        },
-      });
-    }
   };
 
   // Gestione tentativo
@@ -1068,36 +1021,6 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
             )}
           </div>
         </div>
-
-        {/* Selettore Dimensione Cover in Modalità Endless: 5x6 / 6x5 (30) o 6x8 / 8x6 (48) */}
-        {activeMode === 'infinite' && (
-          <div className="mb-2.5 flex items-center justify-center gap-2">
-            <div className="inline-flex rounded-xl bg-zinc-900 border border-zinc-800 p-0.5 shadow-inner">
-              <button
-                type="button"
-                onClick={() => handleGridSizeChange('5x6')}
-                className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  gridSize === '5x6'
-                    ? 'bg-rose-600 text-white shadow-md'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {isLandscape ? '6x5' : '5x6'} ({lang === 'en' ? '30 tiles' : '30 tessere'})
-              </button>
-              <button
-                type="button"
-                onClick={() => handleGridSizeChange('6x8')}
-                className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  gridSize === '6x8'
-                    ? 'bg-rose-600 text-white shadow-md'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {isLandscape ? '8x6' : '6x8'} ({lang === 'en' ? '48 tiles' : '48 tessere'})
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Cornice della Copertina (Proporzione originale naturale dell'immagine senza alcun ritaglio) */}
         <div
