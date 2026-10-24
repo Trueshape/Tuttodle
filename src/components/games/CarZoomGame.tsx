@@ -57,6 +57,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   const [focus, setFocus] = useState(init.focus);
   const [wrongGuesses, setWrongGuesses] = useState<string[]>(init.wrong);
   const [status, setStatus] = useState<Status>(init.status);
+  const [imageReady, setImageReady] = useState(false);
 
   useEffect(() => {
     if (mode !== 'daily') return;
@@ -100,6 +101,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   };
 
   const newGame = () => {
+    setImageReady(false);
     setTargetCar(pickRandomCar(targetCar.id));
     setFocus(randomFocus());
     setWrongGuesses([]);
@@ -119,12 +121,15 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
 
       <div className="relative mb-4 aspect-[16/10] rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <img
+          key={targetCar.id}
+          onLoad={() => setImageReady(true)}
           src={getProxiedImageUrl(targetCar.imageUrl)}
           alt={lang === 'en' ? 'Zoomed car' : 'Auto zoomata'}
           className={`w-full h-full object-cover select-none pointer-events-none ${wrongGuesses.length > 0 ? 'transition-transform duration-500' : ''}`}
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: `${focus.x}% ${focus.y}%`,
+            opacity: imageReady ? 1 : 0,
           }}
         />
       </div>
