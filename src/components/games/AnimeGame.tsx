@@ -8,7 +8,7 @@ import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
-import { ArrowUp, ArrowDown, Tv, Lightbulb, Lock, RotateCcw } from 'lucide-react';
+import { ArrowUp, ArrowDown, Tv, RotateCcw } from 'lucide-react';
 
 interface AnimeGameProps {
   mode: GameMode;
@@ -28,7 +28,6 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
   const [targetAnime, setTargetAnime] = useState<AnimeItem>(ANIME_LIST[0]);
   const [guesses, setGuesses] = useState<GuessRecord<AnimeItem>[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [unlockedCharacter, setUnlockedCharacter] = useState(false);
 
   const initGame = (forceNew: boolean = false) => {
     if (!forceNew) {
@@ -43,7 +42,6 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
           const savedGuesses = session.guesses || [];
           setGuesses(savedGuesses);
           setIsGameOver(Boolean(session.isGameOver));
-          setUnlockedCharacter(savedGuesses.length >= 3);
           return;
         }
       }
@@ -61,7 +59,6 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
     setTargetAnime(chosen);
     setGuesses([]);
     setIsGameOver(false);
-    setUnlockedCharacter(false);
 
     saveGameSession('anime', 'anime-stats', mode, {
       isWon: false,
@@ -77,7 +74,6 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
   }, [mode]);
 
   useEffect(() => {
-    if (guesses.length >= 3) setUnlockedCharacter(true);
   }, [guesses.length]);
 
   const searchOptions: SearchOption[] = useMemo(() => {
@@ -147,21 +143,6 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
         />
       )}
 
-      {!isGameOver && (
-        <div className="mb-6 rounded-2xl border border-purple-500/20 bg-purple-950/20 p-4 text-center">
-          {unlockedCharacter ? (
-            <div className="flex items-center justify-center gap-2 text-xs font-medium text-purple-200">
-              <Lightbulb className="h-4 w-4 text-purple-400 shrink-0" />
-              <span><strong>{lang === 'en' ? 'Main Character / Hint:' : 'Protagonista Principale:'}</strong> {targetAnime.mainCharacter}</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-              <Lock className="h-3.5 w-3.5" />
-              <span>{lang === 'en' ? 'Main character hint unlocks after 3 attempts' : 'Indizio Protagonista si sblocca dopo 3 tentativi'}</span>
-            </div>
-          )}
-        </div>
-      )}
 
       {!isGameOver && (
         <div className="mb-8">
