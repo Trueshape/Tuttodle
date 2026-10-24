@@ -61,26 +61,26 @@ export interface ConsoleDatabaseStat {
   badge: string;
 }
 
+const countForPlatform = (platform: string): number =>
+  ALL_CONSOLE_GAMES.filter((g) => g.platforms?.includes(platform)).length;
+
 export const CONSOLE_DATABASE_STATS: ConsoleDatabaseStat[] = [
-  // Sony PlayStation
-  { key: 'PS1', name: 'PlayStation 1', brand: 'Sony', count: PS1_GAMES.length, icon: '🎮', badge: 'PS1' },
-  { key: 'PS2', name: 'PlayStation 2', brand: 'Sony', count: PS2_GAMES.length, icon: '🎮', badge: 'PS2' },
-  { key: 'PS3', name: 'PlayStation 3', brand: 'Sony', count: PS3_GAMES.length, icon: '🎮', badge: 'PS3' },
-  { key: 'PS4', name: 'PlayStation 4', brand: 'Sony', count: PS4_GAMES.length, icon: '🎮', badge: 'PS4' },
-  { key: 'PS5', name: 'PlayStation 5', brand: 'Sony', count: PS5_GAMES.length, icon: '🎮', badge: 'PS5' },
+  { key: 'PS1', name: 'PlayStation 1', brand: 'Sony', count: countForPlatform('PS1'), icon: '🎮', badge: 'PS1' },
+  { key: 'PS2', name: 'PlayStation 2', brand: 'Sony', count: countForPlatform('PS2'), icon: '🎮', badge: 'PS2' },
+  { key: 'PS3', name: 'PlayStation 3', brand: 'Sony', count: countForPlatform('PS3'), icon: '🎮', badge: 'PS3' },
+  { key: 'PS4', name: 'PlayStation 4', brand: 'Sony', count: countForPlatform('PS4'), icon: '🎮', badge: 'PS4' },
+  { key: 'PS5', name: 'PlayStation 5', brand: 'Sony', count: countForPlatform('PS5'), icon: '🎮', badge: 'PS5' },
 
-  // Nintendo
-  { key: 'SNES', name: 'Super Nintendo', brand: 'Nintendo', count: SNES_GAMES.length, icon: '🍄', badge: 'SNES' },
-  { key: 'N64', name: 'Nintendo 64', brand: 'Nintendo', count: N64_GAMES.length, icon: '🍄', badge: 'N64' },
-  { key: 'GameCube', name: 'Nintendo GameCube', brand: 'Nintendo', count: GAMECUBE_GAMES.length, icon: '🍄', badge: 'GameCube' },
-  { key: 'Wii', name: 'Nintendo Wii', brand: 'Nintendo', count: WII_GAMES.length, icon: '🍄', badge: 'Wii' },
-  { key: 'Switch', name: 'Nintendo Switch', brand: 'Nintendo', count: SWITCH_GAMES.length, icon: '🍄', badge: 'Switch' },
+  { key: 'SNES', name: 'Super Nintendo', brand: 'Nintendo', count: countForPlatform('SNES'), icon: '🍄', badge: 'SNES' },
+  { key: 'N64', name: 'Nintendo 64', brand: 'Nintendo', count: countForPlatform('N64'), icon: '🍄', badge: 'N64' },
+  { key: 'GameCube', name: 'Nintendo GameCube', brand: 'Nintendo', count: countForPlatform('GameCube'), icon: '🍄', badge: 'GameCube' },
+  { key: 'Wii', name: 'Nintendo Wii', brand: 'Nintendo', count: countForPlatform('Wii'), icon: '🍄', badge: 'Wii' },
+  { key: 'Switch', name: 'Nintendo Switch', brand: 'Nintendo', count: countForPlatform('Switch'), icon: '🍄', badge: 'Switch' },
 
-  // Microsoft Xbox
-  { key: 'Xbox', name: 'Xbox Original', brand: 'Microsoft', count: XBOX_ORIGINAL_GAMES.length, icon: '🟩', badge: 'Xbox' },
-  { key: 'Xbox 360', name: 'Xbox 360', brand: 'Microsoft', count: XBOX_360_GAMES.length, icon: '🟩', badge: 'Xbox 360' },
-  { key: 'Xbox One', name: 'Xbox One', brand: 'Microsoft', count: XBOX_ONE_GAMES.length, icon: '🟩', badge: 'Xbox One' },
-  { key: 'Xbox Series X/S', name: 'Xbox Series X/S', brand: 'Microsoft', count: XBOX_SERIES_X_GAMES.length, icon: '🟩', badge: 'Series X|S' },
+  { key: 'Xbox', name: 'Xbox Original', brand: 'Microsoft', count: countForPlatform('Xbox'), icon: '🟩', badge: 'Xbox' },
+  { key: 'Xbox 360', name: 'Xbox 360', brand: 'Microsoft', count: countForPlatform('Xbox 360'), icon: '🟩', badge: 'Xbox 360' },
+  { key: 'Xbox One', name: 'Xbox One', brand: 'Microsoft', count: countForPlatform('Xbox One'), icon: '🟩', badge: 'Xbox One' },
+  { key: 'Xbox Series X/S', name: 'Xbox Series X/S', brand: 'Microsoft', count: countForPlatform('Xbox Series X/S'), icon: '🟩', badge: 'Series X|S' },
 ];
 
 export const CONSOLE_GAME_COUNTS: Record<string, number> = CONSOLE_DATABASE_STATS.reduce(
@@ -88,9 +88,12 @@ export const CONSOLE_GAME_COUNTS: Record<string, number> = CONSOLE_DATABASE_STAT
   {}
 );
 
+const brandTotal = (brand: string): number =>
+  CONSOLE_DATABASE_STATS.filter((s) => s.brand === brand).reduce((sum, s) => sum + s.count, 0);
+
 export const BRAND_SUMMARY_STATS = {
-  Sony: PS1_GAMES.length + PS2_GAMES.length + PS3_GAMES.length + PS4_GAMES.length + PS5_GAMES.length,
-  Nintendo: SNES_GAMES.length + N64_GAMES.length + GAMECUBE_GAMES.length + WII_GAMES.length + SWITCH_GAMES.length,
-  Microsoft: XBOX_ORIGINAL_GAMES.length + XBOX_360_GAMES.length + XBOX_ONE_GAMES.length + XBOX_SERIES_X_GAMES.length,
+  Sony: brandTotal('Sony'),
+  Nintendo: brandTotal('Nintendo'),
+  Microsoft: brandTotal('Microsoft'),
   Total: ALL_CONSOLE_GAMES.length
 };
