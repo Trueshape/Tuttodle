@@ -12,6 +12,7 @@ import { LoLGame } from './components/games/LoLGame';
 import { CarSpecsGame } from './components/games/CarSpecsGame';
 import { CarZoomGame } from './components/games/CarZoomGame';
 import { MovieGame } from './components/games/MovieGame';
+import { QuoteGame } from './components/games/QuoteGame';
 import { AnimeGame } from './components/games/AnimeGame';
 import { VideoGame } from './components/games/VideoGame';
 import { BarChart2, HelpCircle } from 'lucide-react';
@@ -195,7 +196,10 @@ export default function App() {
                   lang={lang}
                 />
               )}
-              {selectedCategory === 'film' && (
+              {selectedCategory === 'film' && activeMiniGame === 'citazioni' && (
+                <QuoteGame onVictory={handleVictory} lang={lang} />
+              )}
+              {selectedCategory === 'film' && activeMiniGame !== 'citazioni' && (
                 <MovieGame
                   key={`film-${roundKey}`}
                   mode={gameMode}

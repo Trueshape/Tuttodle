@@ -8,7 +8,7 @@ import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
-import { ArrowUp, ArrowDown, Clapperboard, Lightbulb, Lock, RotateCcw } from 'lucide-react';
+import { ArrowUp, ArrowDown, Clapperboard, RotateCcw } from 'lucide-react';
 
 interface MovieGameProps {
   mode: GameMode;
@@ -28,7 +28,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
   const [targetMovie, setTargetMovie] = useState<MovieItem>(MOVIES[0]);
   const [guesses, setGuesses] = useState<GuessRecord<MovieItem>[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [unlockedQuote, setUnlockedQuote] = useState(false);
 
   const initGame = (forceNew: boolean = false) => {
     if (!forceNew) {
@@ -43,7 +42,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
           const savedGuesses = session.guesses || [];
           setGuesses(savedGuesses);
           setIsGameOver(Boolean(session.isGameOver));
-          setUnlockedQuote(savedGuesses.length >= 3);
           return;
         }
       }
@@ -61,7 +59,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
     setTargetMovie(chosen);
     setGuesses([]);
     setIsGameOver(false);
-    setUnlockedQuote(false);
 
     saveGameSession('film', 'film-stats', mode, {
       isWon: false,
@@ -77,7 +74,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
   }, [mode]);
 
   useEffect(() => {
-    if (guesses.length >= 3) setUnlockedQuote(true);
   }, [guesses.length]);
 
   const searchOptions: SearchOption[] = useMemo(() => {
@@ -148,21 +144,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
         />
       )}
 
-      {!isGameOver && (
-        <div className="mb-6 rounded-2xl border border-rose-500/20 bg-rose-950/20 p-4 text-center">
-          {unlockedQuote ? (
-            <div className="flex items-center justify-center gap-2 text-xs font-medium text-rose-200">
-              <Lightbulb className="h-4 w-4 text-rose-400 shrink-0" />
-              <span><strong>{lang === 'en' ? 'Quote / Hint:' : 'Citazione / Indizio:'}</strong> "{targetMovie.taglineOrQuote}"</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-              <Lock className="h-3.5 w-3.5" />
-              <span>{lang === 'en' ? 'Quote hint unlocks after 3 attempts' : 'Indizio Citazione si sblocca dopo 3 tentativi'}</span>
-            </div>
-          )}
-        </div>
-      )}
 
       {!isGameOver && (
         <div className="mb-8">
