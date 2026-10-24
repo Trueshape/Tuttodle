@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { CarModel, LolLanguage } from '../../types';
+import { CarModel, GameMode, LolLanguage } from '../../types';
 import { CAR_MODELS } from '../../data/cars';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { SearchBar, SearchOption } from '../SearchBar';
 
-const MAX_ATTEMPTS = 5;
 const ZOOM_START = 5;
 const ZOOM_END = 1;
 
@@ -19,11 +18,13 @@ const randomFocus = () => ({
 });
 
 interface CarZoomGameProps {
+  mode: GameMode;
   onVictory: (attemptsCount: number, guessesMatches: never[], targetCar: CarModel) => void;
   lang?: LolLanguage;
 }
 
-export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it' }) => {
+export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang = 'it' }) => {
+  const maxAttempts = mode === 'daily' ? 5 : 7;
   const [targetCar, setTargetCar] = useState<CarModel>(() => pickRandomCar());
   const [focus, setFocus] = useState(randomFocus);
   const [wrongGuesses, setWrongGuesses] = useState<string[]>([]);
@@ -43,7 +44,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it'
 
   const zoom =
     status === 'playing'
-      ? ZOOM_START - (wrongGuesses.length / MAX_ATTEMPTS) * (ZOOM_START - ZOOM_END)
+      ? ZOOM_START - (wrongGuesses.length / maxAttempts) * (ZOOM_START - ZOOM_END)
       : ZOOM_END;
 
   const handleGuess = (option: SearchOption) => {
@@ -55,7 +56,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it'
     }
     const next = [...wrongGuesses, option.id];
     setWrongGuesses(next);
-    if (next.length >= MAX_ATTEMPTS) setStatus('lost');
+    if (next.length >= maxAttempts) setStatus('lost');
   };
 
   const newGame = () => {
@@ -72,15 +73,15 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it'
       </h2>
       <p className="text-xs text-zinc-400 mb-4">
         {lang === 'en'
-          ? `The image zooms out with every wrong guess. ${MAX_ATTEMPTS} attempts.`
-          : `L'immagine si rimpicciolisce a ogni errore. ${MAX_ATTEMPTS} tentativi.`}
+          ? `The image zooms out with every wrong guess. ${maxAttempts} attempts.`
+          : `L'immagine si rimpicciolisce a ogni errore. ${maxAttempts} tentativi.`}
       </p>
 
       <div className="relative mb-4 aspect-[16/10] rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <img
           src={getProxiedImageUrl(targetCar.imageUrl)}
           alt={lang === 'en' ? 'Zoomed car' : 'Auto zoomata'}
-          className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500"
+          className={`w-full h-full object-cover select-none pointer-events-none ${wrongGuesses.length > 0 ? 'transition-transform duration-500' : ''}`}
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: `${focus.x}% ${focus.y}%`,
@@ -89,7 +90,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it'
       </div>
 
       <p className="text-xs text-zinc-500 mb-3">
-        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {MAX_ATTEMPTS}
+        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {maxAttempts}
       </p>
 
       {status === 'playing' && (

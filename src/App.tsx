@@ -184,7 +184,7 @@ export default function App() {
                 />
               )}
               {selectedCategory === 'automobili' && activeMiniGame === 'silhouette' && (
-                <CarZoomGame onVictory={handleVictory} lang={lang} />
+                <CarZoomGame mode={gameMode} onVictory={handleVictory} lang={lang} />
               )}
               {selectedCategory === 'automobili' && activeMiniGame !== 'silhouette' && (
                 <CarSpecsGame
