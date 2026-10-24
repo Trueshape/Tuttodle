@@ -1371,7 +1371,7 @@ export const SNES_GAMES: VideoGameItem[] = [
       "Giocatore singolo"
     ],
     "franchise": "Super Mario",
-    "gameType": "Remake"
+    "gameType": "Normale"
   },
   {
     "id": "snes-mega-man-x2",
