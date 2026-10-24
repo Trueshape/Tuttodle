@@ -259,8 +259,7 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
   const filteredGenresList = useMemo(() => {
     const query = genreSearch.trim().toLowerCase();
     return availableGenres
-      .map((g) => canonicalGenre(g))
-      .filter((g): g is string => Boolean(g))
+      .map((g) => canonicalGenre(g) ?? g)
       .filter((g, i, arr) => arr.indexOf(g) === i)
       .filter((g) => {
         if (!query) return true;
