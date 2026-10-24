@@ -164,6 +164,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   useEffect(() => {
     if (prevDifficultyRef.current === difficulty) return;
     prevDifficultyRef.current = difficulty;
+    setEndlessStreak(0);
     initGame('infinite', undefined, undefined, true);
   }, [difficulty]);
 
@@ -272,14 +273,14 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
 
   // Statistiche per la modalità Endless / Infinita
   const [endlessStreak, setEndlessStreak] = useState<number>(0);
-  const [endlessBestStreak, setEndlessBestStreak] = useState<number>(() => {
+  const [bestByDifficulty, setBestByDifficulty] = useState<Partial<Record<VideoGameDifficulty, number>>>(() => {
     try {
-      const saved = localStorage.getItem('vg_pixel_endless_best_streak');
-      return saved ? parseInt(saved, 10) || 0 : 0;
+      return JSON.parse(localStorage.getItem('vg_pixel_endless_best_by_difficulty') || '{}');
     } catch {
-      return 0;
+      return {};
     }
   });
+  const endlessBestStreak = bestByDifficulty[difficulty] ?? 0;
   const [endlessTotalScore, setEndlessTotalScore] = useState<number>(0);
   const [endlessGamesPlayed, setEndlessGamesPlayed] = useState<number>(0);
   const [playedGameIdsInSession, setPlayedGameIdsInSession] = useState<string[]>([]);
@@ -629,9 +630,10 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
         const newStreak = endlessStreak + 1;
         setEndlessStreak(newStreak);
         if (newStreak > endlessBestStreak) {
-          setEndlessBestStreak(newStreak);
+          const nextBest = { ...bestByDifficulty, [difficulty]: newStreak };
+          setBestByDifficulty(nextBest);
           try {
-            localStorage.setItem('vg_pixel_endless_best_streak', newStreak.toString());
+            localStorage.setItem('vg_pixel_endless_best_by_difficulty', JSON.stringify(nextBest));
           } catch {
             // ignore
           }
@@ -754,7 +756,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
           {activeMode === 'infinite' ? (
             <div
               className="flex flex-col items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 px-4 h-[50px] min-w-[76px] shadow-inner"
-              title={lang === 'en' ? 'Best Streak Ever' : 'Miglior Serie di Sempre'}
+              title={DIFFICULTY_OPTIONS.map((o) => `${lang === 'en' ? o.labelEn : o.labelIt}: ${bestByDifficulty[o.key] ?? 0}`).join('\n')}
             >
               <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-widest text-zinc-400 leading-none">
                 <Award className={`h-3 w-3 ${endlessBestStreak > 0 ? 'text-indigo-400' : 'text-zinc-500'}`} />
