@@ -47,7 +47,7 @@ const GENRE_CANONICAL: Record<string, string> = {
   Strategia: 'Strategia', 'Strategia a Turni': 'Strategia a Turni', 'Strategia in Tempo Reale': 'Strategia in Tempo Reale',
   Simulazione: 'Simulazione', 'Simulazione di Guida': 'Simulazione di Guida', 'Simulazione di Volo': 'Simulazione di Volo',
   Sport: 'Sport', Calcio: 'Calcio', Golf: 'Sport', 'Party Game': 'Party Game', 'Rhythm Game': 'Rhythm Game',
-  Gestionale: 'Gestionale', Rally: 'Corse', 'Kart Racing': 'Kart Racing', 'Open World': 'Open World',
+  Gestionale: 'Gestionale', Rally: 'Corse', 'Kart Racing': 'Corse', 'Kart Racing': 'Corse', 'Open World': 'Open World',
 };
 
 export const canonicalGenre = (g: string): string | undefined => GENRE_CANONICAL[g];
