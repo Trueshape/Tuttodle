@@ -164,8 +164,10 @@ export const LOL_TRANSLATIONS = {
 };
 
 const REGION_EN_MAP: Record<string, string> = {
+  'Isole della Nebbia': 'Shadow Isles',
   'Isole Ombra': 'Shadow Isles',
   'Città di Bandle': 'Bandle City',
+  'Monte Targon': 'Mount Targon',
   'Vuoto': 'Void',
 };
 
