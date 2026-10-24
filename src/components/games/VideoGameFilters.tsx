@@ -236,7 +236,7 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
   };
 
   const handleInvertGenres = () => {
-    const all = Array.from(new Set(availableGenres.map((g) => canonicalGenre(g) ?? g)));
+    const all = Array.from(new Set(availableGenres.map((g) => canonicalGenre(g)).filter((g): g is string => Boolean(g))));
     const inverted = all.filter((g) => !filters.excludedGenres.includes(g));
     onChange({ ...filters, excludedGenres: inverted });
   };
