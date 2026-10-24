@@ -235,6 +235,12 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
     onChange({ ...filters, excludedGenres: updated });
   };
 
+  const handleInvertGenres = () => {
+    const all = Array.from(new Set(availableGenres.map((g) => canonicalGenre(g)).filter((g): g is string => Boolean(g))));
+    const inverted = all.filter((g) => !filters.excludedGenres.includes(g));
+    onChange({ ...filters, excludedGenres: inverted });
+  };
+
   const handleReset = () => {
     onChange({ ...DEFAULT_FILTERS });
   };
@@ -599,15 +605,24 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
                 )}
               </div>
 
-              {filters.excludedGenres.length > 0 && (
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => onChange({ ...filters, excludedGenres: [] })}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                  onClick={handleInvertGenres}
+                  className="text-[11px] text-sky-400 hover:text-sky-300 underline cursor-pointer"
                 >
-                  {lang === 'en' ? 'Clear excluded' : 'Deseleziona tutti gli esclusi'}
+                  {lang === 'en' ? 'Invert selection' : 'Inverti selezione'}
                 </button>
-              )}
+                {filters.excludedGenres.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...filters, excludedGenres: [] })}
+                    className="text-[11px] text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                  >
+                    {lang === 'en' ? 'Clear excluded' : 'Deseleziona tutti gli esclusi'}
+                  </button>
+                )}
+              </div>
             </div>
 
             <p className="text-[11px] text-zinc-400 mb-2">
