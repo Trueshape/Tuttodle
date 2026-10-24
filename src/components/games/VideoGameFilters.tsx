@@ -12,6 +12,7 @@ export interface VideoGameFiltersState {
   minYear: number;
   maxYear: number;
   excludedGenres: string[];
+  genreMode: 'exclude' | 'include';
 }
 
 const EXCLUDED_GENRES_KEY = 'tuttodle_excluded_genres';
@@ -58,6 +59,7 @@ export const DEFAULT_FILTERS: VideoGameFiltersState = {
   minYear: 1980,
   maxYear: 2026,
   excludedGenres: [],
+  genreMode: 'exclude',
 };
 
 export const BRAND_DEFINITIONS: Record<
@@ -100,11 +102,9 @@ export function gameMatchesFilters(game: VideoGameItem, filters: VideoGameFilter
   }
 
   // 2. Excluded genres filter
-  if (
-    filters.excludedGenres.length > 0 &&
-    game.genres.some((g) => filters.excludedGenres.includes(canonicalGenre(g) ?? g))
-  ) {
-    return false;
+  if (filters.excludedGenres.length > 0) {
+    const hasSelected = game.genres.some((g) => filters.excludedGenres.includes(canonicalGenre(g) ?? g));
+    if (filters.genreMode === 'include' ? !hasSelected : hasSelected) return false;
   }
 
   // 3. Platform & Brand filter
@@ -599,12 +599,23 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
                 </span>
                 {filters.excludedGenres.length > 0 && (
                   <span className="text-[10px] text-rose-400 font-black bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
-                    {filters.excludedGenres.length} {lang === 'en' ? 'excluded' : 'esclusi'}
+                    {filters.excludedGenres.length} {filters.genreMode === 'include'
+                      ? (lang === 'en' ? 'included' : 'inclusi')
+                      : (lang === 'en' ? 'excluded' : 'esclusi')}
                   </span>
                 )}
               </div>
 
               <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...filters, genreMode: filters.genreMode === 'include' ? 'exclude' : 'include' })}
+                  className="text-[11px] text-amber-400 hover:text-amber-300 underline cursor-pointer"
+                >
+                  {filters.genreMode === 'include'
+                    ? (lang === 'en' ? 'Mode: include' : 'Modalità: includi')
+                    : (lang === 'en' ? 'Mode: exclude' : 'Modalità: escludi')}
+                </button>
                 <button
                   type="button"
                   onClick={handleInvertGenres}
