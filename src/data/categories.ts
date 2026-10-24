@@ -111,6 +111,14 @@ export const CATEGORIES: CategoryInfo[] = [
         descriptionEn: 'Guess the car from the zoomed image, which zooms out with every wrong guess',
         isAvailable: true,
       },
+      {
+        id: 'pixel-auto',
+        title: 'Pixel Auto',
+        titleEn: 'Pixel Car',
+        description: "Indovina l'auto dai pixel, che si definiscono a ogni errore",
+        descriptionEn: 'Guess the car from the pixels, which sharpen with every wrong guess',
+        isAvailable: true,
+      },
     ],
   },
   {

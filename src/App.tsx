@@ -11,6 +11,7 @@ import { FootballTransferGame } from './components/games/FootballTransferGame';
 import { LoLGame } from './components/games/LoLGame';
 import { CarSpecsGame } from './components/games/CarSpecsGame';
 import { CarZoomGame } from './components/games/CarZoomGame';
+import { CarPixelGame } from './components/games/CarPixelGame';
 import { MovieGame } from './components/games/MovieGame';
 import { QuoteGame } from './components/games/QuoteGame';
 import { AnimeGame } from './components/games/AnimeGame';
@@ -186,7 +187,10 @@ export default function App() {
               {selectedCategory === 'automobili' && activeMiniGame === 'silhouette' && (
                 <CarZoomGame mode={gameMode} onVictory={handleVictory} lang={lang} />
               )}
-              {selectedCategory === 'automobili' && activeMiniGame !== 'silhouette' && (
+              {selectedCategory === 'automobili' && activeMiniGame === 'pixel-auto' && (
+                <CarPixelGame mode={gameMode} onVictory={handleVictory} lang={lang} />
+              )}
+              {selectedCategory === 'automobili' && activeMiniGame !== 'silhouette' && activeMiniGame !== 'pixel-auto' && (
                 <CarSpecsGame
                   key={`auto-${roundKey}`}
                   mode={gameMode}
@@ -197,7 +201,7 @@ export default function App() {
                 />
               )}
               {selectedCategory === 'film' && activeMiniGame === 'citazioni' && (
-                <QuoteGame onVictory={handleVictory} lang={lang} />
+                <QuoteGame mode={gameMode} onVictory={handleVictory} lang={lang} />
               )}
               {selectedCategory === 'film' && activeMiniGame !== 'citazioni' && (
                 <MovieGame

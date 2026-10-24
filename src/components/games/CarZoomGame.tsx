@@ -1,14 +1,20 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CarModel, GameMode, LolLanguage } from '../../types';
 import { CAR_MODELS } from '../../data/cars';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
+import { getDailyIndex } from '../../utils/dailySeed';
+import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 
 const ZOOM_START = 5;
 const ZOOM_END = 1;
 
+type Status = 'playing' | 'won' | 'lost';
+
+const ZOOM_POOL = CAR_MODELS.filter((c) => c.imageUrl);
+
 const pickRandomCar = (exclude?: string): CarModel => {
-  const pool = CAR_MODELS.filter((c) => c.imageUrl && c.id !== exclude);
+  const pool = ZOOM_POOL.filter((c) => c.id !== exclude);
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
@@ -25,10 +31,44 @@ interface CarZoomGameProps {
 
 export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang = 'it' }) => {
   const maxAttempts = mode === 'daily' ? 5 : 7;
-  const [targetCar, setTargetCar] = useState<CarModel>(() => pickRandomCar());
-  const [focus, setFocus] = useState(randomFocus);
-  const [wrongGuesses, setWrongGuesses] = useState<string[]>([]);
-  const [status, setStatus] = useState<'playing' | 'won' | 'lost'>('playing');
+
+  const [init] = useState(() => {
+    if (mode === 'daily') {
+      const session = getGameSession<string, CarModel>('automobili', 'zoom', mode);
+      if (session?.targetItem) {
+        return {
+          target: session.targetItem,
+          wrong: session.guesses ?? [],
+          status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
+          focus: (session.extra?.focus as { x: number; y: number }) ?? randomFocus(),
+        };
+      }
+      return {
+        target: ZOOM_POOL[getDailyIndex('automobili', 'zoom', ZOOM_POOL.length)],
+        wrong: [] as string[],
+        status: 'playing' as Status,
+        focus: randomFocus(),
+      };
+    }
+    return { target: pickRandomCar(), wrong: [] as string[], status: 'playing' as Status, focus: randomFocus() };
+  });
+
+  const [targetCar, setTargetCar] = useState<CarModel>(init.target);
+  const [focus, setFocus] = useState(init.focus);
+  const [wrongGuesses, setWrongGuesses] = useState<string[]>(init.wrong);
+  const [status, setStatus] = useState<Status>(init.status);
+
+  useEffect(() => {
+    if (mode !== 'daily') return;
+    saveGameSession('automobili', 'zoom', mode, {
+      isWon: status === 'won',
+      isGameOver: status !== 'playing',
+      guesses: wrongGuesses,
+      targetItem: targetCar,
+      targetId: targetCar.id,
+      extra: { focus },
+    });
+  }, [mode, targetCar, focus, wrongGuesses, status]);
 
   const searchOptions: SearchOption[] = useMemo(
     () =>
@@ -112,8 +152,13 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
           {lang === 'en' ? 'Correct!' : 'Esatto!'} {targetCar.name}
         </p>
       )}
+      {mode === 'daily' && status !== 'playing' && (
+        <p className="mt-2 text-xs text-zinc-500">
+          {lang === 'en' ? 'Daily completed. Come back tomorrow.' : 'Daily completata. Torna domani.'}
+        </p>
+      )}
 
-      {status !== 'playing' && (
+      {mode === 'infinite' && status !== 'playing' && (
         <button
           type="button"
           onClick={newGame}

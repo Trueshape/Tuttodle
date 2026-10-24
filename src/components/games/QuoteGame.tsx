@@ -1,9 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { MovieItem, LolLanguage } from '../../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { MovieItem, GameMode, LolLanguage } from '../../types';
 import { MOVIES } from '../../data/movies';
+import { getDailyIndex } from '../../utils/dailySeed';
+import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 
 const MAX_ATTEMPTS = 5;
+
+type Status = 'playing' | 'won' | 'lost';
 
 const QUOTABLE = MOVIES.filter((m) => m.taglineOrQuote && m.taglineOrQuote.trim().length > 0);
 
@@ -19,14 +23,41 @@ const maskQuote = (quote: string, revealRatio: number): string => {
 };
 
 interface QuoteGameProps {
+  mode: GameMode;
   onVictory: (attemptsCount: number, guessesMatches: never[], targetMovie: MovieItem) => void;
   lang?: LolLanguage;
 }
 
-export const QuoteGame: React.FC<QuoteGameProps> = ({ onVictory, lang = 'it' }) => {
-  const [targetMovie, setTargetMovie] = useState<MovieItem>(() => pickRandomMovie());
-  const [wrongGuesses, setWrongGuesses] = useState<string[]>([]);
-  const [status, setStatus] = useState<'playing' | 'won' | 'lost'>('playing');
+export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'it' }) => {
+  const [init] = useState(() => {
+    if (mode === 'daily') {
+      const session = getGameSession<string, MovieItem>('film', 'citazioni', mode);
+      if (session?.targetItem) {
+        return {
+          target: session.targetItem,
+          wrong: session.guesses ?? [],
+          status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
+        };
+      }
+      return { target: QUOTABLE[getDailyIndex('film', 'citazioni', QUOTABLE.length)], wrong: [] as string[], status: 'playing' as Status };
+    }
+    return { target: pickRandomMovie(), wrong: [] as string[], status: 'playing' as Status };
+  });
+
+  const [targetMovie, setTargetMovie] = useState<MovieItem>(init.target);
+  const [wrongGuesses, setWrongGuesses] = useState<string[]>(init.wrong);
+  const [status, setStatus] = useState<Status>(init.status);
+
+  useEffect(() => {
+    if (mode !== 'daily') return;
+    saveGameSession('film', 'citazioni', mode, {
+      isWon: status === 'won',
+      isGameOver: status !== 'playing',
+      guesses: wrongGuesses,
+      targetItem: targetMovie,
+      targetId: targetMovie.id,
+    });
+  }, [mode, targetMovie, wrongGuesses, status]);
 
   const searchOptions: SearchOption[] = useMemo(
     () =>
@@ -98,8 +129,13 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ onVictory, lang = 'it' }) 
           {lang === 'en' ? 'Correct!' : 'Esatto!'} {targetMovie.title}
         </p>
       )}
+      {mode === 'daily' && status !== 'playing' && (
+        <p className="mt-2 text-xs text-zinc-500">
+          {lang === 'en' ? 'Daily completed. Come back tomorrow.' : 'Daily completata. Torna domani.'}
+        </p>
+      )}
 
-      {status !== 'playing' && (
+      {mode === 'infinite' && status !== 'playing' && (
         <button
           type="button"
           onClick={newGame}
