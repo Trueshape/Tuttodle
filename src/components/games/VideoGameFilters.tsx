@@ -31,6 +31,65 @@ export function saveExcludedGenres(genres: string[]) {
   } catch {}
 }
 
+// Generi riconosciuti mostrati nei filtri (esclude stili e temi)
+const GAME_GENRES = new Set<string>([
+  "Action",
+  "Action RPG",
+  "Action Adventure",
+  "Action-Adventure",
+  "Azione",
+  "Avventura",
+  "Adventure",
+  "Platform",
+  "Platform 2D",
+  "Platform 3D",
+  "Platform Adventure",
+  "Action Platformer",
+  "Metroidvania",
+  "Soulslike",
+  "Hack and Slash",
+  "Survival Horror",
+  "Horror",
+  "Stealth",
+  "Shooter",
+  "First-Person Shooter",
+  "Third-Person Shooter",
+  "Sparatutto",
+  "Battle Royale",
+  "Hero Shooter",
+  "Rail Shooter",
+  "Shoot 'em Up",
+  "Run and Gun",
+  "Picchiaduro",
+  "Picchiaduro 2D",
+  "Picchiaduro 3D",
+  "Fighting",
+  "JRPG",
+  "GDR",
+  "Role-playing (RPG)",
+  "Strategia",
+  "Strategia a Turni",
+  "Strategia in Tempo Reale",
+  "Puzzle",
+  "Rompicapo",
+  "Corse",
+  "Racing",
+  "Corse Arcade",
+  "Kart Racing",
+  "Rally",
+  "Simulazione",
+  "Simulazione di Guida",
+  "Simulazione di Volo",
+  "Sport",
+  "Calcio",
+  "Golf",
+  "Wrestling",
+  "Party Game",
+  "Rhythm Game",
+  "Gestionale",
+  "Open World",
+]);
+
 export const DEFAULT_FILTERS: VideoGameFiltersState = {
   brand: 'ALL',
   selectedConsoles: [],
@@ -232,6 +291,7 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
   const filteredGenresList = useMemo(() => {
     const query = genreSearch.trim().toLowerCase();
     return availableGenres
+      .filter((g) => GAME_GENRES.has(g))
       .filter((g) => {
         if (!query) return true;
         const localized = String(localizeSpecValue('Genere', g, lang)).toLowerCase();
