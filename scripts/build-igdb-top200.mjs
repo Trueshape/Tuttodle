@@ -77,9 +77,18 @@ for (const [file, label, brand] of CONSOLES) {
   console.log(`${label}: ${top.length}`);
 }
 
-const body = items.map((i) => '  ' + JSON.stringify(i)).join(',\n');
+const normKey = (t) => t.replace(/s*((Xbox|Xboxs*360|Xboxs*One|Xboxs*Seriess*X|PS1|PS2|PS3|PS4|PS5|Switch|GameCube|N64|SNES))$/i, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+const byGame = new Map();
+for (const it of items) {
+  const key = normKey(it.title) + '__' + it.releaseYear;
+  const ex = byGame.get(key);
+  if (!ex) byGame.set(key, { ...it });
+  else ex.platforms = [...new Set([...ex.platforms, ...it.platforms])];
+}
+const unique = [...byGame.values()];
+const body = unique.map((i) => '  ' + JSON.stringify(i)).join(',\n');
 fs.writeFileSync(
   outPath,
   `// Generato da scripts/build-igdb-top200.mjs\nimport { VideoGameItem } from '../../types';\n\nconst RAW_TOP200: unknown[] = [\n${body}\n];\n\nexport const IGDB_TOP200_GAMES = RAW_TOP200 as (VideoGameItem & { igdbRating?: number; igdbReviews?: number })[];\n`,
 );
-console.log(`Totale: ${items.length}`);
+console.log(`Totale: ${unique.length}`);
