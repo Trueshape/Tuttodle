@@ -1,14 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CarModel, GameMode, LolLanguage } from '../../types';
 import { CAR_MODELS } from '../../data/cars';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { PixelatedCoverCanvas } from './PixelatedCoverCanvas';
 
-const PIXEL_MIN = 6;
-const PIXEL_MAX = 48;
+const COLS = 6;
+const ROWS = 5;
+const TILES = COLS * ROWS;
+const LOW_SCALE = 4;
+const MAX_ATTEMPTS = 5;
+const CANVAS_W = 600;
+const CANVAS_H = 500;
 
 type Status = 'playing' | 'won' | 'lost';
 
@@ -19,6 +23,24 @@ const pickRandomCar = (exclude?: string): CarModel => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
+const shuffled = (rand: () => number): number[] => {
+  const order = Array.from({ length: TILES }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+};
+
+const seededRandom = (seed: string) => {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return () => {
+    h = (h * 1664525 + 1013904223) >>> 0;
+    return h / 4294967296;
+  };
+};
+
 interface CarPixelGameProps {
   mode: GameMode;
   onVictory: (attemptsCount: number, guessesMatches: never[], targetCar: CarModel) => void;
@@ -26,8 +48,6 @@ interface CarPixelGameProps {
 }
 
 export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lang = 'it' }) => {
-  const maxAttempts = mode === 'daily' ? 5 : 7;
-
   const [init] = useState(() => {
     if (mode === 'daily') {
       const session = getGameSession<string, CarModel>('automobili', 'pixel', mode);
@@ -36,16 +56,28 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
           target: session.targetItem,
           wrong: session.guesses ?? [],
           status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
+          order: (session.extra?.order as number[]) ?? shuffled(seededRandom(session.targetItem.id)),
         };
       }
-      return { target: PIXEL_POOL[getDailyIndex('automobili', 'pixel', PIXEL_POOL.length)], wrong: [] as string[], status: 'playing' as Status };
+      const target = PIXEL_POOL[getDailyIndex('automobili', 'pixel', PIXEL_POOL.length)];
+      return {
+        target,
+        wrong: [] as string[],
+        status: 'playing' as Status,
+        order: shuffled(seededRandom(target.id)),
+      };
     }
-    return { target: pickRandomCar(), wrong: [] as string[], status: 'playing' as Status };
+    const target = pickRandomCar();
+    return { target, wrong: [] as string[], status: 'playing' as Status, order: shuffled(Math.random) };
   });
 
   const [targetCar, setTargetCar] = useState<CarModel>(init.target);
   const [wrongGuesses, setWrongGuesses] = useState<string[]>(init.wrong);
   const [status, setStatus] = useState<Status>(init.status);
+  const [order, setOrder] = useState<number[]>(init.order);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [imageReady, setImageReady] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
     if (mode !== 'daily') return;
@@ -55,8 +87,58 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
       guesses: wrongGuesses,
       targetItem: targetCar,
       targetId: targetCar.id,
+      extra: { order },
     });
-  }, [mode, targetCar, wrongGuesses, status]);
+  }, [mode, targetCar, wrongGuesses, status, order]);
+
+  useEffect(() => {
+    setImageReady(null);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => setImageReady(img);
+    img.src = getProxiedImageUrl(targetCar.imageUrl);
+  }, [targetCar]);
+
+  const revealedCount = status === 'playing' ? Math.min(TILES, wrongGuesses.length + 1) : TILES;
+  const revealed = new Set(order.slice(0, revealedCount));
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !imageReady) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const scale = Math.max(CANVAS_W / imageReady.naturalWidth, CANVAS_H / imageReady.naturalHeight);
+    const drawW = imageReady.naturalWidth * scale;
+    const drawH = imageReady.naturalHeight * scale;
+    const full = document.createElement('canvas');
+    full.width = CANVAS_W;
+    full.height = CANVAS_H;
+    full.getContext('2d')?.drawImage(imageReady, (CANVAS_W - drawW) / 2, (CANVAS_H - drawH) / 2, drawW, drawH);
+
+    const low = document.createElement('canvas');
+    low.width = COLS * LOW_SCALE;
+    low.height = ROWS * LOW_SCALE;
+    low.getContext('2d')?.drawImage(full, 0, 0, low.width, low.height);
+
+    const tileW = CANVAS_W / COLS;
+    const tileH = CANVAS_H / ROWS;
+    ctx.imageSmoothingEnabled = false;
+    for (let i = 0; i < TILES; i++) {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      const dx = col * tileW;
+      const dy = row * tileH;
+      if (revealed.has(i)) {
+        ctx.drawImage(full, dx, dy, tileW, tileH, dx, dy, tileW, tileH);
+      } else {
+        ctx.drawImage(low, col * LOW_SCALE, row * LOW_SCALE, LOW_SCALE, LOW_SCALE, dx, dy, tileW, tileH);
+      }
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(dx, dy, tileW, tileH);
+    }
+  }, [imageReady, revealedCount, order, status]);
 
   const searchOptions: SearchOption[] = useMemo(
     () =>
@@ -70,12 +152,6 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
     []
   );
 
-  const pixelCols =
-    status === 'playing'
-      ? Math.round(PIXEL_MIN + (PIXEL_MAX - PIXEL_MIN) * (wrongGuesses.length / maxAttempts))
-      : PIXEL_MAX;
-  const pixelRows = Math.round(pixelCols * 0.75);
-
   const handleGuess = (option: SearchOption) => {
     if (status !== 'playing') return;
     if (option.id === targetCar.id) {
@@ -85,11 +161,12 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
     }
     const next = [...wrongGuesses, option.id];
     setWrongGuesses(next);
-    if (next.length >= maxAttempts) setStatus('lost');
+    if (next.length >= MAX_ATTEMPTS) setStatus('lost');
   };
 
   const newGame = () => {
     setTargetCar(pickRandomCar(targetCar.id));
+    setOrder(shuffled(Math.random));
     setWrongGuesses([]);
     setStatus('playing');
   };
@@ -97,26 +174,20 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
   return (
     <div className="max-w-xl mx-auto text-center">
       <h2 className="text-xl font-black mb-1">
-        {lang === 'en' ? 'Guess the car from the pixels' : 'Indovina l\'auto dai pixel'}
+        {lang === 'en' ? 'Guess the car from the tiles' : 'Indovina l\'auto dalle tessere'}
       </h2>
       <p className="text-xs text-zinc-400 mb-4">
         {lang === 'en'
-          ? `Each wrong guess reveals more detail. ${maxAttempts} attempts.`
-          : `Ogni errore mostra più dettagli. ${maxAttempts} tentativi.`}
+          ? `One tile is revealed at start, and one more at every wrong guess. ${MAX_ATTEMPTS} attempts.`
+          : `Una tessera è scoperta all'inizio, e una in più a ogni errore. ${MAX_ATTEMPTS} tentativi.`}
       </p>
 
-      <div className="relative mb-4 aspect-[4/3] rounded-2xl overflow-hidden border border-zinc-800 bg-black">
-        <PixelatedCoverCanvas
-          src={getProxiedImageUrl(targetCar.imageUrl)}
-          isGameOver={status !== 'playing'}
-          pixelCols={pixelCols}
-          pixelRows={pixelRows}
-          className="w-full h-full"
-        />
+      <div className="mb-4 rounded-2xl overflow-hidden border border-zinc-800 bg-black">
+        <canvas ref={canvasRef} width={CANVAS_W} height={CANVAS_H} className="w-full h-auto block" />
       </div>
 
       <p className="text-xs text-zinc-500 mb-3">
-        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {maxAttempts}
+        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {MAX_ATTEMPTS}
       </p>
 
       {status === 'playing' && (
