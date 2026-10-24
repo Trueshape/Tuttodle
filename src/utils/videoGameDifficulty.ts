@@ -1,6 +1,6 @@
 import { VideoGameItem } from '../types';
 
-export type VideoGameDifficulty = 'all' | 'easy' | 'medium' | 'hard' | 'very-hard' | 'extreme';
+export type VideoGameDifficulty = 'all' | 'easy' | 'medium' | 'hard' | 'very-hard';
 
 // Recognizable global franchises & mainstream titans for Easy
 const EASY_FRANCHISE_KEYWORDS = [
@@ -119,10 +119,6 @@ export function getGameDifficulty(game: VideoGameItem): Exclude<VideoGameDifficu
     return rating >= 70 ? 'hard' : 'very-hard';
   }
 
-  if (reviews !== undefined) {
-    return reviews >= 20 ? 'hard' : 'extreme';
-  }
-
   return 'hard';
 }
 
@@ -185,16 +181,6 @@ export const DIFFICULTY_OPTIONS: DifficultyOption[] = [
     icon: '🔴',
     badgeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
     activeBtnClass: 'bg-rose-600 text-white border-rose-500 shadow-rose-900/40',
-  },
-  {
-    key: 'extreme',
-    labelIt: 'Estremo',
-    labelEn: 'Extreme',
-    descIt: 'Titoli senza voto e con pochissime recensioni',
-    descEn: 'Titles with no rating and very few reviews',
-    icon: '🟣',
-    badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-    activeBtnClass: 'bg-purple-600 text-white border-purple-500 shadow-purple-900/40',
   },
   {
     key: 'all',
