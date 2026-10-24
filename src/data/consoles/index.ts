@@ -1,5 +1,8 @@
+/// <reference types="vite/client" />
 import { VideoGameItem } from '../../types';
 import { PS1_GAMES } from './ps1Games';
+import { PS1_IGDB_TEST_GAMES } from './ps1IgdbTest';
+import { IGDB_TOP200_GAMES } from './igdbTop200';
 import { PS2_GAMES } from './ps2Games';
 import { PS3_GAMES } from './ps3Games';
 import { PS4_GAMES } from './ps4Games';
@@ -32,7 +35,8 @@ export {
 };
 
 export const ALL_CONSOLE_GAMES: VideoGameItem[] = [
-  ...PS1_GAMES,
+  ...IGDB_TOP200_GAMES,
+  ...(import.meta.env.VITE_PS1_POOL === 'igdb' ? PS1_IGDB_TEST_GAMES : PS1_GAMES),
   ...PS2_GAMES,
   ...PS3_GAMES,
   ...PS4_GAMES,

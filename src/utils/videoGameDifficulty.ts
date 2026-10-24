@@ -1,6 +1,6 @@
 import { VideoGameItem } from '../types';
 
-export type VideoGameDifficulty = 'all' | 'easy' | 'medium' | 'hard';
+export type VideoGameDifficulty = 'all' | 'easy' | 'medium' | 'hard' | 'very-hard' | 'extreme';
 
 // Recognizable global franchises & mainstream titans for Easy
 const EASY_FRANCHISE_KEYWORDS = [
@@ -93,35 +93,36 @@ const MEDIUM_FRANCHISE_KEYWORDS = [
   'nier',
 ];
 
-export function getGameDifficulty(game: VideoGameItem): 'easy' | 'medium' | 'hard' {
+export function getGameDifficulty(game: VideoGameItem): Exclude<VideoGameDifficulty, 'all'> {
   const titleLower = game.title.toLowerCase();
   const franchiseLower = (game.franchise || '').toLowerCase();
-  const rating = (game as { igdbRating?: number }).igdbRating || 0;
+  const extra = game as { igdbRating?: number; igdbReviews?: number };
+  const rating = extra.igdbRating;
+  const reviews = extra.igdbReviews;
 
-  // 1. EASY: Universal cultural icons & mainstream giants
   const isEasyFranchise = EASY_FRANCHISE_KEYWORDS.some(
     (kw) => titleLower.includes(kw) || franchiseLower.includes(kw)
   );
-
-  if (isEasyFranchise) {
+  const isWellKnown = reviews !== undefined && reviews >= 500 && (rating === undefined || rating >= 85);
+  if (isEasyFranchise || (rating !== undefined && rating >= 90) || isWellKnown) {
     return 'easy';
   }
 
-  // Also if rating is exceptionally high (>= 93) and released >= 2000
-  if (rating >= 93 && game.releaseYear >= 2000) {
-    return 'easy';
-  }
-
-  // 2. MEDIUM: Acclaimed classics and high-rated community favorites
   const isMediumFranchise = MEDIUM_FRANCHISE_KEYWORDS.some(
     (kw) => titleLower.includes(kw) || franchiseLower.includes(kw)
   );
-
-  if (isMediumFranchise || rating >= 83) {
+  if (isMediumFranchise || (rating !== undefined && rating >= 80)) {
     return 'medium';
   }
 
-  // 3. HARD: Deep library, obscure/retro gems, niche console exclusives
+  if (rating !== undefined) {
+    return rating >= 70 ? 'hard' : 'very-hard';
+  }
+
+  if (reviews !== undefined) {
+    return reviews >= 20 ? 'hard' : 'extreme';
+  }
+
   return 'hard';
 }
 
@@ -169,11 +170,31 @@ export const DIFFICULTY_OPTIONS: DifficultyOption[] = [
     key: 'hard',
     labelIt: 'Difficile',
     labelEn: 'Hard',
-    descIt: 'Catalogo Completo, Retrogaming & Perle Console (1000+ giochi)',
-    descEn: 'Complete Library, Retrogaming & Console Gems (1000+ games)',
+    descIt: 'Catalogo Completo e Perle Console',
+    descEn: 'Complete Library & Console Gems',
+    icon: '🟠',
+    badgeClass: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
+    activeBtnClass: 'bg-orange-600 text-white border-orange-500 shadow-orange-900/40',
+  },
+  {
+    key: 'very-hard',
+    labelIt: 'Molto difficile',
+    labelEn: 'Very hard',
+    descIt: 'Retrogaming e giochi di nicchia con voto basso',
+    descEn: 'Retro games and niche titles with low ratings',
     icon: '🔴',
     badgeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
     activeBtnClass: 'bg-rose-600 text-white border-rose-500 shadow-rose-900/40',
+  },
+  {
+    key: 'extreme',
+    labelIt: 'Estremo',
+    labelEn: 'Extreme',
+    descIt: 'Titoli senza voto e con pochissime recensioni',
+    descEn: 'Titles with no rating and very few reviews',
+    icon: '🟣',
+    badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+    activeBtnClass: 'bg-purple-600 text-white border-purple-500 shadow-purple-900/40',
   },
   {
     key: 'all',

@@ -21,6 +21,34 @@ async function startServer() {
     res.json({ date: today, timestamp: Date.now() });
   });
 
+  const FLAGGED_PATH = path.join(process.cwd(), "data", "flagged-covers.json");
+  const readFlagged = (): any[] => {
+    try {
+      return JSON.parse(fs.readFileSync(FLAGGED_PATH, "utf-8"));
+    } catch {
+      return [];
+    }
+  };
+
+  app.get("/api/flagged-covers", (req, res) => {
+    res.json(readFlagged());
+  });
+
+  app.post("/api/flag-cover", (req, res) => {
+    const { id, title, coverUrl } = req.body || {};
+    if (!id || typeof id !== "string") {
+      res.status(400).json({ error: "id mancante" });
+      return;
+    }
+    const list = readFlagged();
+    if (!list.some((item) => item.id === id)) {
+      list.push({ id, title: String(title || ""), coverUrl: String(coverUrl || ""), flaggedAt: new Date().toISOString() });
+    }
+    fs.mkdirSync(path.dirname(FLAGGED_PATH), { recursive: true });
+    fs.writeFileSync(FLAGGED_PATH, JSON.stringify(list, null, 2));
+    res.json({ ok: true, count: list.length });
+  });
+
   // Persistent disk cache setup
   const CACHE_DIR = path.join(process.cwd(), ".cache", "covers");
   try {

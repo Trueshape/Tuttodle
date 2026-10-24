@@ -8,6 +8,7 @@ import { getStats, saveGameResult } from '../../utils/stats';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { PixelatedCoverCanvas } from './PixelatedCoverCanvas';
 import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters } from './VideoGameFilters';
+import { DIFFICULTY_OPTIONS, VideoGameDifficulty, gameMatchesDifficulty } from '../../utils/videoGameDifficulty';
 import { localizeSpecValue } from '../../utils/vgLocalization';
 import { getSafeCoverUrl, getFallbackSvgCover } from '../../utils/boxArtGenerator';
 import { getRealCoverUrl, getAlternativeCover } from '../../data/realGameCovers';
@@ -127,9 +128,18 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
 
   // Catalogo unificato di giochi con copertina autentica (Wikipedia box art / HTTP reale).
   // Esclude i giochi flaggati fino ad ora; per quelli futuri viene invece sostituita la cover senza rimuovere il gioco.
+  const [serverFlaggedIds, setServerFlaggedIds] = useState<string[]>([]);
+  const pendingNextAfterFlagRef = useRef(false);
+  useEffect(() => {
+    fetch('/api/flagged-covers')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list: { id: string }[]) => setServerFlaggedIds(list.map((item) => item.id)))
+      .catch(() => {});
+  }, []);
+
   const playableGames = useMemo(() => {
     return gameList
-      .filter((g) => !previouslyFlaggedGameIds.includes(g.id))
+      .filter((g) => !previouslyFlaggedGameIds.includes(g.id) && !serverFlaggedIds.includes(g.id))
       .map((g) => {
         const replacedCover = coverReplacements[g.id];
         const real = replacedCover || getRealCoverUrl(g) || (g.coverUrl && g.coverUrl.startsWith('http') ? g.coverUrl : undefined);
@@ -139,10 +149,17 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
         return null;
       })
       .filter((g): g is NonNullable<typeof g> => g !== null) as VideoGameItem[];
-  }, [gameList, previouslyFlaggedGameIds, coverReplacements]);
+  }, [gameList, previouslyFlaggedGameIds, serverFlaggedIds, coverReplacements]);
 
   // Filtri per la modalità Endless / Infinita
   const [filters, setFilters] = useState<VideoGameFiltersState>(DEFAULT_FILTERS);
+  const [difficulty, setDifficulty] = useState<VideoGameDifficulty>('all');
+  const prevDifficultyRef = useRef<VideoGameDifficulty>('all');
+  useEffect(() => {
+    if (prevDifficultyRef.current === difficulty) return;
+    prevDifficultyRef.current = difficulty;
+    initGame('infinite', undefined, undefined, true);
+  }, [difficulty]);
 
   const availablePlatforms = useMemo(() => {
     const plats = new Set<string>();
@@ -165,8 +182,8 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   }, [playableGames]);
 
   const filteredPlayableGames = useMemo(() => {
-    return playableGames.filter((g) => gameMatchesFilters(g, filters));
-  }, [playableGames, filters]);
+    return playableGames.filter((g) => gameMatchesFilters(g, filters) && gameMatchesDifficulty(g, difficulty));
+  }, [playableGames, filters, difficulty]);
 
   const [targetGame, setTargetGame] = useState<VideoGameItem>(playableGames[0]);
 
@@ -237,6 +254,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   }, [targetGame]);
 
   const [revealedIndices, setRevealedIndices] = useState<number[]>([]);
+  const revealedByGridRef = useRef<Partial<Record<PixelGridSize, number[]>>>({});
   const [guessHistory, setGuessHistory] = useState<VideoGameItem[]>([]);
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
   const [earnedScore, setEarnedScore] = useState<number>(0);
@@ -395,7 +413,9 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
       initialTileIndex = getDailyIndex(categoryKey, 'pixel-tile', activeTotalTiles);
     } else {
       // In modalità Endless: applica i filtri di piattaforma, anni ed esclusione generi
-      const currentFiltered = playableGames.filter((g) => gameMatchesFilters(g, currentFiltersToUse));
+      const currentFiltered = playableGames.filter(
+        (g) => gameMatchesFilters(g, currentFiltersToUse) && gameMatchesDifficulty(g, difficulty)
+      );
       const activePool = currentFiltered.length > 0 ? currentFiltered : playableGames;
       const unplayed = activePool.filter((g) => !playedGameIdsInSession.includes(g.id));
       const finalPool = unplayed.length > 0 ? unplayed : activePool;
@@ -411,6 +431,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     setRoundKey((prev) => prev + 1);
     setTargetGame(chosen);
     setNaturalAspect(null);
+    revealedByGridRef.current = {};
     setRevealedIndices([initialTileIndex]);
     setLastRevealedIndex(initialTileIndex);
     setGuessHistory([]);
@@ -443,40 +464,31 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     const gameToFlag = targetGame;
     setShowReportModal(false);
 
-    // Controlla se c'è una copertina alternativa per rimpiazzare questa dalla prossima volta
     const currentCover = coverReplacements[gameToFlag.id] || targetGame.coverUrl;
-    const alternateCover = getAlternativeCover(gameToFlag, currentCover);
+    pendingNextAfterFlagRef.current = true;
+    setServerFlaggedIds((prev) => [...prev, gameToFlag.id]);
+    fetch('/api/flag-cover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: gameToFlag.id, title: gameToFlag.title, coverUrl: currentCover }),
+    }).catch(() => {});
 
-    if (alternateCover) {
-      const updatedReplacements = {
-        ...coverReplacements,
-        [gameToFlag.id]: alternateCover,
-      };
-      setCoverReplacements(updatedReplacements);
-      try {
-        localStorage.setItem('omni_cover_replacements', JSON.stringify(updatedReplacements));
-      } catch {}
-
-      setReportToast(
-        lang === 'en'
-          ? `Cover flagged for "${gameToFlag.title}". Alternate cover found and set for next time!`
-          : `Cover di "${gameToFlag.title}" segnalata. Trovata e impostata copertina alternativa per la prossima volta!`
-      );
-    } else {
-      setReportToast(
-        lang === 'en'
-          ? `Cover flagged for "${gameToFlag.title}". Loading next game...`
-          : `Cover di "${gameToFlag.title}" segnalata. Nuova cover in caricamento...`
-      );
-    }
+    setReportToast(
+      lang === 'en'
+        ? `Cover of "${gameToFlag.title}" removed. It will be searched again later.`
+        : `Cover di "${gameToFlag.title}" rimossa. Verrà cercata di nuovo più avanti.`
+    );
 
     setTimeout(() => {
       setReportToast(null);
     }, 3500);
-
-    // NON rimuove il gioco dal pool: passa forzatamente alla prossima partita
-    initGame('infinite', undefined, undefined, true);
   };
+
+  useEffect(() => {
+    if (!pendingNextAfterFlagRef.current) return;
+    pendingNextAfterFlagRef.current = false;
+    initGame(activeMode, undefined, undefined, true);
+  }, [serverFlaggedIds]);
 
   useEffect(() => {
     initGame(activeMode);
@@ -572,6 +584,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   // Cambia dimensione griglia (5x6/6x5 o 6x8/8x6) SENZA cambiare il gioco corrente
   const handleGridSizeChange = (newSize: PixelGridSize) => {
     if (gridSize === newSize) return;
+    revealedByGridRef.current[gridSize] = revealedIndices;
     setGridSize(newSize);
 
     const newTotal = newSize === '5x6' ? 30 : 48;
@@ -579,14 +592,21 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     if (gameState !== 'playing') {
       setRevealedIndices(Array.from({ length: newTotal }, (_, i) => i));
     } else {
-      // Mantiene lo stesso numero di tessere sbloccate sul gioco corrente
-      const targetCount = Math.min(newTotal, Math.max(1, guessHistory.length + 1));
-      const newRevealed: number[] = [];
-      while (newRevealed.length < targetCount) {
-        const rand = Math.floor(Math.random() * newTotal);
-        if (!newRevealed.includes(rand)) {
-          newRevealed.push(rand);
+      const remembered = revealedByGridRef.current[newSize];
+      let newRevealed: number[];
+      if (remembered) {
+        newRevealed = remembered;
+      } else {
+        // Mantiene lo stesso numero di tessere sbloccate sul gioco corrente
+        const targetCount = Math.min(newTotal, Math.max(1, guessHistory.length + 1));
+        newRevealed = [];
+        while (newRevealed.length < targetCount) {
+          const rand = Math.floor(Math.random() * newTotal);
+          if (!newRevealed.includes(rand)) {
+            newRevealed.push(rand);
+          }
         }
+        revealedByGridRef.current[newSize] = newRevealed;
       }
       setRevealedIndices(newRevealed);
       setLastRevealedIndex(newRevealed[newRevealed.length - 1]);
@@ -910,6 +930,23 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
           </div>
         </div>
       </div>
+
+      {activeMode === 'infinite' && (
+        <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {DIFFICULTY_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => setDifficulty(opt.key)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
+                difficulty === opt.key ? opt.activeBtnClass : opt.badgeClass
+              }`}
+            >
+              {opt.icon} {lang === 'en' ? opt.labelEn : opt.labelIt}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Filtri per la Sfida Infinita */}
       {activeMode === 'infinite' && (

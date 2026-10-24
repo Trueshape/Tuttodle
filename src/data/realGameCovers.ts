@@ -716,17 +716,21 @@ export function normalizeGameKey(nameOrId: string): string {
   return nameOrId.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+function ownCover(key: string): string | undefined {
+  return Object.prototype.hasOwnProperty.call(REAL_GAME_COVERS, key) ? REAL_GAME_COVERS[key] : undefined;
+}
+
 export function getRealCoverUrl(game: { id?: string; title?: string; coverUrl?: string }): string | undefined {
-  if (game.id && REAL_GAME_COVERS[game.id]) {
-    return REAL_GAME_COVERS[game.id];
+  if (game.id && ownCover(game.id)) {
+    return ownCover(game.id);
   }
   if (game.title) {
     const norm = normalizeGameKey(game.title);
-    if (REAL_GAME_COVERS[norm]) {
-      return REAL_GAME_COVERS[norm];
+    if (ownCover(norm)) {
+      return ownCover(norm);
     }
-    if (REAL_GAME_COVERS[game.title.toLowerCase().trim()]) {
-      return REAL_GAME_COVERS[game.title.toLowerCase().trim()];
+    if (ownCover(game.title.toLowerCase().trim())) {
+      return ownCover(game.title.toLowerCase().trim());
     }
   }
   if (game.coverUrl && game.coverUrl.startsWith("http")) {

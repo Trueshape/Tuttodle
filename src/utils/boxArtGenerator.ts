@@ -1,5 +1,7 @@
 import { VideoGameItem } from '../types';
 import { getRealCoverUrl } from '../data/realGameCovers';
+import { IGDB_CONSOLE_COVER_IDS } from '../data/igdbConsoleCovers';
+import { TGDB_CONSOLE_COVER_URLS } from '../data/tgdbConsoleCovers';
 
 function escapeXml(unsafe: string): string {
   return String(unsafe)
@@ -222,7 +224,7 @@ export function getProxiedImageUrl(url?: string): string {
     const cleanUrl = url
       .replace(/([?&])utm_[^&]+(&|$)/gi, '$1')
       .replace(/[?&]$/, '');
-    if (cleanUrl.includes('wikimedia.org') || cleanUrl.includes('wikipedia.org')) {
+    if (!import.meta.env.PROD && (cleanUrl.includes('wikimedia.org') || cleanUrl.includes('wikipedia.org'))) {
       return `/api/cover-proxy?url=${encodeURIComponent(cleanUrl)}`;
     }
     return cleanUrl;
@@ -286,8 +288,21 @@ export function getFallbackSvgCover(game: Partial<VideoGameItem>): string {
 }
 
 export function getSafeCoverUrl(game: Partial<VideoGameItem>): string {
+  const igdbImageId = game.id && Object.prototype.hasOwnProperty.call(IGDB_CONSOLE_COVER_IDS, game.id)
+    ? IGDB_CONSOLE_COVER_IDS[game.id]
+    : undefined;
+  if (igdbImageId) {
+    return `https://images.igdb.com/igdb/image/upload/t_cover_big/${igdbImageId}.jpg`;
+  }
+  const tgdbUrl = game.id && Object.prototype.hasOwnProperty.call(TGDB_CONSOLE_COVER_URLS, game.id)
+    ? TGDB_CONSOLE_COVER_URLS[game.id]
+    : undefined;
+  if (tgdbUrl) {
+    return tgdbUrl;
+  }
+
   // 1. If game already has a real http/https cover URL, proxy and return it
-  if (game.coverUrl && game.coverUrl.startsWith('http')) {
+  if (typeof game.coverUrl === 'string' && game.coverUrl.startsWith('http')) {
     return getProxiedImageUrl(game.coverUrl);
   }
 
