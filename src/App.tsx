@@ -10,6 +10,7 @@ import { VictoryModal } from './components/VictoryModal';
 import { FootballTransferGame } from './components/games/FootballTransferGame';
 import { LoLGame } from './components/games/LoLGame';
 import { CarSpecsGame } from './components/games/CarSpecsGame';
+import { CarSilhouetteGame } from './components/games/CarSilhouetteGame';
 import { MovieGame } from './components/games/MovieGame';
 import { AnimeGame } from './components/games/AnimeGame';
 import { VideoGame } from './components/games/VideoGame';
@@ -181,7 +182,10 @@ export default function App() {
                   onLanguageChange={handleLanguageChange}
                 />
               )}
-              {selectedCategory === 'automobili' && (
+              {selectedCategory === 'automobili' && activeMiniGame === 'silhouette' && (
+                <CarSilhouetteGame onVictory={handleVictory} lang={lang} />
+              )}
+              {selectedCategory === 'automobili' && activeMiniGame !== 'silhouette' && (
                 <CarSpecsGame
                   key={`auto-${roundKey}`}
                   mode={gameMode}
