@@ -304,7 +304,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
 
     activeList.forEach((g) => {
       const cleanT = g.title.replace(/\s*\((Xbox|Xbox\s*360|Xbox\s*One|Xbox\s*Series\s*X|PS1|PS2|PS3|PS4|PS5|Switch|GameCube|N64|SNES)\)$/i, '').trim();
-      const normKey = (cleanT.toLowerCase().replace(/[^a-z0-9]/g, '') + '__' + (g.gameType || 'Normale')).toLowerCase();
+      const normKey = (cleanT.toLowerCase().replace(/[^a-z0-9]/g, '') + '__' + g.releaseYear).toLowerCase();
       if (!uniqueMap.has(normKey)) {
         uniqueMap.set(normKey, { ...g, title: cleanT });
       } else {
