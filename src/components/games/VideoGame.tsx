@@ -324,8 +324,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
       const isRemake =
         g.gameType === 'Remake' ||
         lowerTitle.includes('remake') ||
-        lowerTitle.includes('reload') ||
-        lowerTitle.includes('rebirth');
+        lowerTitle.includes('reload');
       const isExpansion =
         lowerTitle.includes('expansion') ||
         lowerTitle.includes('espansione') ||
@@ -516,7 +515,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
 
           {/* Selettore Difficoltà per Specs */}
           {mode === 'infinite' && (
-            <div className="mb-4 grid grid-cols-6 gap-1.5">
+            <div className="mb-4 flex flex-wrap justify-center gap-1.5">
               {DIFFICULTY_OPTIONS.map((opt) => (
                 <button
                   key={opt.key}
@@ -527,7 +526,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
                       initGame(filters, opt.key);
                     }
                   }}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
+                  className={`w-24 rounded-lg border px-2 py-1.5 text-center text-xs font-bold transition ${
                     difficulty === opt.key ? opt.activeBtnClass : opt.badgeClass
                   }`}
                 >
@@ -642,7 +641,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
           {/* Pulsante Aiuto Endless & Barra di Ricerca */}
           {!isGameOver && (
             <div className="mb-8 space-y-3">
-              {mode === 'infinite' && (
+              {mode === 'infinite' && guesses.length > 0 && (
                 <div className="flex justify-center">
                   <button
                     type="button"
