@@ -49,26 +49,20 @@ interface CarPixelGameProps {
 
 export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lang = 'it' }) => {
   const [init] = useState(() => {
-    if (mode === 'daily') {
-      const session = getGameSession<string, CarModel>('automobili', 'pixel', mode);
-      if (session?.targetItem) {
-        return {
-          target: session.targetItem,
-          wrong: session.guesses ?? [],
-          status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
-          order: (session.extra?.order as number[]) ?? shuffled(seededRandom(session.targetItem.id)),
-        };
-      }
-      const target = PIXEL_POOL[getDailyIndex('automobili', 'pixel', PIXEL_POOL.length)];
+    const session = getGameSession<string, CarModel>('automobili', 'pixel', mode);
+    if (session?.targetItem) {
       return {
-        target,
-        wrong: [] as string[],
-        status: 'playing' as Status,
-        order: shuffled(seededRandom(target.id)),
+        target: session.targetItem,
+        wrong: session.guesses ?? [],
+        status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status, order: (session.extra?.order as number[]) ?? shuffled(seededRandom(session.targetItem.id)),
       };
     }
-    const target = pickRandomCar();
-    return { target, wrong: [] as string[], status: 'playing' as Status, order: shuffled(Math.random) };
+    if (mode === 'daily') {
+      const t = PIXEL_POOL[getDailyIndex('automobili', 'pixel', PIXEL_POOL.length)];
+      return { target: t, wrong: [] as string[], status: 'playing' as Status, order: shuffled(seededRandom(t.id)) };
+    }
+    const t = pickRandomCar();
+    return { target: t, wrong: [] as string[], status: 'playing' as Status, order: shuffled(Math.random) };
   });
 
   const [targetCar, setTargetCar] = useState<CarModel>(init.target);
@@ -80,7 +74,6 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
   const [imageReady, setImageReady] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    if (mode !== 'daily') return;
     saveGameSession('automobili', 'pixel', mode, {
       isWon: status === 'won',
       isGameOver: status !== 'playing',

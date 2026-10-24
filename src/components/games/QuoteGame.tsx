@@ -30,18 +30,20 @@ interface QuoteGameProps {
 
 export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'it' }) => {
   const [init] = useState(() => {
-    if (mode === 'daily') {
-      const session = getGameSession<string, MovieItem>('film', 'citazioni', mode);
-      if (session?.targetItem) {
-        return {
-          target: session.targetItem,
-          wrong: session.guesses ?? [],
-          status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
-        };
-      }
-      return { target: QUOTABLE[getDailyIndex('film', 'citazioni', QUOTABLE.length)], wrong: [] as string[], status: 'playing' as Status };
+    const session = getGameSession<string, MovieItem>('film', 'citazioni', mode);
+    if (session?.targetItem) {
+      return {
+        target: session.targetItem,
+        wrong: session.guesses ?? [],
+        status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
+      };
     }
-    return { target: pickRandomMovie(), wrong: [] as string[], status: 'playing' as Status };
+    if (mode === 'daily') {
+      const t = QUOTABLE[getDailyIndex('film', 'citazioni', QUOTABLE.length)];
+      return { target: t, wrong: [] as string[], status: 'playing' as Status };
+    }
+    const t = pickRandomMovie();
+    return { target: t, wrong: [] as string[], status: 'playing' as Status };
   });
 
   const [targetMovie, setTargetMovie] = useState<MovieItem>(init.target);
@@ -49,7 +51,6 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
   const [status, setStatus] = useState<Status>(init.status);
 
   useEffect(() => {
-    if (mode !== 'daily') return;
     saveGameSession('film', 'citazioni', mode, {
       isWon: status === 'won',
       isGameOver: status !== 'playing',

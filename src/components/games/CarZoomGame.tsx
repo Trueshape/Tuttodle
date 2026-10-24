@@ -33,24 +33,20 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   const maxAttempts = mode === 'daily' ? 5 : 7;
 
   const [init] = useState(() => {
-    if (mode === 'daily') {
-      const session = getGameSession<string, CarModel>('automobili', 'zoom', mode);
-      if (session?.targetItem) {
-        return {
-          target: session.targetItem,
-          wrong: session.guesses ?? [],
-          status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status,
-          focus: (session.extra?.focus as { x: number; y: number }) ?? randomFocus(),
-        };
-      }
+    const session = getGameSession<string, CarModel>('automobili', 'zoom', mode);
+    if (session?.targetItem) {
       return {
-        target: ZOOM_POOL[getDailyIndex('automobili', 'zoom', ZOOM_POOL.length)],
-        wrong: [] as string[],
-        status: 'playing' as Status,
-        focus: randomFocus(),
+        target: session.targetItem,
+        wrong: session.guesses ?? [],
+        status: (session.isWon ? 'won' : session.isGameOver ? 'lost' : 'playing') as Status, focus: (session.extra?.focus as { x: number; y: number }) ?? randomFocus(),
       };
     }
-    return { target: pickRandomCar(), wrong: [] as string[], status: 'playing' as Status, focus: randomFocus() };
+    if (mode === 'daily') {
+      const t = ZOOM_POOL[getDailyIndex('automobili', 'zoom', ZOOM_POOL.length)];
+      return { target: t, wrong: [] as string[], status: 'playing' as Status, focus: randomFocus() };
+    }
+    const t = pickRandomCar();
+    return { target: t, wrong: [] as string[], status: 'playing' as Status, focus: randomFocus() };
   });
 
   const [targetCar, setTargetCar] = useState<CarModel>(init.target);
@@ -60,7 +56,6 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   const [imageReady, setImageReady] = useState(false);
 
   useEffect(() => {
-    if (mode !== 'daily') return;
     saveGameSession('automobili', 'zoom', mode, {
       isWon: status === 'won',
       isGameOver: status !== 'playing',
