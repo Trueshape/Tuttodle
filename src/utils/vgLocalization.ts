@@ -1,6 +1,10 @@
 import { LolLanguage, VideoGameItem } from '../types';
 
 export const GENRE_TRANSLATIONS_EN: Record<string, string> = {
+  'Sparatutto': 'Shooter',
+  'Picchiaduro': 'Fighting',
+  'GDR': 'RPG',
+  'Gestionale': 'Management',
   'A turni': 'Turn-based',
   'Action': 'Action',
   'Action RPG': 'Action RPG',

@@ -31,64 +31,26 @@ export function saveExcludedGenres(genres: string[]) {
   } catch {}
 }
 
-// Generi riconosciuti mostrati nei filtri (esclude stili e temi)
-const GAME_GENRES = new Set<string>([
-  "Action",
-  "Action RPG",
-  "Action Adventure",
-  "Action-Adventure",
-  "Azione",
-  "Avventura",
-  "Adventure",
-  "Platform",
-  "Platform 2D",
-  "Platform 3D",
-  "Platform Adventure",
-  "Action Platformer",
-  "Metroidvania",
-  "Soulslike",
-  "Hack and Slash",
-  "Survival Horror",
-  "Horror",
-  "Stealth",
-  "Shooter",
-  "First-Person Shooter",
-  "Third-Person Shooter",
-  "Sparatutto",
-  "Battle Royale",
-  "Hero Shooter",
-  "Rail Shooter",
-  "Shoot 'em Up",
-  "Run and Gun",
-  "Picchiaduro",
-  "Picchiaduro 2D",
-  "Picchiaduro 3D",
-  "Fighting",
-  "JRPG",
-  "GDR",
-  "Role-playing (RPG)",
-  "Strategia",
-  "Strategia a Turni",
-  "Strategia in Tempo Reale",
-  "Puzzle",
-  "Rompicapo",
-  "Corse",
-  "Racing",
-  "Corse Arcade",
-  "Kart Racing",
-  "Rally",
-  "Simulazione",
-  "Simulazione di Guida",
-  "Simulazione di Volo",
-  "Sport",
-  "Calcio",
-  "Golf",
-  "Wrestling",
-  "Party Game",
-  "Rhythm Game",
-  "Gestionale",
-  "Open World",
-]);
+// Varianti di nome dello stesso genere: un solo genere nei filtri
+const GENRE_CANONICAL: Record<string, string> = {
+  Action: 'Azione', Azione: 'Azione',
+  Adventure: 'Avventura', Avventura: 'Avventura',
+  Shooter: 'Sparatutto', 'First-Person Shooter': 'Sparatutto', 'Third-Person Shooter': 'Sparatutto', Sparatutto: 'Sparatutto',
+  Puzzle: 'Rompicapo', Rompicapo: 'Rompicapo',
+  Fighting: 'Picchiaduro', Picchiaduro: 'Picchiaduro', 'Picchiaduro 2D': 'Picchiaduro', 'Picchiaduro 3D': 'Picchiaduro', Wrestling: 'Picchiaduro',
+  Racing: 'Corse', Corse: 'Corse',
+  'Role-playing (RPG)': 'GDR', GDR: 'GDR',
+  'Action RPG': 'Action RPG', JRPG: 'JRPG', 'Action Adventure': 'Action-Adventure', 'Action-Adventure': 'Action-Adventure',
+  Platform: 'Platform', 'Platform 2D': 'Platform', 'Platform 3D': 'Platform', 'Action Platformer': 'Platform',
+  'Survival Horror': 'Survival Horror', Horror: 'Horror', Stealth: 'Stealth', Metroidvania: 'Metroidvania', Soulslike: 'Soulslike',
+  'Hack and Slash': 'Hack and Slash', 'Battle Royale': 'Battle Royale', 'Hero Shooter': 'Hero Shooter', 'Rail Shooter': 'Rail Shooter',
+  Strategia: 'Strategia', 'Strategia a Turni': 'Strategia a Turni', 'Strategia in Tempo Reale': 'Strategia in Tempo Reale',
+  Simulazione: 'Simulazione', 'Simulazione di Guida': 'Simulazione di Guida', 'Simulazione di Volo': 'Simulazione di Volo',
+  Sport: 'Sport', Calcio: 'Calcio', Golf: 'Sport', 'Party Game': 'Party Game', 'Rhythm Game': 'Rhythm Game',
+  Gestionale: 'Gestionale', Rally: 'Corse', 'Kart Racing': 'Kart Racing', 'Open World': 'Open World',
+};
+
+export const canonicalGenre = (g: string): string | undefined => GENRE_CANONICAL[g];
 
 export const DEFAULT_FILTERS: VideoGameFiltersState = {
   brand: 'ALL',
@@ -140,7 +102,7 @@ export function gameMatchesFilters(game: VideoGameItem, filters: VideoGameFilter
   // 2. Excluded genres filter
   if (
     filters.excludedGenres.length > 0 &&
-    game.genres.some((g) => filters.excludedGenres.includes(g))
+    game.genres.some((g) => filters.excludedGenres.includes(canonicalGenre(g) ?? g))
   ) {
     return false;
   }
@@ -291,7 +253,9 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
   const filteredGenresList = useMemo(() => {
     const query = genreSearch.trim().toLowerCase();
     return availableGenres
-      .filter((g) => GAME_GENRES.has(g))
+      .map((g) => canonicalGenre(g))
+      .filter((g): g is string => Boolean(g))
+      .filter((g, i, arr) => arr.indexOf(g) === i)
       .filter((g) => {
         if (!query) return true;
         const localized = String(localizeSpecValue('Genere', g, lang)).toLowerCase();
