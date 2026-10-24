@@ -5,20 +5,27 @@ import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { SearchBar, SearchOption } from '../SearchBar';
 
 const MAX_ATTEMPTS = 5;
-const BRIGHTNESS_BY_WRONG = [0, 0.25, 0.5, 0.75, 1];
+const ZOOM_START = 5;
+const ZOOM_END = 1;
 
 const pickRandomCar = (exclude?: string): CarModel => {
   const pool = CAR_MODELS.filter((c) => c.imageUrl && c.id !== exclude);
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
-interface CarSilhouetteGameProps {
+const randomFocus = () => ({
+  x: 20 + Math.random() * 60,
+  y: 20 + Math.random() * 60,
+});
+
+interface CarZoomGameProps {
   onVictory: (attemptsCount: number, guessesMatches: never[], targetCar: CarModel) => void;
   lang?: LolLanguage;
 }
 
-export const CarSilhouetteGame: React.FC<CarSilhouetteGameProps> = ({ onVictory, lang = 'it' }) => {
+export const CarZoomGame: React.FC<CarZoomGameProps> = ({ onVictory, lang = 'it' }) => {
   const [targetCar, setTargetCar] = useState<CarModel>(() => pickRandomCar());
+  const [focus, setFocus] = useState(randomFocus);
   const [wrongGuesses, setWrongGuesses] = useState<string[]>([]);
   const [status, setStatus] = useState<'playing' | 'won' | 'lost'>('playing');
 
@@ -34,6 +41,11 @@ export const CarSilhouetteGame: React.FC<CarSilhouetteGameProps> = ({ onVictory,
     []
   );
 
+  const zoom =
+    status === 'playing'
+      ? ZOOM_START - (wrongGuesses.length / MAX_ATTEMPTS) * (ZOOM_START - ZOOM_END)
+      : ZOOM_END;
+
   const handleGuess = (option: SearchOption) => {
     if (status !== 'playing') return;
     if (option.id === targetCar.id) {
@@ -46,10 +58,9 @@ export const CarSilhouetteGame: React.FC<CarSilhouetteGameProps> = ({ onVictory,
     if (next.length >= MAX_ATTEMPTS) setStatus('lost');
   };
 
-  const brightness = BRIGHTNESS_BY_WRONG[Math.min(wrongGuesses.length, BRIGHTNESS_BY_WRONG.length - 1)];
-
   const newGame = () => {
     setTargetCar(pickRandomCar(targetCar.id));
+    setFocus(randomFocus());
     setWrongGuesses([]);
     setStatus('playing');
   };
@@ -57,20 +68,23 @@ export const CarSilhouetteGame: React.FC<CarSilhouetteGameProps> = ({ onVictory,
   return (
     <div className="max-w-xl mx-auto text-center">
       <h2 className="text-xl font-black mb-1">
-        {lang === 'en' ? 'Guess the car from its silhouette' : 'Indovina l\'auto dalla silhouette'}
+        {lang === 'en' ? 'Guess the car from the zoomed image' : 'Indovina l\'auto dall\'immagine zoomata'}
       </h2>
       <p className="text-xs text-zinc-400 mb-4">
         {lang === 'en'
-          ? `Each wrong guess reveals more colour. ${MAX_ATTEMPTS} attempts.`
-          : `Ogni errore mostra più colore. ${MAX_ATTEMPTS} tentativi.`}
+          ? `The image zooms out with every wrong guess. ${MAX_ATTEMPTS} attempts.`
+          : `L'immagine si rimpicciolisce a ogni errore. ${MAX_ATTEMPTS} tentativi.`}
       </p>
 
-      <div className="mb-4 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 flex items-center justify-center min-h-[220px]">
+      <div className="relative mb-4 aspect-[16/10] rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <img
           src={getProxiedImageUrl(targetCar.imageUrl)}
-          alt={lang === 'en' ? 'Car silhouette' : 'Silhouette dell\'auto'}
-          className="max-h-[220px] w-auto object-contain transition-[filter] duration-500"
-          style={{ filter: `brightness(${brightness})` }}
+          alt={lang === 'en' ? 'Zoomed car' : 'Auto zoomata'}
+          className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500"
+          style={{
+            transform: `scale(${zoom})`,
+            transformOrigin: `${focus.x}% ${focus.y}%`,
+          }}
         />
       </div>
 
