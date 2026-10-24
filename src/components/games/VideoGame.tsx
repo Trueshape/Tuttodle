@@ -514,51 +514,26 @@ export const VideoGame: React.FC<VideoGameProps> = ({
             />
           )}
 
-          {/* Selettore Difficoltà (Facile, Medio, Difficile, Tutte) per Specs */}
+          {/* Selettore Difficoltà per Specs */}
           {mode === 'infinite' && (
-            <div className="mb-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-3 sm:p-4 text-center shadow-lg">
-              <div className="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-zinc-300">
-                    {lang === 'en' ? 'Difficulty Level:' : 'Livello di Difficoltà:'}
-                  </span>
-                  <span className="text-[11px] font-semibold text-zinc-500">
-                    ({filteredGamesPool.length} {lang === 'en' ? 'games available' : 'giochi disponibili'})
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {DIFFICULTY_OPTIONS.map((opt) => {
-                  const isSelected = difficulty === opt.key;
-                  return (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      onClick={() => {
-                        if (difficulty !== opt.key) {
-                          setDifficulty(opt.key);
-                          initGame(filters, opt.key);
-                        }
-                      }}
-                      className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
-                        isSelected
-                          ? `${opt.activeBtnClass} shadow-md scale-[1.02] ring-2 ring-white/20`
-                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                      }`}
-                      title={lang === 'en' ? opt.descEn : opt.descIt}
-                    >
-                      <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm">
-                        <span>{opt.icon}</span>
-                        <span>{lang === 'en' ? opt.labelEn : opt.labelIt}</span>
-                      </div>
-                      <span className="text-[10px] mt-0.5 opacity-75 line-clamp-1">
-                        {lang === 'en' ? opt.descEn : opt.descIt}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="mb-4 grid grid-cols-6 gap-1.5">
+              {DIFFICULTY_OPTIONS.map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => {
+                    if (difficulty !== opt.key) {
+                      setDifficulty(opt.key);
+                      initGame(filters, opt.key);
+                    }
+                  }}
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
+                    difficulty === opt.key ? opt.activeBtnClass : opt.badgeClass
+                  }`}
+                >
+                  {opt.icon} {lang === 'en' ? opt.labelEn : opt.labelIt}
+                </button>
+              ))}
             </div>
           )}
 

@@ -295,8 +295,12 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [reportToast, setReportToast] = useState<string | null>(null);
 
+  // Segnalazione cover rotte: attiva solo in locale, dove le segnalazioni vengono salvate su file
+  const reportEnabled = import.meta.env.DEV;
+
   // Scorciatoia da tastiera 'X' per segnalare cover rotte (disponibile in ogni stato, anche a fine partita)
   useEffect(() => {
+    if (!reportEnabled) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeTag = document.activeElement?.tagName.toLowerCase();
       if (activeTag === 'input' || activeTag === 'textarea') return;
@@ -938,7 +942,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
       </div>
 
       {activeMode === 'infinite' && (
-        <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="mb-4 grid grid-cols-6 gap-1.5">
           {DIFFICULTY_OPTIONS.map((opt) => (
             <button
               key={opt.key}
@@ -1013,28 +1017,30 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
 
           <div className="ml-2 flex items-center gap-1.5 relative z-30">
             {/* Pulsante 'X': Segnala cover rovinata o distorta (cliccabile sempre, sia durante il gioco che dopo che la cover è stata mostrata) */}
+            {reportEnabled && (
             <button
-              type="button"
-              id="btn-report-broken-cover"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowReportModal(true);
-              }}
-              className="flex items-center gap-1.5 rounded-lg border border-amber-500/70 bg-amber-500/25 hover:bg-amber-500/40 hover:border-amber-400 px-3 py-1.5 text-xs font-bold text-amber-200 hover:text-white transition shadow-sm cursor-pointer active:scale-95 pointer-events-auto select-none"
-              title={
-                lang === 'en'
-                  ? 'Flag broken or distorted cover (X)'
-                  : 'Segnala cover rovinata o distorta (X)'
-              }
-            >
-              <span className="flex h-4 w-4 items-center justify-center rounded bg-amber-500/50 text-[11px] font-black text-amber-100 border border-amber-400/80 leading-none">
-                X
-              </span>
-              <span>
-                {lang === 'en' ? 'Flag Cover' : 'Cover Rovinata'}
-              </span>
-            </button>
+                type="button"
+                id="btn-report-broken-cover"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowReportModal(true);
+                }}
+                className="flex items-center gap-1.5 rounded-lg border border-amber-500/70 bg-amber-500/25 hover:bg-amber-500/40 hover:border-amber-400 px-3 py-1.5 text-xs font-bold text-amber-200 hover:text-white transition shadow-sm cursor-pointer active:scale-95 pointer-events-auto select-none"
+                title={
+                  lang === 'en'
+                    ? 'Flag broken or distorted cover (X)'
+                    : 'Segnala cover rovinata o distorta (X)'
+                }
+              >
+                <span className="flex h-4 w-4 items-center justify-center rounded bg-amber-500/50 text-[11px] font-black text-amber-100 border border-amber-400/80 leading-none">
+                  X
+                </span>
+                <span>
+                  {lang === 'en' ? 'Flag Cover' : 'Cover Rovinata'}
+                </span>
+              </button>
+              )}
 
             {activeMode === 'infinite' && (
               gameState === 'playing' ? (

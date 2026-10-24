@@ -321,7 +321,7 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
               disabled={matchingCount === 0}
               className="flex h-[40px] items-center gap-1.5 rounded-xl border border-indigo-500/40 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:pointer-events-none px-4 text-xs font-bold text-white transition shadow-sm cursor-pointer box-border shrink-0"
             >
-              <span>{lang === 'en' ? 'New Game' : 'Nuovo Videogioco'}</span>
+              <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
             </button>
           )}
         </div>
@@ -687,7 +687,7 @@ export const VideoGameFilters: React.FC<VideoGameFiltersProps> = ({
                   className="flex items-center gap-1.5 rounded-xl border border-indigo-500/40 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:pointer-events-none px-4 py-2 text-xs font-bold text-white transition shadow-sm cursor-pointer"
                 >
                   <Play className="h-3.5 w-3.5 fill-white" />
-                  <span>{lang === 'en' ? 'New Game' : 'Nuovo Videogioco'}</span>
+                  <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
                 </button>
               </div>
             </div>
