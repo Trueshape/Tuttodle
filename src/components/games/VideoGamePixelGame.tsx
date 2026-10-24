@@ -755,8 +755,7 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
           {/* Serie Record in Endless o Statistiche Complete in Daily */}
           {activeMode === 'infinite' ? (
             <div
-              className="flex flex-col items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 px-4 h-[50px] min-w-[76px] shadow-inner"
-              title={DIFFICULTY_OPTIONS.map((o) => `${lang === 'en' ? o.labelEn : o.labelIt}: ${bestByDifficulty[o.key] ?? 0}`).join('\n')}
+              className="group relative flex flex-col items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 px-4 h-[50px] min-w-[76px] shadow-inner cursor-default"
             >
               <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-widest text-zinc-400 leading-none">
                 <Award className={`h-3 w-3 ${endlessBestStreak > 0 ? 'text-indigo-400' : 'text-zinc-500'}`} />
@@ -764,6 +763,15 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
               </div>
               <div className="text-base font-black text-indigo-300 leading-tight text-center mt-1">
                 {endlessBestStreak}
+              </div>
+              <div className="pointer-events-none invisible absolute right-0 top-full z-50 mt-2 w-44 rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-left text-xs shadow-xl group-hover:visible">
+                <div className="mb-1.5 text-[10px] font-black uppercase tracking-widest text-zinc-400">{lang === 'en' ? 'Best streak by difficulty' : 'Serie migliore per difficoltà'}</div>
+                {DIFFICULTY_OPTIONS.map((o) => (
+                  <div key={o.key} className={`flex items-center justify-between py-0.5 ${o.key === difficulty ? 'font-black text-white' : 'text-zinc-400'}`}>
+                    <span>{o.icon} {lang === 'en' ? o.labelEn : o.labelIt}</span>
+                    <span className="tabular-nums">{bestByDifficulty[o.key] ?? 0}</span>
+                  </div>
+                ))}
               </div>
             </div>
           ) : (

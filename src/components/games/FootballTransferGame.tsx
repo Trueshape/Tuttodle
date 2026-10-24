@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { FootballPlayer, GuessRecord, GameMode, AttributeMatch } from '../../types';
+import { FootballPlayer, GuessRecord, GameMode, AttributeMatch, LolLanguage } from '../../types';
 import { FOOTBALL_PLAYERS } from '../../data/footballPlayers';
 import { compareFootballPlayer } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
@@ -15,6 +15,7 @@ interface FootballTransferGameProps {
   onModeChange?: (mode: GameMode) => void;
   onVictory: (attemptsCount: number, guessesMatches: AttributeMatch[][], targetPlayer: FootballPlayer) => void;
   onOpenHelp: () => void;
+  lang?: LolLanguage;
 }
 
 export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
@@ -22,6 +23,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
   onModeChange,
   onVictory,
   onOpenHelp,
+  lang = 'it',
 }) => {
   const [targetPlayer, setTargetPlayer] = useState<FootballPlayer>(FOOTBALL_PLAYERS[0]);
   const [guesses, setGuesses] = useState<GuessRecord<FootballPlayer>[]>([]);
@@ -161,7 +163,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
         <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-emerald-400" />
-            <span className="text-sm font-bold text-slate-200">Cronologia Carriera</span>
+            <span className="text-sm font-bold text-slate-200">{lang === 'en' ? 'Career History' : 'Cronologia Carriera'}</span>
           </div>
           <span className="text-xs font-semibold text-slate-400">
             {targetPlayer.transfers.length} Tappe Registrate
@@ -198,7 +200,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
         <div className="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-amber-400" />
-            <span className="text-xs font-bold text-slate-300">Indizi Sbloccabili:</span>
+            <span className="text-xs font-bold text-slate-300">{lang === 'en' ? 'Unlockable Hints:' : 'Indizi Sbloccabili:'}</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -245,7 +247,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
             className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-emerald-600/30 cursor-pointer active:scale-95"
           >
             <RotateCcw className="h-4 w-4" />
-            <span>Nuova Partita</span>
+            <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
           </button>
         </div>
       )}

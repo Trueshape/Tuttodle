@@ -8,6 +8,7 @@ import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
+import { translateCarValue } from '../../utils/vgLocalization';
 import { ArrowUp, ArrowDown, Car, Lightbulb, Lock, RotateCcw } from 'lucide-react';
 
 interface CarSpecsGameProps {
@@ -84,7 +85,7 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
     return CAR_MODELS.map((c) => ({
       id: c.id,
       name: c.name,
-      subtitle: `${c.flag} ${c.brand} • ${c.bodyType} • ${c.horsepower} CV • ${c.releaseYear}`,
+      subtitle: `${c.flag} ${c.brand} • ${translateCarValue(c.bodyType, lang)} • ${c.horsepower} ${lang === 'en' ? 'HP' : 'CV'} • ${c.releaseYear}`,
       flag: c.flag,
       iconUrl: getProxiedImageUrl(c.imageUrl),
     })).sort((a, b) =>
@@ -144,7 +145,7 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
         <DailyCompletedBanner
           attemptsCount={guesses.length}
           targetName={targetCar.name}
-          targetSubtitle={`${targetCar.flag} ${targetCar.brand} • ${targetCar.bodyType} • ${targetCar.horsepower} CV • ${targetCar.releaseYear}`}
+          targetSubtitle={`${targetCar.flag} ${targetCar.brand} • ${translateCarValue(targetCar.bodyType, lang)} • ${targetCar.horsepower} ${lang === 'en' ? 'HP' : 'CV'} • ${targetCar.releaseYear}`}
           targetImageUrl={getProxiedImageUrl(targetCar.imageUrl)}
           onPlayInfinite={onModeChange ? () => onModeChange('infinite') : undefined}
           lang={lang}

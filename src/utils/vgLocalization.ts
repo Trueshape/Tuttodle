@@ -697,3 +697,25 @@ export function localizeSpecValue(label: string, value: any, lang?: LolLanguage 
 
   return value;
 }
+
+const CAR_VALUE_EN_MAP: Record<string, string> = {
+  Italia: 'Italy',
+  Germania: 'Germany',
+  Francia: 'France',
+  'Regno Unito': 'United Kingdom',
+  Svezia: 'Sweden',
+  Spagna: 'Spain',
+  Giappone: 'Japan',
+  'Repubblica Ceca': 'Czech Republic',
+  Romania: 'Romania',
+  Berlina: 'Sedan',
+  'Coupé': 'Coupe',
+  Cabrio: 'Convertible',
+  Supercar: 'Supercar',
+  Hypercar: 'Hypercar',
+};
+
+export function translateCarValue(value: string, lang: string = 'it'): string {
+  if (lang === 'it') return value;
+  return CAR_VALUE_EN_MAP[value] || value;
+}

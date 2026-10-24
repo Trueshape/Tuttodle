@@ -169,6 +169,7 @@ export default function App() {
                   onModeChange={setGameMode}
                   onVictory={handleVictory}
                   onOpenHelp={() => setIsHelpOpen(true)}
+                  lang={lang}
                 />
               )}
               {selectedCategory === 'league-of-legends' && (
