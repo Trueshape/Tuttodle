@@ -39,7 +39,6 @@ import {
   Clock,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { getChampionVoiceAudioUrl } from '../../utils/lolAudio';
 
 interface LoLQuoteGameProps {
   mode: GameMode;
@@ -243,42 +242,6 @@ export const LoLQuoteGame: React.FC<LoLQuoteGameProps> = ({
       return;
     }
 
-    // Try real audio first
-    const realAudioUrl = getChampionVoiceAudioUrl(targetChampion.id, currentLang);
-    if (realAudioUrl) {
-      try {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
-        const audio = new Audio(realAudioUrl);
-        audioRef.current = audio;
-        setAudioSourceType('riot');
-        setIsPlayingAudio(true);
-
-        audio.onended = () => {
-          setIsPlayingAudio(false);
-          audioRef.current = null;
-        };
-
-        audio.onerror = () => {
-          // If real audio fails to load, gracefully fallback to SpeechSynthesis
-          console.warn('Real audio file failed to load, falling back to TTS');
-          audioRef.current = null;
-          playSpeechSynthesisFallback();
-        };
-
-        audio.play().catch((err) => {
-          console.warn('Audio play rejected, falling back to TTS:', err);
-          audioRef.current = null;
-          playSpeechSynthesisFallback();
-        });
-        return;
-      } catch (e) {
-        console.warn('Error creating audio, falling back to TTS:', e);
-      }
-    }
-
-    // Fallback if no real audio URL
     playSpeechSynthesisFallback();
   };
 
@@ -409,7 +372,6 @@ export const LoLQuoteGame: React.FC<LoLQuoteGameProps> = ({
   const currentQuoteText = lang === 'en' ? targetQuote.quoteEn : targetQuote.quoteIt;
   const alternateQuoteText = lang === 'en' ? targetQuote.quoteIt : targetQuote.quoteEn;
   const currentQuoteType = lang === 'en' ? targetQuote.quoteTypeEn : targetQuote.quoteTypeIt;
-  const hasRealRiotAudio = !!getChampionVoiceAudioUrl(targetChampion.id, currentLang);
 
   return (
     <div className="mx-auto max-w-4xl">
