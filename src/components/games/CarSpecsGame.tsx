@@ -7,6 +7,8 @@ import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
+import { ActionSlot } from '../ActionSlot';
+import { ResultCard } from '../ResultCard';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { translateCarValue } from '../../utils/vgLocalization';
 import { ArrowUp, ArrowDown, Car, Lightbulb, Lock, RotateCcw } from 'lucide-react';
@@ -126,6 +128,19 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
     }
   };
 
+  const handleGiveUp = () => {
+    if (isGameOver) return;
+    setIsGameOver(true);
+    saveGameSession('automobili', 'specs', mode, {
+      isWon: false,
+      isGameOver: true,
+      guesses,
+      targetItem: targetCar,
+      targetId: targetCar.id,
+    });
+    saveGameResult('automobili', 'specs', false, guesses.length);
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 pt-4 pb-6">
       {/* Game Title */}
@@ -152,6 +167,30 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
         />
       )}
 
+
+      {/* Search Bar */}
+      <div className={isGameOver ? 'invisible' : ''}>
+        <SearchBar
+          options={searchOptions}
+          alreadyGuessedIds={guesses.map((g) => g.item.id)}
+          onSelectOption={handleMakeGuess}
+          placeholder="Cerca un'auto (es. Ferrari F40, Porsche 911, Nissan GT-R)..."
+          disabled={isGameOver}
+          focusSignal={`${targetCar.id}-${guesses.length}`}
+        />
+      </div>
+
+      <ActionSlot mode={mode} isOver={isGameOver} onGiveUp={handleGiveUp} onNewGame={() => initGame(true)} lang={lang} />
+
+      {isGameOver && mode === 'infinite' && (
+        <ResultCard
+          won={guesses.some((g) => g.isCorrect)}
+          name={targetCar.name}
+          details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`}
+          lang={lang}
+        />
+      )}
+
       {/* Unlocked Hint Box - solo durante la partita */}
       {!isGameOver && (
         <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 text-center">
@@ -169,30 +208,6 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
         </div>
       )}
 
-      {/* Search Bar */}
-      {!isGameOver && (
-        <div className="mb-8">
-          <SearchBar
-            options={searchOptions}
-            alreadyGuessedIds={guesses.map((g) => g.item.id)}
-            onSelectOption={handleMakeGuess}
-            placeholder="Cerca un'auto (es. Ferrari F40, Porsche 911, Nissan GT-R)..."
-          />
-        </div>
-      )}
-
-      {/* Pulsante Nuova Partita in Modalità Infinita */}
-      {isGameOver && mode === 'infinite' && (
-        <div className="mb-8 flex justify-center">
-          <button
-            onClick={() => initGame(true)}
-            className="flex items-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-amber-600/30 cursor-pointer active:scale-95"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
-          </button>
-        </div>
-      )}
 
       {/* Guesses Table */}
       {guesses.length > 0 && (
