@@ -5,6 +5,8 @@ import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
+import { ActionSlot } from '../ActionSlot';
+import { ResultCard } from '../ResultCard';
 
 const COLS = 6;
 const ROWS = 5;
@@ -183,39 +185,21 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
         {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {MAX_ATTEMPTS}
       </p>
 
-      {status === 'playing' && (
+      <div className={status === 'playing' ? '' : 'invisible'}>
         <SearchBar
           options={searchOptions}
           alreadyGuessedIds={wrongGuesses}
           onSelectOption={handleGuess}
-          placeholder={lang === 'en' ? 'Search a car...' : 'Cerca un\'auto...'}
+          placeholder={lang === 'en' ? 'Search a car...' : "Cerca un'auto..."}
+          disabled={status !== 'playing'}
+          focusSignal={`${targetCar.id}-${wrongGuesses.length}`}
         />
-      )}
+      </div>
 
-      {status === 'lost' && (
-        <p className="mt-4 text-sm font-bold text-rose-300">
-          {lang === 'en' ? 'It was' : 'Era'} {targetCar.name}
-        </p>
-      )}
-      {status === 'won' && (
-        <p className="mt-4 text-sm font-bold text-emerald-300">
-          {lang === 'en' ? 'Correct!' : 'Esatto!'} {targetCar.name}
-        </p>
-      )}
-      {mode === 'daily' && status !== 'playing' && (
-        <p className="mt-2 text-xs text-zinc-500">
-          {lang === 'en' ? 'Daily completed. Come back tomorrow.' : 'Daily completata. Torna domani.'}
-        </p>
-      )}
+      <ActionSlot mode={mode} isOver={status !== 'playing'} onGiveUp={() => setStatus('lost')} onNewGame={newGame} lang={lang} />
 
-      {mode === 'infinite' && status !== 'playing' && (
-        <button
-          type="button"
-          onClick={newGame}
-          className="mt-4 rounded-xl bg-amber-600 hover:bg-amber-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition cursor-pointer active:scale-95"
-        >
-          {lang === 'en' ? 'New Game' : 'Nuova Partita'}
-        </button>
+      {status !== 'playing' && (
+        <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} lang={lang} />
       )}
     </div>
   );

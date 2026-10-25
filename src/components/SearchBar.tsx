@@ -18,6 +18,7 @@ interface SearchBarProps {
   onSelect?: (option: SearchOption) => void;
   placeholder?: string;
   disabled?: boolean;
+  focusSignal?: unknown;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -27,6 +28,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSelect,
   placeholder = 'Cerca e seleziona...',
   disabled = false,
+  focusSignal,
 }) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -55,6 +57,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setSelectedIndex(0);
   }, [query]);
 
+  useEffect(() => {
+    if (!disabled) inputRef.current?.focus();
+  }, [focusSignal, disabled]);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -69,6 +75,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
+
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      setQuery('');
+      return;
+    }
 
     if (!isOpen && e.key === 'ArrowDown') {
       setIsOpen(true);
@@ -91,8 +103,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           handleSelect(selected);
         }
       }
-    } else if (e.key === 'Escape') {
-      setIsOpen(false);
     }
   };
 
@@ -106,6 +116,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setQuery('');
     setIsOpen(false);
     setSelectedIndex(0);
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   return (
