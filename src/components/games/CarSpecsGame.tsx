@@ -7,7 +7,7 @@ import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { ActionSlot } from '../ActionSlot';
+import { AttemptsRow } from '../AttemptsRow';
 import { ResultCard } from '../ResultCard';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { translateCarValue } from '../../utils/vgLocalization';
@@ -168,6 +168,16 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
       )}
 
 
+      <AttemptsRow
+        mode={mode}
+        attempts={guesses.length}
+        won={guesses.some((g) => g.isCorrect)}
+        isOver={isGameOver}
+        onGiveUp={handleGiveUp}
+        onNewGame={() => initGame(true)}
+        lang={lang}
+      />
+
       {/* Search Bar */}
       <div className={isGameOver ? 'invisible' : ''}>
         <SearchBar
@@ -179,8 +189,6 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
           focusSignal={`${targetCar.id}-${guesses.length}`}
         />
       </div>
-
-      <ActionSlot mode={mode} isOver={isGameOver} onGiveUp={handleGiveUp} onNewGame={() => initGame(true)} lang={lang} />
 
       {isGameOver && mode === 'infinite' && (
         <ResultCard

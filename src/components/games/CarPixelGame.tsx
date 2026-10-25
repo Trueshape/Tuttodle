@@ -5,7 +5,7 @@ import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { ActionSlot } from '../ActionSlot';
+import { AttemptsRow } from '../AttemptsRow';
 import { ResultCard } from '../ResultCard';
 
 const COLS = 6;
@@ -177,13 +177,20 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
           : `Una tessera è scoperta all'inizio, e una in più a ogni errore. ${MAX_ATTEMPTS} tentativi.`}
       </p>
 
+      <AttemptsRow
+        mode={mode}
+        attempts={wrongGuesses.length}
+        maxAttempts={MAX_ATTEMPTS}
+        won={status === 'won'}
+        isOver={status !== 'playing'}
+        onGiveUp={() => setStatus('lost')}
+        onNewGame={newGame}
+        lang={lang}
+      />
+
       <div className="mb-4 rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <canvas ref={canvasRef} className="w-full h-auto block" />
       </div>
-
-      <p className="text-xs text-zinc-500 mb-3">
-        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {MAX_ATTEMPTS}
-      </p>
 
       <div className={status === 'playing' ? '' : 'invisible'}>
         <SearchBar
@@ -195,8 +202,6 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
           focusSignal={`${targetCar.id}-${wrongGuesses.length}`}
         />
       </div>
-
-      <ActionSlot mode={mode} isOver={status !== 'playing'} onGiveUp={() => setStatus('lost')} onNewGame={newGame} lang={lang} />
 
       {status !== 'playing' && (
         <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} lang={lang} />

@@ -6,3 +6,7 @@
     color: #f4f4f5;
   }
 }
+
+html {
+  scrollbar-gutter: stable;
+}

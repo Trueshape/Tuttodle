@@ -4,7 +4,7 @@ import { MOVIES } from '../../data/movies';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { ActionSlot } from '../ActionSlot';
+import { AttemptsRow } from '../AttemptsRow';
 import { ResultCard } from '../ResultCard';
 
 const MAX_ATTEMPTS = 5;
@@ -105,13 +105,20 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
           : `Ogni errore svela altre parole della citazione. ${MAX_ATTEMPTS} tentativi.`}
       </p>
 
+      <AttemptsRow
+        mode={mode}
+        attempts={wrongGuesses.length}
+        maxAttempts={MAX_ATTEMPTS}
+        won={status === 'won'}
+        isOver={status !== 'playing'}
+        onGiveUp={() => setStatus('lost')}
+        onNewGame={newGame}
+        lang={lang}
+      />
+
       <div className="mb-4 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5 min-h-[140px] flex items-center justify-center">
         <p className="text-base italic leading-relaxed text-zinc-100">“{shownQuote}”</p>
       </div>
-
-      <p className="text-xs text-zinc-500 mb-3">
-        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {MAX_ATTEMPTS}
-      </p>
 
       <div className={status === 'playing' ? '' : 'invisible'}>
         <SearchBar
@@ -123,8 +130,6 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
           focusSignal={`${targetMovie.id}-${wrongGuesses.length}`}
         />
       </div>
-
-      <ActionSlot mode={mode} isOver={status !== 'playing'} onGiveUp={() => setStatus('lost')} onNewGame={newGame} lang={lang} />
 
       {status !== 'playing' && (
         <ResultCard won={status === 'won'} name={targetMovie.title} details={`${targetMovie.flag} ${targetMovie.director} • ${targetMovie.releaseYear}`} lang={lang} />

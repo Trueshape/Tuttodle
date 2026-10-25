@@ -6,7 +6,7 @@ import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
-import { ActionSlot } from '../ActionSlot';
+import { AttemptsRow } from '../AttemptsRow';
 import { ResultCard } from '../ResultCard';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
@@ -160,6 +160,16 @@ export const MovieGame: React.FC<MovieGameProps> = ({
       )}
 
 
+      <AttemptsRow
+        mode={mode}
+        attempts={guesses.length}
+        won={guesses.some((g) => g.isCorrect)}
+        isOver={isGameOver}
+        onGiveUp={handleGiveUp}
+        onNewGame={() => initGame(true)}
+        lang={lang}
+      />
+
       <div className={isGameOver ? 'invisible' : ''}>
         <SearchBar
           options={searchOptions}
@@ -170,8 +180,6 @@ export const MovieGame: React.FC<MovieGameProps> = ({
           focusSignal={`${targetMovie.id}-${guesses.length}`}
         />
       </div>
-
-      <ActionSlot mode={mode} isOver={isGameOver} onGiveUp={handleGiveUp} onNewGame={() => initGame(true)} lang={lang} />
 
       {isGameOver && mode === 'infinite' && (
         <ResultCard

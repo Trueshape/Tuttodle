@@ -5,7 +5,7 @@ import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
-import { ActionSlot } from '../ActionSlot';
+import { AttemptsRow } from '../AttemptsRow';
 import { ResultCard } from '../ResultCard';
 
 const ZOOM_START = 5;
@@ -116,6 +116,17 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
           : `L'immagine si rimpicciolisce a ogni errore. ${maxAttempts} tentativi.`}
       </p>
 
+      <AttemptsRow
+        mode={mode}
+        attempts={wrongGuesses.length}
+        maxAttempts={maxAttempts}
+        won={status === 'won'}
+        isOver={status !== 'playing'}
+        onGiveUp={() => setStatus('lost')}
+        onNewGame={newGame}
+        lang={lang}
+      />
+
       <div className="relative mb-4 rounded-2xl overflow-hidden border border-zinc-800 bg-black">
         <img
           key={targetCar.id}
@@ -131,10 +142,6 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
         />
       </div>
 
-      <p className="text-xs text-zinc-500 mb-3">
-        {lang === 'en' ? 'Attempts' : 'Tentativi'}: {wrongGuesses.length} / {maxAttempts}
-      </p>
-
       <div className={status === 'playing' ? '' : 'invisible'}>
         <SearchBar
           options={searchOptions}
@@ -145,8 +152,6 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
           focusSignal={`${targetCar.id}-${wrongGuesses.length}`}
         />
       </div>
-
-      <ActionSlot mode={mode} isOver={status !== 'playing'} onGiveUp={() => setStatus('lost')} onNewGame={newGame} lang={lang} />
 
       {status !== 'playing' && (
         <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} lang={lang} />
