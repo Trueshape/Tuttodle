@@ -363,7 +363,7 @@ export const LoLAbilityGame: React.FC<LoLAbilityGameProps> = ({
   const rotationLabel = initialRotation === 90 ? '+90° (Destra)' : initialRotation === 270 ? '-90° (Sinistra)' : '180° (Capovolta)';
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-4 sm:py-6">
+    <div className="mx-auto max-w-4xl px-4 pt-4 pb-6">
       {/* Title & Badge Header */}
       <div className="text-center mb-6">
         {mode === 'infinite' && (
@@ -373,7 +373,7 @@ export const LoLAbilityGame: React.FC<LoLAbilityGameProps> = ({
           </div>
         )}
 
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-2xl font-black text-white sm:text-3xl">
           {lang === 'en' ? 'Guess the Ability (P, Q, W, E, R)' : "Indovina l'Abilità (P, Q, W, E, R)"}
         </h1>
         <p className="mt-1 text-xs text-zinc-400 max-w-lg mx-auto">

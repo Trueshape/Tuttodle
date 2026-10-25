@@ -404,7 +404,7 @@ export const LoLArtworkGame: React.FC<LoLArtworkGameProps> = ({
   const progressPercent = Math.min(100, Math.round((totalErrors / 25) * 100));
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-4 sm:py-6">
+    <div className="mx-auto max-w-4xl px-4 pt-4 pb-6">
       {/* Header Badge & Title */}
       <div className="text-center mb-6">
         {mode === 'infinite' && (
@@ -414,7 +414,7 @@ export const LoLArtworkGame: React.FC<LoLArtworkGameProps> = ({
           </div>
         )}
 
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-2xl font-black text-white sm:text-3xl">
           {lang === 'en' ? "Guess the Champion's Artwork" : "Indovina l'Artwork del Campione"}
         </h1>
         <p className="mt-1 text-xs text-zinc-400 max-w-lg mx-auto">

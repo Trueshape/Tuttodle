@@ -738,11 +738,11 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6">
+    <div className="mx-auto max-w-4xl px-4 pt-4 pb-6 sm:px-6">
       {/* Header Info & Punteggio */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
         <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-black text-white truncate">
+          <h2 className="text-2xl font-black text-white sm:text-3xl truncate">
             {lang === 'en' ? 'Pixel Cover' : 'Copertina Pixellata'}
           </h2>
           <p className="text-xs text-zinc-400 mt-0.5">

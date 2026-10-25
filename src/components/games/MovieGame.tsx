@@ -122,9 +122,9 @@ export const MovieGame: React.FC<MovieGameProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6">
+    <div className="mx-auto max-w-5xl px-4 pt-4 pb-6">
       <div className="mb-6 text-center">
-        <h1 className="text-3xl font-black text-white sm:text-4xl">
+        <h1 className="text-2xl font-black text-white sm:text-3xl">
           Indovina la Pellicola
         </h1>
         <p className="mt-1 text-xs text-slate-400">

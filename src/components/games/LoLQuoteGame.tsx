@@ -412,7 +412,7 @@ export const LoLQuoteGame: React.FC<LoLQuoteGameProps> = ({
   const hasRealRiotAudio = !!getChampionVoiceAudioUrl(targetChampion.id, currentLang);
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-4xl px-4 pt-4 pb-6">
       {/* Header Info */}
       <div className="text-center mb-6">
         {mode === 'infinite' && (
@@ -421,7 +421,7 @@ export const LoLQuoteGame: React.FC<LoLQuoteGameProps> = ({
             <span>{t.streak}: {streak} ({t.bestStreak}: {bestStreak})</span>
           </div>
         )}
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-2xl font-black text-white sm:text-3xl">
           {lang === 'en' ? 'Guess the Champion from the Quote' : 'Indovina il Campione dalla Citazione'}
         </h1>
         <p className="mt-1 text-xs text-zinc-400 max-w-lg mx-auto">

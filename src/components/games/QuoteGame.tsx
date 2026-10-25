@@ -93,11 +93,11 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
   const shownQuote = maskQuote(targetMovie.taglineOrQuote, Math.max(0.2, revealRatio));
 
   return (
-    <div className="max-w-xl mx-auto text-center">
-      <h2 className="text-xl font-black mb-1">
+    <div className="mx-auto max-w-xl px-4 pt-4 pb-6 text-center">
+      <h1 className="text-2xl font-black text-white sm:text-3xl">
         {lang === 'en' ? 'Guess the movie from the quote' : 'Indovina il film dalla citazione'}
-      </h2>
-      <p className="text-xs text-zinc-400 mb-4">
+      </h1>
+      <p className="mt-1 mb-5 text-xs text-slate-400">
         {lang === 'en'
           ? `Each wrong guess reveals more of the quote. ${MAX_ATTEMPTS} attempts.`
           : `Ogni errore svela altre parole della citazione. ${MAX_ATTEMPTS} tentativi.`}

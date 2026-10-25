@@ -417,7 +417,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-[1500px] px-3 sm:px-6 py-4 sm:py-6">
+    <div className="mx-auto max-w-[1500px] px-3 sm:px-6 pt-4 pb-6">
       {subGame === 'pixel' ? (
         <VideoGamePixelGame
           mode={mode}
@@ -431,7 +431,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
       ) : (
         <>
           <div className="mb-6 text-center">
-            <h1 className="text-3xl font-black text-white sm:text-4xl">
+            <h1 className="text-2xl font-black text-white sm:text-3xl">
               {lang === 'en' ? 'Videogames: Specs' : 'Videogiochi: Specs'}
             </h1>
             <p className="mt-1 text-xs text-slate-400">

@@ -165,11 +165,11 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
   };
 
   return (
-    <div className="max-w-xl mx-auto text-center">
-      <h2 className="text-xl font-black mb-1">
+    <div className="mx-auto max-w-xl px-4 pt-4 pb-6 text-center">
+      <h1 className="text-2xl font-black text-white sm:text-3xl">
         {lang === 'en' ? 'Guess the car from the tiles' : 'Indovina l\'auto dalle tessere'}
-      </h2>
-      <p className="text-xs text-zinc-400 mb-4">
+      </h1>
+      <p className="mt-1 mb-5 text-xs text-slate-400">
         {lang === 'en'
           ? `One tile is revealed at start, and one more at every wrong guess. ${MAX_ATTEMPTS} attempts.`
           : `Una tessera è scoperta all'inizio, e una in più a ogni errore. ${MAX_ATTEMPTS} tentativi.`}

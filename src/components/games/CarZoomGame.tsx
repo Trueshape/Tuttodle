@@ -104,11 +104,11 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   };
 
   return (
-    <div className="max-w-xl mx-auto text-center">
-      <h2 className="text-xl font-black mb-1">
+    <div className="mx-auto max-w-xl px-4 pt-4 pb-6 text-center">
+      <h1 className="text-2xl font-black text-white sm:text-3xl">
         {lang === 'en' ? 'Guess the car from the zoomed image' : 'Indovina l\'auto dall\'immagine zoomata'}
-      </h2>
-      <p className="text-xs text-zinc-400 mb-4">
+      </h1>
+      <p className="mt-1 mb-5 text-xs text-slate-400">
         {lang === 'en'
           ? `The image zooms out with every wrong guess. ${maxAttempts} attempts.`
           : `L'immagine si rimpicciolisce a ogni errore. ${maxAttempts} tentativi.`}
