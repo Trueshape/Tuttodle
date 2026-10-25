@@ -7,6 +7,8 @@ import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
+import { AttemptsRow } from '../AttemptsRow';
+import { ResultCard } from '../ResultCard';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { ArrowUp, ArrowDown, HelpCircle, Lightbulb, Award, Lock, ShieldCheck, User, RotateCcw } from 'lucide-react';
 
@@ -100,6 +102,19 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
       a.name.localeCompare(b.name, 'it', { sensitivity: 'base', numeric: true })
     );
   }, []);
+
+  const handleGiveUp = () => {
+    if (isGameOver) return;
+    setIsGameOver(true);
+    saveGameSession('calcio', 'carriera', mode, {
+      isWon: false,
+      isGameOver: true,
+      guesses,
+      targetItem: targetPlayer,
+      targetId: targetPlayer.id,
+    });
+    saveGameResult('calcio', 'carriera', false, guesses.length);
+  };
 
   const handleMakeGuess = (option: SearchOption) => {
     if (isGameOver) return;
@@ -227,29 +242,34 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
         </div>
       </div>
 
-      {/* Search Input Bar */}
-      {!isGameOver && (
-        <div className="mb-8">
-          <SearchBar
-            options={searchOptions}
-            alreadyGuessedIds={guesses.map((g) => g.item.id)}
-            onSelectOption={handleMakeGuess}
-            placeholder="Cerca un calciatore (es. Messi, Ronaldo, Mbappé...)..."
-          />
-        </div>
-      )}
+      <AttemptsRow
+        mode={mode}
+        attempts={guesses.length}
+        won={guesses.some((g) => g.isCorrect)}
+        isOver={isGameOver}
+        onGiveUp={handleGiveUp}
+        onNewGame={() => initGame(true)}
+        lang={lang}
+      />
 
-      {/* Pulsante Nuova Partita in Modalità Infinita */}
+      <div className={isGameOver ? 'invisible' : ''}>
+        <SearchBar
+          options={searchOptions}
+          alreadyGuessedIds={guesses.map((g) => g.item.id)}
+          onSelectOption={handleMakeGuess}
+          placeholder="Cerca un calciatore (es. Messi, Ronaldo, Mbappé)..."
+          disabled={isGameOver}
+          focusSignal={`${targetPlayer.id}-${guesses.length}`}
+        />
+      </div>
+
       {isGameOver && mode === 'infinite' && (
-        <div className="mb-8 flex justify-center">
-          <button
-            onClick={() => initGame(true)}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-emerald-600/30 cursor-pointer active:scale-95"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
-          </button>
-        </div>
+        <ResultCard
+          won={guesses.some((g) => g.isCorrect)}
+          name={targetPlayer.name}
+          details={`${targetPlayer.flag} ${targetPlayer.currentClub}`}
+          lang={lang}
+        />
       )}
 
       {/* Guesses Table */}

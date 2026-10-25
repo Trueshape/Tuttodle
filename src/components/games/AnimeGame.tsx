@@ -7,6 +7,8 @@ import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
+import { AttemptsRow } from '../AttemptsRow';
+import { ResultCard } from '../ResultCard';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { ArrowUp, ArrowDown, Tv, RotateCcw } from 'lucide-react';
 
@@ -87,6 +89,19 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
     );
   }, []);
 
+  const handleGiveUp = () => {
+    if (isGameOver) return;
+    setIsGameOver(true);
+    saveGameSession('anime', 'anime-stats', mode, {
+      isWon: false,
+      isGameOver: true,
+      guesses,
+      targetItem: targetAnime,
+      targetId: targetAnime.id,
+    });
+    saveGameResult('anime', 'anime-stats', false, guesses.length);
+  };
+
   const handleMakeGuess = (option: SearchOption) => {
     if (isGameOver) return;
     const guessedAnime = ANIME_LIST.find((a) => a.id === option.id);
@@ -144,28 +159,34 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
       )}
 
 
-      {!isGameOver && (
-        <div className="mb-8">
-          <SearchBar
-            options={searchOptions}
-            alreadyGuessedIds={guesses.map((g) => g.item.id)}
-            onSelectOption={handleMakeGuess}
-            placeholder="Cerca un anime (es. L'Attacco dei Giganti, One Piece, Demon Slayer)..."
-          />
-        </div>
-      )}
+      <AttemptsRow
+        mode={mode}
+        attempts={guesses.length}
+        won={guesses.some((g) => g.isCorrect)}
+        isOver={isGameOver}
+        onGiveUp={handleGiveUp}
+        onNewGame={() => initGame(true)}
+        lang={lang}
+      />
 
-      {/* Pulsante Nuova Partita in Modalità Infinita */}
+      <div className={isGameOver ? 'invisible' : ''}>
+        <SearchBar
+          options={searchOptions}
+          alreadyGuessedIds={guesses.map((g) => g.item.id)}
+          onSelectOption={handleMakeGuess}
+          placeholder="Cerca un anime (es. L'Attacco dei Giganti, One Piece, Demon Slayer)..."
+          disabled={isGameOver}
+          focusSignal={`${targetAnime.id}-${guesses.length}`}
+        />
+      </div>
+
       {isGameOver && mode === 'infinite' && (
-        <div className="mb-8 flex justify-center">
-          <button
-            onClick={() => initGame(true)}
-            className="flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-purple-600/30 cursor-pointer active:scale-95"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
-          </button>
-        </div>
+        <ResultCard
+          won={guesses.some((g) => g.isCorrect)}
+          name={targetAnime.title}
+          details={`${targetAnime.studio} • ${targetAnime.releaseYear}`}
+          lang={lang}
+        />
       )}
 
       {guesses.length > 0 && (
