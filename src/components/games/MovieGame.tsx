@@ -6,6 +6,8 @@ import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
+import { ActionSlot } from '../ActionSlot';
+import { ResultCard } from '../ResultCard';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { ArrowUp, ArrowDown, Clapperboard, RotateCcw } from 'lucide-react';
@@ -88,6 +90,19 @@ export const MovieGame: React.FC<MovieGameProps> = ({
     );
   }, []);
 
+  const handleGiveUp = () => {
+    if (isGameOver) return;
+    setIsGameOver(true);
+    saveGameSession('film', 'film-stats', mode, {
+      isWon: false,
+      isGameOver: true,
+      guesses,
+      targetItem: targetMovie,
+      targetId: targetMovie.id,
+    });
+    saveGameResult('film', 'film-stats', false, guesses.length);
+  };
+
   const handleMakeGuess = (option: SearchOption) => {
     if (isGameOver) return;
     const guessedMovie = MOVIES.find((m) => m.id === option.id);
@@ -145,28 +160,26 @@ export const MovieGame: React.FC<MovieGameProps> = ({
       )}
 
 
-      {!isGameOver && (
-        <div className="mb-8">
-          <SearchBar
-            options={searchOptions}
-            alreadyGuessedIds={guesses.map((g) => g.item.id)}
-            onSelectOption={handleMakeGuess}
-            placeholder="Cerca un film (es. Inception, Il Padrino, Matrix, Titanic)..."
-          />
-        </div>
-      )}
+      <div className={isGameOver ? 'invisible' : ''}>
+        <SearchBar
+          options={searchOptions}
+          alreadyGuessedIds={guesses.map((g) => g.item.id)}
+          onSelectOption={handleMakeGuess}
+          placeholder="Cerca un film (es. Inception, Il Padrino, Matrix, Titanic)..."
+          disabled={isGameOver}
+          focusSignal={`${targetMovie.id}-${guesses.length}`}
+        />
+      </div>
 
-      {/* Pulsante Nuova Partita in Modalità Infinita */}
+      <ActionSlot mode={mode} isOver={isGameOver} onGiveUp={handleGiveUp} onNewGame={() => initGame(true)} lang={lang} />
+
       {isGameOver && mode === 'infinite' && (
-        <div className="mb-8 flex justify-center">
-          <button
-            onClick={() => initGame(true)}
-            className="flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-6 py-3 text-sm font-black uppercase tracking-wider text-white transition shadow-lg shadow-rose-600/30 cursor-pointer active:scale-95"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span>{lang === 'en' ? 'New Game' : 'Nuova Partita'}</span>
-          </button>
-        </div>
+        <ResultCard
+          won={guesses.some((g) => g.isCorrect)}
+          name={targetMovie.title}
+          details={`${targetMovie.flag} ${targetMovie.director} • ${targetMovie.releaseYear}`}
+          lang={lang}
+        />
       )}
 
       {guesses.length > 0 && (
