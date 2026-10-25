@@ -3,6 +3,8 @@ import { CarModel, GameMode, LolLanguage } from '../../types';
 import { CAR_MODELS } from '../../data/cars';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
+import { scoreForWin } from '../../utils/scoring';
+import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { AttemptsRow } from '../AttemptsRow';
@@ -150,13 +152,18 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
   const handleGuess = (option: SearchOption) => {
     if (status !== 'playing') return;
     if (option.id === targetCar.id) {
+      const attemptsUsed = wrongGuesses.length + 1;
       setStatus('won');
-      onVictory(wrongGuesses.length + 1, [], targetCar);
+      if (mode === 'daily') saveGameResult('automobili', 'pixel', true, attemptsUsed, scoreForWin(attemptsUsed, MAX_ATTEMPTS));
+      onVictory(attemptsUsed, [], targetCar);
       return;
     }
     const next = [...wrongGuesses, option.id];
     setWrongGuesses(next);
-    if (next.length >= MAX_ATTEMPTS) setStatus('lost');
+    if (next.length >= MAX_ATTEMPTS) {
+      setStatus('lost');
+      if (mode === 'daily') saveGameResult('automobili', 'pixel', false, next.length, 0);
+    }
   };
 
   const newGame = () => {
@@ -204,7 +211,7 @@ export const CarPixelGame: React.FC<CarPixelGameProps> = ({ mode, onVictory, lan
       </div>
 
       {status !== 'playing' && (
-        <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} lang={lang} />
+        <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} score={status === 'won' ? scoreForWin(wrongGuesses.length + 1, MAX_ATTEMPTS) : 0} lang={lang} />
       )}
     </div>
   );

@@ -3,6 +3,8 @@ import { CarModel, GameMode, LolLanguage } from '../../types';
 import { CAR_MODELS } from '../../data/cars';
 import { getProxiedImageUrl } from '../../utils/boxArtGenerator';
 import { getDailyIndex } from '../../utils/dailySeed';
+import { scoreForWin } from '../../utils/scoring';
+import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { AttemptsRow } from '../AttemptsRow';
@@ -32,7 +34,7 @@ interface CarZoomGameProps {
 }
 
 export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang = 'it' }) => {
-  const maxAttempts = mode === 'daily' ? 5 : 7;
+  const maxAttempts = 5;
 
   const [init] = useState(() => {
     const session = getGameSession<string, CarModel>('automobili', 'zoom', mode);
@@ -88,13 +90,18 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
   const handleGuess = (option: SearchOption) => {
     if (status !== 'playing') return;
     if (option.id === targetCar.id) {
+      const attemptsUsed = wrongGuesses.length + 1;
       setStatus('won');
-      onVictory(wrongGuesses.length + 1, [], targetCar);
+      if (mode === 'daily') saveGameResult('automobili', 'zoom', true, attemptsUsed, scoreForWin(attemptsUsed, maxAttempts));
+      onVictory(attemptsUsed, [], targetCar);
       return;
     }
     const next = [...wrongGuesses, option.id];
     setWrongGuesses(next);
-    if (next.length >= maxAttempts) setStatus('lost');
+    if (next.length >= maxAttempts) {
+      setStatus('lost');
+      if (mode === 'daily') saveGameResult('automobili', 'zoom', false, next.length, 0);
+    }
   };
 
   const newGame = () => {
@@ -154,7 +161,7 @@ export const CarZoomGame: React.FC<CarZoomGameProps> = ({ mode, onVictory, lang 
       </div>
 
       {status !== 'playing' && (
-        <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} lang={lang} />
+        <ResultCard won={status === 'won'} name={targetCar.name} details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`} score={status === 'won' ? scoreForWin(wrongGuesses.length + 1, maxAttempts) : 0} lang={lang} />
       )}
     </div>
   );

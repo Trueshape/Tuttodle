@@ -10,6 +10,7 @@ import { SearchBar, SearchOption } from '../SearchBar';
 import { ArrowUp, ArrowDown, Gamepad2, Lightbulb, Grid3X3, Sparkles, Star, Play, RotateCcw, HelpCircle } from 'lucide-react';
 import { VideoGamePixelGame } from './VideoGamePixelGame';
 import { usePlayableGames } from '../../hooks/usePlayableGames';
+import { scoreForWin } from '../../utils/scoring';
 import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters, loadExcludedGenres, saveExcludedGenres } from './VideoGameFilters';
 import { PlatformIcons } from './PlatformIcons';
 import { PixelHeart } from './PixelHeart';
@@ -390,19 +391,19 @@ export const VideoGame: React.FC<VideoGameProps> = ({
     const newGuesses = [record, ...guesses];
     setGuesses(newGuesses);
 
-    const isDefeat = mode === 'daily' && newGuesses.filter((g) => !g.isCorrect).length >= MAX_DAILY_ATTEMPTS;
+    const isDefeat = newGuesses.filter((g) => !g.isCorrect).length >= MAX_DAILY_ATTEMPTS;
     const isOver = isCorrect || isDefeat;
 
     if (isCorrect) {
       setIsGameOver(true);
       setIsVictory(true);
-      saveGameResult(categoryKey, 'game-specs', true, newGuesses.length);
+      saveGameResult(categoryKey, 'game-specs', true, newGuesses.length, scoreForWin(newGuesses.length, MAX_DAILY_ATTEMPTS));
       const matchesHistory = newGuesses.map((g) => g.matches);
       onVictory(newGuesses.length, matchesHistory, targetGame);
     } else if (isDefeat) {
       setIsGameOver(true);
       setIsVictory(false);
-      saveGameResult(categoryKey, 'game-specs', false, MAX_DAILY_ATTEMPTS);
+      saveGameResult(categoryKey, 'game-specs', false, MAX_DAILY_ATTEMPTS, 0);
     }
 
     saveGameSession(categoryKey, 'game-specs', mode, {
@@ -454,13 +455,14 @@ export const VideoGame: React.FC<VideoGameProps> = ({
             />
           )}
 
-          {/* Barra Tentativi con Cuoricini Pixel Art per la modalità Daily (20 vite) */}
-          {mode === 'daily' && (
+          {/* Barra Tentativi con Cuoricini Pixel Art (20 vite, Daily e Infinite) */}
+          {(
+
             <div className="mb-6 rounded-2xl border border-zinc-800 bg-zinc-950/80 p-3 sm:p-4 text-center shadow-xl">
               <div className="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black uppercase tracking-wider text-zinc-300">
-                    {lang === 'en' ? 'Daily Attempts' : 'Tentativi Giornalieri'}
+                    {lang === 'en' ? 'Attempts' : 'Tentativi'}
                   </span>
                   <span className="text-[11px] font-semibold text-zinc-500 hidden sm:inline">
                     ({lang === 'en' ? '1 heart lost per mistake' : '1 cuore perso per ogni errore'})

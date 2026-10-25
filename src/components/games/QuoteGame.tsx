@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { MovieItem, GameMode, LolLanguage } from '../../types';
 import { MOVIES } from '../../data/movies';
 import { getDailyIndex } from '../../utils/dailySeed';
+import { scoreForWin } from '../../utils/scoring';
+import { saveGameResult } from '../../utils/stats';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { AttemptsRow } from '../AttemptsRow';
@@ -76,13 +78,18 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
   const handleGuess = (option: SearchOption) => {
     if (status !== 'playing') return;
     if (option.id === targetMovie.id) {
+      const attemptsUsed = wrongGuesses.length + 1;
       setStatus('won');
-      onVictory(wrongGuesses.length + 1, [], targetMovie);
+      if (mode === 'daily') saveGameResult('film', 'citazioni', true, attemptsUsed, scoreForWin(attemptsUsed, MAX_ATTEMPTS));
+      onVictory(attemptsUsed, [], targetMovie);
       return;
     }
     const next = [...wrongGuesses, option.id];
     setWrongGuesses(next);
-    if (next.length >= MAX_ATTEMPTS) setStatus('lost');
+    if (next.length >= MAX_ATTEMPTS) {
+      setStatus('lost');
+      if (mode === 'daily') saveGameResult('film', 'citazioni', false, next.length, 0);
+    }
   };
 
   const newGame = () => {
@@ -132,7 +139,7 @@ export const QuoteGame: React.FC<QuoteGameProps> = ({ mode, onVictory, lang = 'i
       </div>
 
       {status !== 'playing' && (
-        <ResultCard won={status === 'won'} name={targetMovie.title} details={`${targetMovie.flag} ${targetMovie.director} • ${targetMovie.releaseYear}`} lang={lang} />
+        <ResultCard won={status === 'won'} name={targetMovie.title} details={`${targetMovie.flag} ${targetMovie.director} • ${targetMovie.releaseYear}`} score={status === 'won' ? scoreForWin(wrongGuesses.length + 1, MAX_ATTEMPTS) : 0} lang={lang} />
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import { ANIME_LIST } from '../../data/anime';
 import { compareAnime } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
+import { scoreForWin, COMPARE_MAX_ATTEMPTS } from '../../utils/scoring';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
@@ -121,7 +122,7 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
 
     saveGameSession('anime', 'anime-stats', mode, {
       isWon: isCorrect,
-      isGameOver: isCorrect,
+      isGameOver: isCorrect || newGuesses.length >= COMPARE_MAX_ATTEMPTS,
       guesses: newGuesses,
       targetItem: targetAnime,
       targetId: targetAnime.id,
@@ -129,9 +130,12 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
 
     if (isCorrect) {
       setIsGameOver(true);
-      saveGameResult('anime', 'anime-stats', true, newGuesses.length);
+      saveGameResult('anime', 'anime-stats', true, newGuesses.length, scoreForWin(newGuesses.length, COMPARE_MAX_ATTEMPTS));
       const matchesHistory = newGuesses.map((g) => g.matches);
       onVictory(newGuesses.length, matchesHistory, targetAnime);
+    } else if (newGuesses.length >= COMPARE_MAX_ATTEMPTS) {
+      setIsGameOver(true);
+      saveGameResult('anime', 'anime-stats', false, newGuesses.length, 0);
     }
   };
 
@@ -162,6 +166,7 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
       <AttemptsRow
         mode={mode}
         attempts={guesses.length}
+        maxAttempts={COMPARE_MAX_ATTEMPTS}
         won={guesses.some((g) => g.isCorrect)}
         isOver={isGameOver}
         onGiveUp={handleGiveUp}
@@ -185,6 +190,7 @@ export const AnimeGame: React.FC<AnimeGameProps> = ({
           won={guesses.some((g) => g.isCorrect)}
           name={targetAnime.title}
           details={`${targetAnime.studio} • ${targetAnime.releaseYear}`}
+          score={guesses.some((g) => g.isCorrect) ? scoreForWin(guesses.length, COMPARE_MAX_ATTEMPTS) : 0}
           lang={lang}
         />
       )}

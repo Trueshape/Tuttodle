@@ -4,6 +4,7 @@ import { CAR_MODELS } from '../../data/cars';
 import { compareCarModel } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
+import { scoreForWin, COMPARE_MAX_ATTEMPTS } from '../../utils/scoring';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
@@ -114,7 +115,7 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
 
     saveGameSession('automobili', 'specs', mode, {
       isWon: isCorrect,
-      isGameOver: isCorrect,
+      isGameOver: isCorrect || newGuesses.length >= COMPARE_MAX_ATTEMPTS,
       guesses: newGuesses,
       targetItem: targetCar,
       targetId: targetCar.id,
@@ -122,9 +123,12 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
 
     if (isCorrect) {
       setIsGameOver(true);
-      saveGameResult('automobili', 'specs', true, newGuesses.length);
+      saveGameResult('automobili', 'specs', true, newGuesses.length, scoreForWin(newGuesses.length, COMPARE_MAX_ATTEMPTS));
       const matchesHistory = newGuesses.map((g) => g.matches);
       onVictory(newGuesses.length, matchesHistory, targetCar);
+    } else if (newGuesses.length >= COMPARE_MAX_ATTEMPTS) {
+      setIsGameOver(true);
+      saveGameResult('automobili', 'specs', false, newGuesses.length, 0);
     }
   };
 
@@ -171,6 +175,7 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
       <AttemptsRow
         mode={mode}
         attempts={guesses.length}
+        maxAttempts={COMPARE_MAX_ATTEMPTS}
         won={guesses.some((g) => g.isCorrect)}
         isOver={isGameOver}
         onGiveUp={handleGiveUp}
@@ -195,6 +200,7 @@ export const CarSpecsGame: React.FC<CarSpecsGameProps> = ({
           won={guesses.some((g) => g.isCorrect)}
           name={targetCar.name}
           details={`${targetCar.flag} ${targetCar.brand} • ${targetCar.releaseYear}`}
+          score={guesses.some((g) => g.isCorrect) ? scoreForWin(guesses.length, COMPARE_MAX_ATTEMPTS) : 0}
           lang={lang}
         />
       )}

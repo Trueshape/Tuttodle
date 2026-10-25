@@ -4,6 +4,7 @@ import { MOVIES } from '../../data/movies';
 import { compareMovie } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
+import { scoreForWin, COMPARE_MAX_ATTEMPTS } from '../../utils/scoring';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { AttemptsRow } from '../AttemptsRow';
@@ -122,7 +123,7 @@ export const MovieGame: React.FC<MovieGameProps> = ({
 
     saveGameSession('film', 'film-stats', mode, {
       isWon: isCorrect,
-      isGameOver: isCorrect,
+      isGameOver: isCorrect || newGuesses.length >= COMPARE_MAX_ATTEMPTS,
       guesses: newGuesses,
       targetItem: targetMovie,
       targetId: targetMovie.id,
@@ -130,9 +131,12 @@ export const MovieGame: React.FC<MovieGameProps> = ({
 
     if (isCorrect) {
       setIsGameOver(true);
-      saveGameResult('film', 'film-stats', true, newGuesses.length);
+      saveGameResult('film', 'film-stats', true, newGuesses.length, scoreForWin(newGuesses.length, COMPARE_MAX_ATTEMPTS));
       const matchesHistory = newGuesses.map((g) => g.matches);
       onVictory(newGuesses.length, matchesHistory, targetMovie);
+    } else if (newGuesses.length >= COMPARE_MAX_ATTEMPTS) {
+      setIsGameOver(true);
+      saveGameResult('film', 'film-stats', false, newGuesses.length, 0);
     }
   };
 
@@ -163,6 +167,7 @@ export const MovieGame: React.FC<MovieGameProps> = ({
       <AttemptsRow
         mode={mode}
         attempts={guesses.length}
+        maxAttempts={COMPARE_MAX_ATTEMPTS}
         won={guesses.some((g) => g.isCorrect)}
         isOver={isGameOver}
         onGiveUp={handleGiveUp}
@@ -186,6 +191,7 @@ export const MovieGame: React.FC<MovieGameProps> = ({
           won={guesses.some((g) => g.isCorrect)}
           name={targetMovie.title}
           details={`${targetMovie.flag} ${targetMovie.director} • ${targetMovie.releaseYear}`}
+          score={guesses.some((g) => g.isCorrect) ? scoreForWin(guesses.length, COMPARE_MAX_ATTEMPTS) : 0}
           lang={lang}
         />
       )}

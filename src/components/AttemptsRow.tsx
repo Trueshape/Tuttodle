@@ -37,7 +37,7 @@ export const AttemptsRow: React.FC<AttemptsRowProps> = ({
 
   return (
     <div className="mb-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-      {maxAttempts ? (
+      {maxAttempts && maxAttempts <= 10 ? (
         <div className="flex items-center gap-1.5">
           {Array.from({ length: maxAttempts }).map((_, i) => {
             const isUsed = i < attempts;
@@ -63,7 +63,7 @@ export const AttemptsRow: React.FC<AttemptsRowProps> = ({
         </div>
       ) : (
         <div className="flex h-8 items-center rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-xs font-black text-zinc-300">
-          {uiLabel('attempts', lang)}: {attempts}
+          {uiLabel('attempts', lang)}: {attempts}{maxAttempts ? ` / ${maxAttempts}` : ''}
         </div>
       )}
 

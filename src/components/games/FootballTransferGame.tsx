@@ -4,6 +4,7 @@ import { FOOTBALL_PLAYERS } from '../../data/footballPlayers';
 import { compareFootballPlayer } from '../../utils/comparator';
 import { getDailyIndex } from '../../utils/dailySeed';
 import { saveGameResult } from '../../utils/stats';
+import { scoreForWin, COMPARE_MAX_ATTEMPTS } from '../../utils/scoring';
 import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import { SearchBar, SearchOption } from '../SearchBar';
@@ -135,7 +136,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
 
     saveGameSession('calcio', 'carriera', mode, {
       isWon: isCorrect,
-      isGameOver: isCorrect,
+      isGameOver: isCorrect || newGuesses.length >= COMPARE_MAX_ATTEMPTS,
       guesses: newGuesses,
       targetItem: targetPlayer,
       targetId: targetPlayer.id,
@@ -143,9 +144,12 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
 
     if (isCorrect) {
       setIsGameOver(true);
-      saveGameResult('calcio', 'carriera', true, newGuesses.length);
+      saveGameResult('calcio', 'carriera', true, newGuesses.length, scoreForWin(newGuesses.length, COMPARE_MAX_ATTEMPTS));
       const matchesHistory = newGuesses.map((g) => g.matches);
       onVictory(newGuesses.length, matchesHistory, targetPlayer);
+    } else if (newGuesses.length >= COMPARE_MAX_ATTEMPTS) {
+      setIsGameOver(true);
+      saveGameResult('calcio', 'carriera', false, newGuesses.length, 0);
     }
   };
 
@@ -245,6 +249,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
       <AttemptsRow
         mode={mode}
         attempts={guesses.length}
+        maxAttempts={COMPARE_MAX_ATTEMPTS}
         won={guesses.some((g) => g.isCorrect)}
         isOver={isGameOver}
         onGiveUp={handleGiveUp}
@@ -268,6 +273,7 @@ export const FootballTransferGame: React.FC<FootballTransferGameProps> = ({
           won={guesses.some((g) => g.isCorrect)}
           name={targetPlayer.name}
           details={`${targetPlayer.flag} ${targetPlayer.currentClub}`}
+          score={guesses.some((g) => g.isCorrect) ? scoreForWin(guesses.length, COMPARE_MAX_ATTEMPTS) : 0}
           lang={lang}
         />
       )}
