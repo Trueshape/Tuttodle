@@ -9,6 +9,7 @@ import { getGameSession, saveGameSession } from '../../utils/dailySession';
 import { SearchBar, SearchOption } from '../SearchBar';
 import { ArrowUp, ArrowDown, Gamepad2, Lightbulb, Grid3X3, Sparkles, Star, Play, RotateCcw, HelpCircle } from 'lucide-react';
 import { VideoGamePixelGame } from './VideoGamePixelGame';
+import { usePlayableGames } from '../../hooks/usePlayableGames';
 import { VideoGameFilters, VideoGameFiltersState, DEFAULT_FILTERS, gameMatchesFilters, loadExcludedGenres, saveExcludedGenres } from './VideoGameFilters';
 import { PlatformIcons } from './PlatformIcons';
 import { PixelHeart } from './PixelHeart';
@@ -139,9 +140,7 @@ export const VideoGame: React.FC<VideoGameProps> = ({
   lang = 'it',
 }) => {
   // Modalità Daily e Sfida Infinita con catalogo completo console e classici (~1340 giochi)
-  const gamesPool: VideoGameItem[] = useMemo(() => {
-    return ALL_SEARCHABLE_GAMES;
-  }, []);
+  const { playableGames: gamesPool } = usePlayableGames(ALL_SEARCHABLE_GAMES);
 
   const categoryKey = 'videogiochi';
 

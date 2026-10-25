@@ -12,6 +12,7 @@ import { DIFFICULTY_OPTIONS, VideoGameDifficulty, gameMatchesDifficulty } from '
 import { localizeSpecValue } from '../../utils/vgLocalization';
 import { getSafeCoverUrl, getFallbackSvgCover } from '../../utils/boxArtGenerator';
 import { getRealCoverUrl, getAlternativeCover } from '../../data/realGameCovers';
+import { usePlayableGames } from '../../hooks/usePlayableGames';
 import { getDailySession, saveDailySession, getGameSession, saveGameSession } from '../../utils/dailySession';
 import { DailyCompletedBanner } from '../DailyCompletedBanner';
 import {
@@ -103,53 +104,8 @@ export const VideoGamePixelGame: React.FC<VideoGamePixelGameProps> = ({
     }
   };
 
-  // Copertine precedentemente flaggate fino ad ora: rimosse definitivamente dal pool su richiesta dell'utente
-  const previouslyFlaggedGameIds = useMemo(() => {
-    try {
-      const stored = localStorage.getItem('omni_flagged_broken_covers');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return parsed.map((item: any) => (typeof item === 'string' ? item : item.id)).filter(Boolean);
-        }
-      }
-    } catch {}
-    return [];
-  }, []);
-
-  // Mappa delle copertine sostituite per i giochi flaggati (il gioco rimane nel pool con la nuova cover assegnata)
-  const [coverReplacements, setCoverReplacements] = useState<Record<string, string>>(() => {
-    try {
-      const saved = localStorage.getItem('omni_cover_replacements');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {};
-  });
-
-  // Catalogo unificato di giochi con copertina autentica (Wikipedia box art / HTTP reale).
-  // Esclude i giochi flaggati fino ad ora; per quelli futuri viene invece sostituita la cover senza rimuovere il gioco.
-  const [serverFlaggedIds, setServerFlaggedIds] = useState<string[]>([]);
+  const { playableGames, serverFlaggedIds, setServerFlaggedIds, coverReplacements, setCoverReplacements } = usePlayableGames(gameList);
   const pendingNextAfterFlagRef = useRef(false);
-  useEffect(() => {
-    fetch('/api/flagged-covers')
-      .then((res) => (res.ok ? res.json() : []))
-      .then((list: { id: string }[]) => setServerFlaggedIds(list.map((item) => item.id)))
-      .catch(() => {});
-  }, []);
-
-  const playableGames = useMemo(() => {
-    return gameList
-      .filter((g) => !previouslyFlaggedGameIds.includes(g.id) && !serverFlaggedIds.includes(g.id))
-      .map((g) => {
-        const replacedCover = coverReplacements[g.id];
-        const real = replacedCover || getRealCoverUrl(g) || (g.coverUrl && g.coverUrl.startsWith('http') ? g.coverUrl : undefined);
-        if (real) {
-          return { ...g, coverUrl: real };
-        }
-        return null;
-      })
-      .filter((g): g is NonNullable<typeof g> => g !== null) as VideoGameItem[];
-  }, [gameList, previouslyFlaggedGameIds, serverFlaggedIds, coverReplacements]);
 
   // Filtri per la modalità Endless / Infinita
   const [filters, setFilters] = useState<VideoGameFiltersState>(() => ({
